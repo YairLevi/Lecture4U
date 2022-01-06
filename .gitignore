@@ -8,6 +8,7 @@ __pycache__/
 
 node_modules/
 .idea/
+package-lock.json
 
 
 # C extensions
