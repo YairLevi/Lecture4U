@@ -1,0 +1,23 @@
+{
+  "name": "Lecture4U",
+  "version": "1.0.0",
+  "description": "Just use it.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YairLevi/Lecture4U.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YairLevi/Lecture4U/issues"
+  },
+  "homepage": "https://github.com/YairLevi/Lecture4U#readme",
+  "dependencies": {
+    "mongodb": "^4.2.2"
+  }
+}
