@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import cv2
 
-img = cv2.imread('example4.PNG')
+img = cv2.imread('example8.PNG')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 # Find the optimum threshold to your image --> Otsu threshold.
@@ -21,7 +21,7 @@ plt.show()
 # --- choosing the right kernel
 # --- kernel size of 3 rows (to join dots above letters 'i' and 'j')
 # --- and 10 columns to join neighboring letters in words and neighboring words
-rect_kernel = cv2.getStructuringElement(shape=cv2.MORPH_RECT, ksize=(40, 3))
+rect_kernel = cv2.getStructuringElement(shape=cv2.MORPH_RECT, ksize=(70, 1))
 dilation = cv2.dilate(thresh1, rect_kernel, iterations=1)
 color = cv2.cvtColor(dilation, cv2.COLOR_BGR2RGB)
 plt.imshow(color)
@@ -34,9 +34,18 @@ contours, hierachy = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_
 
 im2 = img.copy()
 ROI_number = 0
+height_threshold = 10
+width_threshold = 10
 for c in contours:
     x, y, w, h = cv2.boundingRect(c)
     ROI = img[y:y + h, x:x + w]
+
+    # We check if the size of the rectangle (ROI) is too small,
+    # then it indicates that there is no text in the rectangle.
+    if ROI.shape[0] < height_threshold or ROI.shape[1] < width_threshold or \
+            ((ROI.shape[0] < 2*height_threshold) and (ROI.shape[1] < 2*width_threshold)):
+        continue
+
     cv2.rectangle(im2, (x, y), (x + w, y + h), (36, 255, 12), 2)
     ROI_number += 1
 
