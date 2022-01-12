@@ -1,12 +1,13 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarComp from "./components/Navbar";
+import SignIn from "./components/forms/Sign-in";
+import Home from "./pages/Home";
 
-function App() {
+const App = () => {
     return (
         <div className="App">
-            <NavbarComp/>
-            <p style={{textAlign: "center"}}>Do Something</p>
+            <Home/>
         </div>
     );
 }
