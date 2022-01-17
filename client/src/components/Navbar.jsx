@@ -1,14 +1,14 @@
 import React from "react";
-import {Container, Navbar, Nav, NavDropdown, Form, Button} from "react-bootstrap";
+import {Container, Navbar as Bar, Nav, NavDropdown, Form, Button} from "react-bootstrap";
 
 
-export const NavbarComp = () => {
+export default function Navbar(props) {
     return (
-        <Navbar style={{padding: 15, boxShadow: '10 solid'}} bg="white" expand="lg">
+        <Bar className={"pt-xl-3 pb-xl-3 shadow-none"} expand="lg">
             <Container>
-                <Navbar.Brand href="#home">Lecture4U</Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
+                <Bar.Brand href="#home">Lecture4U</Bar.Brand>
+                <Bar.Toggle aria-controls="basic-Bar-nav" />
+                <Bar.Collapse id="basic-Bar-nav">
                     <Nav className="me-auto">
                         <Nav.Link href="#home">Home</Nav.Link>
                         <Nav.Link href="#link">Link</Nav.Link>
@@ -22,13 +22,11 @@ export const NavbarComp = () => {
                         <Nav.Link href="#about">About</Nav.Link>
                     </Nav>
                     <Form className="d-flex">
-                        <Nav.Link style={{color: 'black'}} href="#sign-up">Sign Up</Nav.Link>
-                        <Button variant="primary">Sign In</Button>
+                        <Nav.Link style={{color: 'black'}} href="sign-up">Sign Up</Nav.Link>
+                        <Button variant="primary" href={"sign-in"}>Sign In</Button>
                     </Form>
-                </Navbar.Collapse>
+                </Bar.Collapse>
             </Container>
-        </Navbar>
+        </Bar>
     );
 }
-
-export default NavbarComp;
