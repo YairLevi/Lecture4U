@@ -54,6 +54,9 @@ export default function SignInPage(props) {
                 <div className={"col text-center"}>
                     <button type="submit" onClick={() => auth(mail, password)} className="btn btn-primary">Submit</button>
                 </div>
+                <p className="forgot-password text-right">
+                    <a href={"forgot-password"}>Forgot Password?</a>
+                </p>
             </form>
         </Container>
     );
