@@ -3,14 +3,15 @@ import {Container, Navbar as Bar, Nav, NavDropdown, Form, Button} from "react-bo
 
 
 export default function Navbar(props) {
+    const {onOpen} = props
     return (
-        <Bar className={"pt-xl-3 pb-xl-3 shadow-none"} expand="lg">
+        <Bar className={"p-3 border-bottom border-1"} bg={"white"} expand="md" sticky={"top"}>
+            <Button onClick={onOpen}>SideNav</Button>
             <Container>
-                <Bar.Brand href="#home">Lecture4U</Bar.Brand>
+                <Bar.Brand href="/">Lecture4U</Bar.Brand>
                 <Bar.Toggle aria-controls="basic-Bar-nav" />
                 <Bar.Collapse id="basic-Bar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
                         <Nav.Link href="#link">Link</Nav.Link>
                         <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                             <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
@@ -22,11 +23,11 @@ export default function Navbar(props) {
                         <Nav.Link href="#about">About</Nav.Link>
                     </Nav>
                     <Form className="d-flex">
-                        <Nav.Link style={{color: 'black'}} href="sign-up">Sign Up</Nav.Link>
-                        <Button variant="primary" href={"sign-in"}>Sign In</Button>
+                        <Nav.Link className="me-2 border border-black rounded text-dark" href="sign-up">Sign Up</Nav.Link>
+                        <Nav.Link className="rounded bg-primary text-light" variant="white" href="sign-in">Sign In</Nav.Link>
                     </Form>
                 </Bar.Collapse>
             </Container>
         </Bar>
-    );
+    )
 }

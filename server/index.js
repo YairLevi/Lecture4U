@@ -1,21 +1,45 @@
-require('dotenv').config({path: './env/.env'})
-const path = require("path")
-const express = require("express");
-const app = express(); // create express app
-const PORT = 8000;
-const {getQueryParams} = require('./httpUtil')
-const userRouter = require('./routes/users')
+require('dotenv').config({ path: './env/.env' })
+const express = require("express")
+const cors = require('cors')
+const User = require("./models/User");
+const jwt = require("jsonwebtoken");
+const cookieParser = require('cookie-parser')
+const mongoose = require("mongoose");
+mongoose.connect(process.env.URL)
 
-// add middlewares
-app.use(express.static(path.join(__dirname, "..", "client", "build")))
+const authRouter = require('./routes/auth')
 
-app.use('/users', userRouter)
+const PORT = 8000
+const HOST = 'localhost'
+const app = express()
+const threeDaysInSeconds = 60 * 60 * 24 * 3
+const jwtName = 'jwt'
 
-app.get('*', function(req, res) {
-    res.sendFile('index.html', {root: path.join(__dirname, '../client/build/')})
-})
+app.use(cors({ origin: process.env.CLIENT, credentials: true, }))
+app.use(cookieParser())
+app.use(express.json())
 
-// start express server on port 5000
-app.listen(PORT, () => {
-    console.log("server started on port 8000")
-})
+app.use('/', authRouter)
+
+// app.get('/login', (req, res) => {
+//     const token = req.cookies.jwt
+//     if (!token) return res.sendStatus(400)
+//     jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+//         if (err) return console.log(err.message)
+//         const user = await User.findById(decodedToken._id)
+//         if (!user) return res.sendStatus(400)
+//         res.sendStatus(200)
+//     })
+// })
+//
+// app.post('/login', async (req, res) => {
+//     const email = req.body.email
+//     const password = req.body.password
+//     const user = await User.login(email, password)
+//     if (!user) return res.sendStatus(400)
+//     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: threeDaysInSeconds })
+//     res.cookie(jwtName, token, { maxAge: threeDaysInSeconds * 1000 })
+//     res.sendStatus(200)
+// })
+
+app.listen(PORT, HOST, () => console.log(`server started on port ${PORT}`))

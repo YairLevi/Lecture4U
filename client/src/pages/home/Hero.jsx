@@ -6,7 +6,7 @@ import image from '../../assets/hero_section_image.jpg';
 
 export default function Hero(props) {
     return (
-        <Container className={"container-lg"}>
+        <Container className={"container-lg pt-4 pb-4"}>
             <Row className={"justify-content-center align-items-center"}>
                 <Col className={"text-center text-md-start"}>
                     <h1 style={{fontWeight: 'bold'}}>

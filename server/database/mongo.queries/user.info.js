@@ -1,5 +1,5 @@
-const {makeUserProps, errorInFunc, toString} = require('../util')
-const {MongoClient} = require('mongodb')
+const { makeUserProps, errorInFunc, toString } = require('../util')
+const { MongoClient } = require('mongodb')
 const url = process.env.URL
 console.log(url)
 const database = process.env.DB_NAME
@@ -16,6 +16,7 @@ async function connect() {
         errorInFunc('connect')
     }
 }
+
 connect().then()
 
 // get the user data collection
@@ -25,12 +26,12 @@ function getCollection() {
 
 // get a user. null if user doesn't exist
 async function getUser(email) {
-    return await getCollection().findOne({email: email})
+    return await getCollection().findOne({ email: email })
 }
 
 // return false or true if the user is successfully logged in
 async function loginUser(email, password) {
-    const object = toString({email: email, password: password})
+    const object = toString({ email: email, password: password })
     const userData = await getUser(object.email)
     return userData !== null && userData.password == object.password
 }
@@ -55,14 +56,14 @@ async function addUser(...props) {
 async function updateUser(email, key, value) {
     const collection = getCollection()
     const userData = await getUser(email)
-    if (userData) await collection.updateOne({email: email}, {$set: {key: value}})
+    if (userData) await collection.updateOne({ email: email }, { $set: { key: value } })
     else errorInFunc('updateValue', `No user with mail ${email}`)
 }
 
 // delete a user by email
 async function deleteUser(email) {
     const collection = getCollection()
-    const result = await collection.deleteOne({email: email})
+    const result = await collection.deleteOne({ email: email })
     return result.deletedCount > 0
 }
 

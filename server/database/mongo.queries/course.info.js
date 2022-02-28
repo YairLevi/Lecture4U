@@ -1,18 +1,23 @@
-// const PATH = '../.env';
-// require('dotenv').config({path: PATH});
-// const { MongoClient } = require('mongodb');
-// const assert = require("assert");
-// const url = process.env.db_url;
-// const client = new MongoClient(url);
-// const db_main = process.env.db_main;
-// const coll = process.env.coll_credentials;
-// const params = ['_id', 'password', 'email', 'firstName', 'lastName'];
-//
-//
-// async function makeProps() {
-//
-// }
-//
-// async function addCourse(props) {
-//
-// }
+require('dotenv').config({ path: '../../env/.env' })
+const mongoose = require('mongoose')
+const User = require('../../models/User')
+
+mongoose.connect(process.env.URL)
+
+async function f() {
+    try {
+        const u = await User.create({
+            firstName: 'a',
+            lastName: 'b',
+            email: 'b@b.b',
+            password: 'b',
+        })
+    } catch (e) {
+        console.log(e.message)
+    }
+    await mongoose.disconnect()
+}
+f()
+
+
+

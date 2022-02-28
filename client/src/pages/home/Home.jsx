@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from "../../components/Navbar";
 import Hero from './Hero'
+import { Container } from 'react-bootstrap'
 
 
 export default function Home(props) {
@@ -9,5 +10,5 @@ export default function Home(props) {
             <Navbar/>
             <Hero/>
         </div>
-    );
-};
+    )
+}
