@@ -17,15 +17,30 @@ $breakpoint-xl: 1200px !default;
 
  */
 
+$hover-color: rgba(220, 220, 220, 0.3);
+
+//.hover {
+//  border-radius: 1rem;
+//  &:hover {
+//    background-color: $hover-color;
+//  }
+//  &:active {
+//    background-color: lightgray;
+//  }
+//}
+
 $background-color: #ffffff;
 $sidebar-bg-color: $background-color;
-$submenu-bg-color: $background-color;
-
-$sidebar-color: #4c8bf5;
+$submenu-bg-color: #ffffff;
+$sidebar-width: 300px;
+$sidebar-color: #333333;
 $highlight-color: #000000;
 
 .on-hover:hover {
   background-color: rgba(220, 220, 220, 0.3);
 }
-
-@import '~react-pro-sidebar/dist/scss/styles.scss';
+@import '../../../node_modules/react-pro-sidebar/dist/scss/styles';
+@keyframes swing {}
+.pro-inner-item:hover {
+  background-color: red;
+}

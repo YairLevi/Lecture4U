@@ -3,10 +3,8 @@ import {Container, Navbar as Bar, Nav, NavDropdown, Form, Button} from "react-bo
 
 
 export default function Navbar(props) {
-    const {onOpen} = props
     return (
-        <Bar className={"p-3 border-bottom border-1"} bg={"white"} expand="md" sticky={"top"}>
-            <Button onClick={onOpen}>SideNav</Button>
+        <Bar className={"p-3 border-bottom shadow-sm"} bg={"white"} expand="md" sticky={"top"}>
             <Container>
                 <Bar.Brand href="/">Lecture4U</Bar.Brand>
                 <Bar.Toggle aria-controls="basic-Bar-nav" />

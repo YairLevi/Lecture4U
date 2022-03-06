@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { Container, Card, Button, Form } from 'react-bootstrap';
+import { Container, Card, Button, Form, NavLink } from 'react-bootstrap';
 import { useAuth } from "../../components/AuthContext";
 
 export default function SignIn(props) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const { login } = useAuth()
+
+    const handleClick = async (e) => {
+        e.preventDefault()
+        await login(email, password)
+    }
 
     return (
         <Container className={"w-100 vh-100 d-flex justify-content-center align-items-center"}>
@@ -16,19 +21,23 @@ export default function SignIn(props) {
                         <Form.Group className={"mb-3"}>
                             <Form.Label>Email Address</Form.Label>
                             <Form.Control type={"email"}
-                                          onChange={(e) => setEmail(e.target.value)} required/>
+                                          onChange={(e) => setEmail(e.target.value)}
+                                          placeholder={'example@domain.com'}
+                                          required/>
                         </Form.Group>
                         <Form.Group className={"mb-3"}>
                             <Form.Label>Password</Form.Label>
                             <Form.Control type={"password"}
-                                          onChange={(e) => setPassword(e.target.value)} required/>
+                                          onChange={(e) => setPassword(e.target.value)}
+                                          required/>
                         </Form.Group>
-                        <Form.Check className={"mb-3"} type={"checkbox"} label={"Remember Me"}/>
-                        <Button className={"d-flex align-self-md-center"} type={"submit"}
-                                onClick={async (e) => {
-                                    e.preventDefault()
-                                    await login(email, password)
-                                }}>Submit</Button>
+                        <div key={'box'}>
+                            <Form.Check id={"box"} className={"mb-3"} type={"checkbox"} label={"Remember Me"}/>
+                        </div>
+                        <div className={'d-flex'}>
+                            <Button className={"d-flex align-self-md-center"} type={"submit"} onClick={handleClick}>Submit</Button>
+                            <NavLink className={'ms-auto pe-0'} href={"/sign-up"}>Register Here</NavLink>
+                        </div>
                     </Form>
                 </Card.Body>
             </Card>

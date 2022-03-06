@@ -37,14 +37,14 @@ export default function SignIn(props) {
                                           onChange={(e) => setPassword(e.target.value)} required/>
                         </Form.Group>
                     </Form>
-                    <Form>
+                    <div className={'d-flex'}>
                         <Button className={"d-flex align-self-md-center"} type={"submit"}
                                 onClick={async (e) => {
                                     e.preventDefault()
                                     await register({ firstName, lastName, email, password })
                                 }}>Register</Button>
-                        <NavLink to={"/sign-in"}>Got An Account?</NavLink>
-                    </Form>
+                        <NavLink className={'ms-auto pe-0'} href={"/sign-in"}>Got An Account?</NavLink>
+                    </div>
                 </Card.Body>
             </Card>
         </Container>

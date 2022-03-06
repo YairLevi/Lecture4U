@@ -44,4 +44,13 @@ router.post('/register', async (req, res) => {
     }
 })
 
+router.get('/logout', (req, res) => {
+    try {
+        res.cookie('jwt', '', { maxAge: 1 })
+        res.sendStatus(200)
+    } catch (e) {
+        res.sendStatus(500)
+    }
+})
+
 module.exports = router
