@@ -26,6 +26,7 @@ app.use('/course', courseRouter)
 app.use(express.static(__dirname + '/static'));
 
 const { Storage } = require('@google-cloud/storage');
+const {execSync} = require("child_process");
 
 const storage = new Storage({
     keyFilename: path.join(__dirname, 'avid-battery-339118-75042e644d3f.json')
