@@ -8,6 +8,9 @@ import CourseCard from "../../components/CourseCard/CourseCard";
 import MainNavbar from "../../components/MainNavbar"
 import Courses from "../courses/Courses";
 import Player from "../video-player/VideoPlayer";
+import { Route, Routes } from 'react-router-dom'
+import MyCourses from "../courses/MyCourses";
+import NavProvider from "../../components/NavContext";
 
 
 function PlaceholderPage() {
@@ -54,14 +57,20 @@ export default function Main() {
     const text = 'Hello everyone! This is Me, typing some shit right here'
 
     return (
-        <div className={'d-flex vh-100'}>
-            <Sidebar closeSidebar={() => closeSidebar()} open={open}/>
-            <Container fluid className={'p-0 h-100 overflow-auto'}>
-                <MainNavbar openSidebar={() => openSidebar()} isSticky={sticky}/>
-                {/*<PlaceholderPage/>*/}
-                <Courses/>
-                {/*<Player />*/}
-            </Container>
-        </div>
+        <NavProvider>
+            <div className={'d-flex vh-100'}>
+                <Sidebar closeSidebar={() => closeSidebar()} open={open}/>
+                <Container fluid className={'p-0 h-100 overflow-auto'}>
+                    <MainNavbar openSidebar={() => openSidebar()} isSticky={sticky}/>
+                    <Routes>
+                        {/*<PlaceholderPage/>*/}
+                        <Route path={'/courses'} element={<Courses/>}/>
+                        {/*<Route path={'/courses'} element={<Courses/>}/>*/}
+                        <Route path={'/my-courses'} element={<MyCourses/>}/>
+                        {/*<Player/>*/}
+                    </Routes>
+                </Container>
+            </div>
+        </NavProvider>
     )
 }

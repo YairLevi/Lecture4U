@@ -1,28 +1,33 @@
-.title, .description, .subtitle {
+.card-title, .card-description, .card-subtitle {
   font-family: system-ui, -apple-system, "Segoe UI";
   font-size: 1rem;
 }
 
-.title {
+.card-title {
   font-size: 1.5rem;
 }
 
-.title {
-  display: -webkit-box;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.card-title {
+  text-wrap: normal;
 }
 
-.subtitle {
+.card-subtitle {
   color: gray;
 }
 
-.description {
+.card-description {
   display: -webkit-box;
   text-overflow: ellipsis;
   overflow: hidden;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+}
+
+.card-pop {
+  transition: ease-in-out 0.2s;
+}
+
+.card-pop:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }

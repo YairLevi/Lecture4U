@@ -6,18 +6,15 @@ import { useAuth } from "../AuthContext";
 import './Sidebar.scss'
 
 import Menu from './Menu'
+import InnerMenu from "./InnerMenu";
+import Item, { Icon } from './Item'
+import { useNav } from "../NavContext";
+import { useNavigate } from "react-router";
+import { Button, FormControl, InputGroup } from "react-bootstrap";
 
-
-function Icon({ iconClass }) {
-    return <i style={{ fontSize: '1.2rem' }} className={`bi ${iconClass}`}/>
-}
-
-function Item({ children, icon }) {
-    if (!icon) icon = 'bi-border'
-    return <MenuItem className={'hover'} icon={<Icon iconClass={icon}/>}>{children}</MenuItem>
-}
 
 export default function Sidebar({ closeSidebar, open }) {
+    const navigate = useNavigate()
     const { logout } = useAuth()
 
     return (
@@ -30,29 +27,26 @@ export default function Sidebar({ closeSidebar, open }) {
                 <UserAvatar name={'John Doe'} email={'johndoe@gmail.com'}/>
             </SidebarHeader>
             <SidebarContent>
-                <Menu>
-                    <MenuItem icon={<Users/>} className={"hover"}>Dashboard</MenuItem>
-                    <Item>Dashboard</Item>
-                    <SubMenu title="Components" icon={<Users/>}>
-                        <MenuItem>Component 1</MenuItem>
-                        <MenuItem>Component 2</MenuItem>
-                        <SubMenu title="Component 3">
-                            <MenuItem>Component 1</MenuItem>
-                            <MenuItem>Component 2</MenuItem>
-                            <SubMenu title="Hello" icon={<Users/>}>
-                                <MenuItem>Component 1</MenuItem>
-                                <MenuItem>Component 2</MenuItem>
-                            </SubMenu>
-                        </SubMenu>
-                    </SubMenu>
-                    <MenuItem className={"on-hover"}>Dashboard</MenuItem>
-                    <MenuItem>UNder</MenuItem>
-                    <SubMenu className={'on-hover'} title="Components">
-                        <Menu style={{ borderLeft: '2px solid black', marginTop: -10 }}>
-                            <MenuItem className={'on-hover'}>Component 1</MenuItem>
-                            <MenuItem>Component 2</MenuItem>
-                        </Menu>
-                    </SubMenu>
+                <Menu title={"General"}>
+                    <Item>Profile</Item>
+                    <Item>Settings</Item>
+                </Menu>
+                <Menu title={"Student View"}>
+                    <InnerMenu title={"Courses"} icon={'bi-book'}>
+                        <Item>Intro to Artificial Intelligence</Item>
+                        <Item>Disruptor Training</Item>
+                        <Item>Mo-Money Masterclass</Item>
+                        <Item>PerfectPitch Sales Training</Item>
+                        <Item>Alpha Entrepreneurs Workshop</Item>
+                        <Item onClick={() => navigate('/main/courses')}>
+                            Show all courses
+                        </Item>
+                    </InnerMenu>
+                </Menu>
+                <Menu title={"Instructor View"}>
+                    <InnerMenu title={"My Courses"} onClick={() => navigate('/main/my-courses')}>
+
+                    </InnerMenu>
                 </Menu>
             </SidebarContent>
             <SidebarFooter>

@@ -1,7 +1,6 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
-
 const router = express.Router()
 const threeDaysInSeconds = 60 * 60 * 24 * 3
 const jwtName = 'jwt'

@@ -1,41 +1,33 @@
-import React from 'react';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import img1 from './images/default-course-img-1.PNG'
+import { Card, Container, Row, Col, CardGroup, Image } from 'react-bootstrap'
+import './course-card.css'
+import ResponsiveDrawer from "./components/ResponsiveDrawer";
+import { CourseCard } from "./components/Course";
 
-import Login from "./components/login.component";
-import SignUp from "./components/signup.component";
 
-function App() {
-  return (<Router>
-    <div className="App">
-      <nav className="navbar navbar-expand-lg navbar-light fixed-top">
-        <div className="container">
-          <Link className="navbar-brand" to={"/sign-in"}>RemoteStack</Link>
-          <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item">
-                <Link className="nav-link" to={"/sign-in"}>Sign in</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to={"/sign-up"}>Sign up</Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+export default function App() {
+    const title = 'Loading...'
+    const author = ""
+    const text = ''
+    const [image, setImage] = useState(null)
 
-      <div className="outer">
-        <div className="inner">
-          <Switch>
-            <Route exact path='/' component={Login} />
-            <Route path="/sign-in" component={Login} />
-            <Route path="/sign-up" component={SignUp} />
-          </Switch>
-        </div>
-      </div>
-    </div></Router>
-  );
+    useEffect(async () => {
+        const res = await fetch('http://localhost:8000/courses')
+        const data = await res.json()
+        console.log(data)
+        setImage(data.image)
+    }, [])
+
+    return (
+        <Container fluid className={'vh-100 p-5'}
+                   style={{ backgroundColor: '#4c8fb4' }}>
+            <Row>
+                <Col className={'col-12 col-md-6 col-lg-4 col-xl-3'}>
+                    <CourseCard image={image} title={title} subtitle={author} description={text}/>
+                </Col>
+            </Row>
+        </Container>
+    );
 }
-
-export default App;
