@@ -1,9 +1,17 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+const Course = require('./Course')
 
 const userSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
+    courses: [Course.schema],
     email: {
         type: String,
         required: true,
@@ -34,5 +42,12 @@ userSchema.statics.login = async function (email, password) {
         return null
     }
 }
+
+// INSTANCE METHODS
+
+userSchema.methods.getCourses = async function () {
+    return this.courses
+}
+
 
 module.exports = mongoose.model('User', userSchema)
