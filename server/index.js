@@ -26,7 +26,6 @@ app.use('/course', courseRouter)
 app.use(express.static(__dirname + '/static'));
 
 const { Storage } = require('@google-cloud/storage');
-const {execSync} = require("child_process");
 
 const storage = new Storage({
     keyFilename: path.join(__dirname, 'avid-battery-339118-75042e644d3f.json')
@@ -47,41 +46,8 @@ app.get('/video', async (req, res) => {
         action: "read",
         expires: new Date().addHours(1)
     })
+    console.log(metadata)
     res.json({ url: metadata })
-    // const videoSize = metadata[0].size
-    //
-    // const CHUNK_SIZE = 10 ** 6 // roughly 1MB
-    // const start = Number(range.replace(/\D/g, ""))
-    // const end = Math.min(start + CHUNK_SIZE, videoSize - 1)
-    //
-    // const contentLength = end - start + 1
-    // const headers = {
-    //     'Content-range': `bytes ${start}-${end}/${videoSize}`,
-    //     'Accept-ranges': 'bytes',
-    //     'Content-length': contentLength,
-    //     'Content-type': 'video/mp4'
-    // }
-    //
-    // res.writeHead(206, headers)
-    //
-    // const videoStream = videoFile.createReadStream({ start, end })
-    // videoStream.pipe(res)
-})
-
-
-app.get('/courses', async (req, res) => {
-    const userId = req.cookies.jwt._id
-    if (!userId) return res.sendStatus(400)
-
-    const user = User.findById(userId)
-    const courses = user.getCourses()
-    const coursesData = []
-
-    for (const course of courses) {
-        
-    }
-
-    res.json(coursesData)
 })
 
 app.get('/test', (req, res) => {

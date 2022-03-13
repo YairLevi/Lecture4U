@@ -1,23 +1,9 @@
-require('dotenv').config({ path: '../../env/.env' })
-const mongoose = require('mongoose')
-const User = require('../../models/User')
-
-mongoose.connect(process.env.URL)
-
-async function f() {
-    try {
-        const u = await User.create({
-            firstName: 'a',
-            lastName: 'b',
-            email: 'b@b.b',
-            password: 'b',
-        })
-    } catch (e) {
-        console.log(e.message)
-    }
-    await mongoose.disconnect()
-}
-f()
+const bcrypt = require('bcryptjs')
 
 
+const before = '$2a$10$uuYNxr80nQuYhqLdveneu.mmLy8BxR5TUaNcA4MupDwnwihZlZQQm'
+const password = 'a'
+
+bcrypt.compare(password, before)
+    .then(res => console.log(res))
 

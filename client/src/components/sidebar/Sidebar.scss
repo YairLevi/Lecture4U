@@ -17,7 +17,7 @@ $breakpoint-xl: 1200px !default;
 
  */
 
-$sidebar-width: 350px;
+$sidebar-width: 380px;
 $hover-color: rgba(220, 220, 220, 0.3);
 $background-color: #ffffff;
 $sidebar-bg-color: $background-color;
@@ -26,6 +26,16 @@ $sidebar-color: #333333;
 $highlight-color: #000000;
 
 $title-color: #808080FF;
+
+.pro-inner-item {
+  border-radius: 1rem;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+.pro-inner-list-item {
+  padding-left: 2rem! important;
+}
 
 
 @import '../../../node_modules/react-pro-sidebar/dist/scss/styles';

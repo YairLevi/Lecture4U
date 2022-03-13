@@ -7,7 +7,7 @@ export function Icon({ iconClass }) {
 
 export default function Item({ children, icon, onClick }) {
     if (!icon) icon = 'bi-border'
-    return <MenuItem className={'hover'} icon={<Icon iconClass={icon}/>}
+    return <MenuItem icon={<Icon iconClass={icon}/>}
                      onClick={onClick}>
         {children}
     </MenuItem>

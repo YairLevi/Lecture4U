@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const router = express.Router()
-const threeDaysInSeconds = 60 * 60 * 24 * 3
+const timeLimit = 60 * 60 * 24 * 100
 const jwtName = 'jwt'
 
 router.get('/login', async (req, res) => {
@@ -21,22 +21,16 @@ router.post('/login', async (req, res) => {
     const password = req.body.password
     const user = await User.login(email, password)
     if (!user) return res.sendStatus(400)
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: threeDaysInSeconds })
-    res.cookie(jwtName, token, { maxAge: threeDaysInSeconds * 1000 })
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: timeLimit })
+    res.cookie(jwtName, token, { maxAge: timeLimit * 1000 })
     res.sendStatus(200)
 })
 
 router.post('/register', async (req, res) => {
     try {
-        const details = req.body
-        const isTaken = await User.isTaken({ email: details.email })
+        const isTaken = await User.isTaken({ email: req.body.email })
         if (isTaken) return res.sendStatus(400)
-        await User.create({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            password: req.body.password,
-        })
+        await User.create({...req.body, })
         res.sendStatus(200)
     } catch (e) {
         res.sendStatus(400)
@@ -51,5 +45,6 @@ router.get('/logout', (req, res) => {
         res.sendStatus(500)
     }
 })
+
 
 module.exports = router

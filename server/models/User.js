@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    courses: [Course.schema],
+    courses: [String],
+    myCourses: [String],
     email: {
         type: String,
         required: true,
@@ -23,6 +24,7 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next()
     const salt = await bcrypt.genSalt()
     this.password = await bcrypt.hash(this.password, salt)
     next()
@@ -35,7 +37,9 @@ userSchema.statics.isTaken = function (email) {
 userSchema.statics.login = async function (email, password) {
     try {
         const user = await this.findOne({ email })
+        console.log(`user: ${user}`)
         const auth = await bcrypt.compare(password, user.password)
+        console.log(`auth: ${auth}`)
         if (!auth) return null
         return user
     } catch (e) {

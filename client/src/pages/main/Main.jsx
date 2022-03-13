@@ -64,9 +64,10 @@ export default function Main() {
                     <MainNavbar openSidebar={() => openSidebar()} isSticky={sticky}/>
                     <Routes>
                         {/*<PlaceholderPage/>*/}
-                        <Route path={'/courses'} element={<Courses/>}/>
+                        <Route path={'/courses/student'} element={<Courses/>}/>
                         {/*<Route path={'/courses'} element={<Courses/>}/>*/}
-                        <Route path={'/my-courses'} element={<MyCourses/>}/>
+                        <Route path={'/courses/teacher'} element={<MyCourses/>}/>
+
                         {/*<Player/>*/}
                     </Routes>
                 </Container>

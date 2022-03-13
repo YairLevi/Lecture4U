@@ -45,13 +45,8 @@ export default function Courses() {
                     </InputGroup>
                 </Container>
                 <Row>
-                    {/*{courseList?.map(value => <Slot {...Object.values(value)}/>)}*/}
-                    <Slot image={img1} title={title} subtitle={author} description={text}/>
-                    <Slot image={img1} title={'hello'} subtitle={author} description={text}/>
-                    <Slot image={img1} title={'hello'} subtitle={author} description={text}/>
-                    <Slot image={img1} title={'hello'} subtitle={author} description={text}/>
-                    <Slot image={img1} title={'hello'} subtitle={author} description={text}/>
-                    <Slot image={img1} title={'hello'} subtitle={author} description={text}/>
+                    <Slot image={img1} name={title} teacher={author} description={text}/>
+                    <Slot image={img1} name={'hello'} teacher={author} description={text}/>
                 </Row>
             </Container>
 

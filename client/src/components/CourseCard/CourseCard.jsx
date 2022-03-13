@@ -3,7 +3,7 @@ import { Card, Container } from 'react-bootstrap'
 import './CourseCard.scss'
 
 
-export default function CourseCard({ image, width, title, subtitle, description }) {
+export default function CourseCard({ image, width, name, teacher, description }) {
     return (
         <Container className={'d-flex justify-content-center mb-4 p-0'}>
             <Card className={'card-pop'} style={{
@@ -15,10 +15,10 @@ export default function CourseCard({ image, width, title, subtitle, description 
                 <Card.Img src={image}/>
                 <Card.Body>
                     <Card.Title as={"h4"} className={'card-title'}>
-                        {title}
+                        {name}
                     </Card.Title>
                     <Card.Subtitle className={'card-subtitle'}>
-                        {subtitle}
+                        {teacher}
                     </Card.Subtitle>
                     <br/>
                     <Card.Text className={'card-description'}>

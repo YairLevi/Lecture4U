@@ -15,7 +15,6 @@ export default function AuthProvider({ children }) {
             const result = await fetch('http://localhost:8000/login', options)
             setIsLoggedIn(result.status === 200)
         })()
-        console.log('hello')
     }, [])
 
     async function login(email, password) {
