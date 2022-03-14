@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Col, Container, FormControl, InputGroup, Row } from "react-bootstrap";
 import CourseCard from "./CourseCard/CourseCard";
 

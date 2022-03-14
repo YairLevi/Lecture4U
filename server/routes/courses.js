@@ -83,5 +83,38 @@ router.get('/teacher', async (req, res) => {
     res.json(list)
 })
 
+router.get('/student', async (req, res) => {
+    const userId = getUserID(req)
+    if (!userId) return res.sendStatus(500)
+
+    const user = await User.findById(userId)
+    const courses = user.courses
+    const list = []
+
+    for (const course of courses) {
+        const obj = {}
+        const courseObj = await Course.findById(course)
+        obj.name = courseObj.name
+        obj.teacher = courseObj.teacher
+        obj.description = courseObj.description
+        obj.image = await getImageURL(courseObj.image)
+        list.push(obj)
+    }
+
+    res.json(list)
+})
+
+router.post('/exist', async (req, res) => {
+    const code = req.body.code
+    try {
+        const course = await Course.findById(code)
+        // return course
+        res.sendStatus(200)
+    } catch (e) {
+        console.log(e.message)
+        res.sendStatus(404)
+    }
+})
+
 
 module.exports = router

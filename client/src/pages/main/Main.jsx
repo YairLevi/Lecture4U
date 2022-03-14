@@ -6,10 +6,10 @@ import '../../components/CourseCard/CourseCard'
 import image1 from '../../assets/default-course-img-2.PNG'
 import CourseCard from "../../components/CourseCard/CourseCard";
 import MainNavbar from "../../components/MainNavbar"
-import Courses from "../courses/Courses";
+import StudentCourses from "../courses/StudentCourses";
 import Player from "../video-player/VideoPlayer";
 import { Route, Routes } from 'react-router-dom'
-import MyCourses from "../courses/MyCourses";
+import TeacherCourses from "../courses/TeacherCourses";
 import NavProvider from "../../components/NavContext";
 
 
@@ -64,9 +64,9 @@ export default function Main() {
                     <MainNavbar openSidebar={() => openSidebar()} isSticky={sticky}/>
                     <Routes>
                         {/*<PlaceholderPage/>*/}
-                        <Route path={'/courses/student'} element={<Courses/>}/>
-                        {/*<Route path={'/courses'} element={<Courses/>}/>*/}
-                        <Route path={'/courses/teacher'} element={<MyCourses/>}/>
+                        <Route path={'/courses/student'} element={<StudentCourses/>}/>
+                        {/*<Route path={'/courses'} element={<StudentCourses/>}/>*/}
+                        <Route path={'/courses/teacher'} element={<TeacherCourses/>}/>
 
                         {/*<Player/>*/}
                     </Routes>

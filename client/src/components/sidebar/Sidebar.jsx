@@ -11,14 +11,15 @@ import Item, { Icon } from './Item'
 import { useNav } from "../NavContext";
 import { useNavigate } from "react-router";
 import { Button, FormControl, InputGroup } from "react-bootstrap";
-import AddCourseModal from "../AddCourseModal";
-import NewCourseModal from "../NewCourseModal";
+import AddCourseModal from "../../modals/AddCourseModal";
+import NewCourseModal from "../../modals/NewCourseModal";
 
 
 export default function Sidebar({ closeSidebar, open }) {
     const navigate = useNavigate()
     const { logout } = useAuth()
     const [modalShow, setModalShow] = useState(false)
+    const [addCourseShow, setAddCourseShow] = useState(false)
 
     return (
         <>
@@ -41,7 +42,7 @@ export default function Sidebar({ closeSidebar, open }) {
                                 <Item>Course 1</Item>
                                 <Item>Course 2</Item>
                             </InnerMenu>
-                            <Item icon={'bi-plus-circle'}>Add Course</Item>
+                            <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>
                             <Item icon={'bi-collection'} onClick={() => navigate('/main/courses/student')}>Show all
                                 courses</Item>
                         </InnerMenu>
@@ -62,6 +63,7 @@ export default function Sidebar({ closeSidebar, open }) {
             </ProSidebar>
 
             <NewCourseModal centered show={modalShow} onHide={() => setModalShow(false)}/>
+            <AddCourseModal centered show={addCourseShow} onHide={() => setAddCourseShow(false)}/>
         </>
     )
 }
