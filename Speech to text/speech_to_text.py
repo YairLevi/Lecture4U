@@ -15,6 +15,7 @@ from gcloud.aio.storage import Storage
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'speech_to_text_cloud.json'
 
 
+# Write speech to document instead of txt file.
 def create_document(doc_name=None, doc_content=None):
     credentials = service_account.Credentials.from_service_account_file(
         filename=os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
@@ -28,11 +29,13 @@ def create_document(doc_name=None, doc_content=None):
     print('Created document with title: {0}'.format(doc.get('title')))
 
 
+# Convert .4ma to .wav file.
 def convert_video_2_audio(zoom_video_file_name, transcribed_audio_file_name):
     audio_clip = AudioFileClip(zoom_video_file_name)
     audio_clip.write_audiofile(transcribed_audio_file_name)
 
 
+# Upload a given record to the bucket in gcs repo.
 def upload_file_to_bucket(bucket_name, source_file_name, destination_blob_name):
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
@@ -147,20 +150,26 @@ def transcribe_gcs_with_word_time_offsets(gcs_uri):
     return word_list, word_time_list
 
 
-transcribed_audio_file_name, language = sys.argv[1], sys.argv[2]
-convert_video_2_audio('audio_hebrew.m4a', transcribed_audio_file_name)
+# Input:
+source_file_name, transcribed_audio_file_name, language = sys.argv[1], sys.argv[2], sys.argv[3]
+
+# convert .m4a --> .wav file :
+convert_video_2_audio(source_file_name, transcribed_audio_file_name)
 
 # upload file to google cloud storage:
-# upload_file_to_bucket('lecture4u-1', 'transcribed_speech.wav', 'speech to text files/transcribed_speech.wav')
+path = 'speech to text files/{}'.format(transcribed_audio_file_name)
+upload_file_to_bucket('lecture4u-1', transcribed_audio_file_name, path)
+
 
 # upload async to google cloud storage :
-print('Start Async Uploading.')
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-asyncio.run(main('transcribed_speech.wav'))
-print("Finish Uploading.")
+# print('Start Async Uploading.')
+# asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+# asyncio.run(main('transcribed_speech.wav'))
+# print("Finish Uploading.")
 
-word_list, timestamps = transcribe_gcs_with_word_time_offsets(
-    'gs://lecture4u-1/speech to text files/transcribed_speech.wav')
+# transcribe:
+path = 'gs://lecture4u-1/speech to text files/{}'.format(transcribed_audio_file_name)
+word_list, timestamps = transcribe_gcs_with_word_time_offsets(path)
 
 my_keywords = []
 if language == "english":
