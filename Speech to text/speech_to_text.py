@@ -11,6 +11,7 @@ from moviepy.editor import AudioFileClip
 import asyncio
 import aiohttp
 from gcloud.aio.storage import Storage
+import wave
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'speech_to_text_cloud.json'
 
@@ -89,40 +90,27 @@ def search_word(key_words, my_word_list, my_timestamps):
         topic_timestamp.append((start_time.total_seconds(), end_time.total_seconds()))
 
     # get the last topic content:
-    last_topic = topic_indexes[len(topic_indexes) - 1]
-    topic_content.append(my_word_list[last_topic[1] + 1: len(my_word_list)])
-    start_time = my_timestamps[last_topic[1] + 1][0]
-    end_time = my_timestamps[len(my_word_list) - 1][1]
-    topic_timestamp.append((start_time.total_seconds(), end_time.total_seconds()))
+    if len(topic_indexes) > 0:
+        last_topic = topic_indexes[len(topic_indexes) - 1]
+        topic_content.append(my_word_list[last_topic[1] + 1: len(my_word_list)])
+        start_time = my_timestamps[last_topic[1] + 1][0]
+        end_time = my_timestamps[len(my_word_list) - 1][1]
+        topic_timestamp.append((start_time.total_seconds(), end_time.total_seconds()))
 
     return topic_name, topic_content, topic_timestamp
 
 
-# Transcribe the given audio file asynchronously and output the word time offsets.
-def transcribe_gcs_with_word_time_offsets(gcs_uri):
+# Transcribe the given audio file and return the word time offsets.
+def transcribe_gcs_with_word_time_offsets(gcs_uri, number_of_channels, sample_rate_hertz, my_language_code):
     client = speech.SpeechClient()
 
     audio = speech.RecognitionAudio(uri=gcs_uri)
     config = speech.RecognitionConfig(
-        sample_rate_hertz=44100,
-        enable_automatic_punctuation=True,
-        language_code='iw-IL',
+        sample_rate_hertz=sample_rate_hertz,
+        language_code=my_language_code,
         enable_word_time_offsets=True,
-        audio_channel_count=2
+        audio_channel_count=number_of_channels
     )
-
-    # for english wav:
-    # sample_rate_hertz = 16000,
-    # enable_automatic_punctuation=True,
-    # language_code = "en-US",
-    # enable_word_time_offsets = True
-
-    # for hebrew wav:
-    # sample_rate_hertz = 44100,
-    # enable_automatic_punctuation = True,
-    # language_code = 'iw-IL',
-    # enable_word_time_offsets = True,
-    # audio_channel_count = 2
 
     operation = client.long_running_recognize(config=config, audio=audio)
 
@@ -160,16 +148,34 @@ convert_video_2_audio(source_file_name, transcribed_audio_file_name)
 path = 'speech to text files/{}'.format(transcribed_audio_file_name)
 upload_file_to_bucket('lecture4u-1', transcribed_audio_file_name, path)
 
-
 # upload async to google cloud storage :
 # print('Start Async Uploading.')
 # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 # asyncio.run(main('transcribed_speech.wav'))
 # print("Finish Uploading.")
 
-# transcribe:
+# settings:
 path = 'gs://lecture4u-1/speech to text files/{}'.format(transcribed_audio_file_name)
-word_list, timestamps = transcribe_gcs_with_word_time_offsets(path)
+f1 = wave.open(transcribed_audio_file_name, "r")
+num_of_channels = int(f1.getnchannels())
+sample_rate = int(f1.getframerate())
+language_code = ''
+
+if language == "english":
+    language_code = 'en-US'
+elif language == "hebrew":
+    language_code = 'iw-IL'
+
+print("\nFile settings:")
+print("num_of_channels = {}".format(num_of_channels))
+print("sample width = {}".format(sample_rate))
+print("language_code = {}\n".format(language_code))
+
+# transcribe:
+word_list, timestamps = transcribe_gcs_with_word_time_offsets(path, num_of_channels, sample_rate, language_code)
+
+if language == "english":
+    word_list = [word.lower() for word in word_list]
 
 my_keywords = []
 if language == "english":
