@@ -1,8 +1,7 @@
 import React from 'react'
 import { Grid, Paper, Button, Typography } from '@material-ui/core'
 import { TextField } from '@material-ui/core'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as Yup from 'yup'
+import { Formik, Form, Field } from 'formik'
 import Select from 'react-select'
 
 const options = [
@@ -16,29 +15,25 @@ const options = [
 const RegistrationForm = () => {
     const paperStyle = { padding: '0 15px 40px 15px', width: 250, }
     const btnStyle = { marginTop: 10 }
-    const phoneRegExp=/^[2-9]{2}[0-9]{8}/
-    const passwordRegExp=/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-    const initialValues = {
-        name: '',
-        email: '',
-        phoneNumber: '',
-        password: '',
-        confirmPassword:''
-    }
-    const validationSchema = Yup.object().shape({
-        name: Yup.string().min(3, "It's too short").required("Required"),
-        email: Yup.string().email("Enter valid email").required("Required"),
-        // phoneNumber: Yup.number().typeError("Enter valid Phone number").required("Required"),
-        phoneNumber:Yup.string().matches(phoneRegExp,"Enter valid Phone number").required("Required"),
-        password: Yup.string().min(8, "Minimum characters should be 8")
-            .matches(passwordRegExp,"Password must have one upper, lower case, number, special symbol").required('Required'),
-        confirmPassword:Yup.string().oneOf([Yup.ref('password')],"Password not matches").required('Required')
-    })
-    const onSubmit = (values, props) => {
 
-        alert(JSON.stringify(values), null, 2)
+    const initialValues = {
+        description: '',
+        message: '',
+    }
+
+    const onSubmit = (values, props) => {
+        console.log(values)
+        // alert(JSON.stringify(values), null, 2)
         props.resetForm()
     }
+
+    const handleChange = selectedOption => {
+        //this.setState({ selectedOption });
+        console.log(`Option selected:`, selectedOption);
+    };
+
+
+    let selectedOption = '';
     return (
         <Grid>
             <Paper elevation={0} style={paperStyle}>
@@ -46,13 +41,13 @@ const RegistrationForm = () => {
                     <Typography variant='caption'>Fill the form to update your repository and notify your students</Typography>
                 </Grid>
                 <br/>
-                <Select options={options} />
-                <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+                <Select value={selectedOption} onChange={handleChange} options={options} />
+                <Formik initialValues={initialValues} onSubmit={onSubmit}>
                     {(props) => (
                         <Form noValidate>
                             <Field as={TextField} name='description' label='Description' fullWidth/>
                             <br/><br/><br/>
-                            <Select options={options} />
+                            <Select value={selectedOption} onChange={handleChange} options={options} />
                             <Field as={TextField} name='message' label='Message For Students' fullWidth/>
 
                             <Button type='submit' style={btnStyle} variant='contained'

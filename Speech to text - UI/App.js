@@ -3,25 +3,114 @@ import {Button, ButtonGroup, Container, Card, Nav, Navbar, Form} from "react-boo
 import './App.css';
 import React, {useState, useEffect} from 'react';
 import NotificationForm from './Notification_Form'
-import {Box, Modal, Typography} from "@mui/material";
+import {colors, FormControl, Modal, Radio, RadioGroup, Typography} from "@mui/material";
 import CustomizedDialogs from "./Dialog";
 import RegistrationForm from "./RegistrationForm";
 import FileUploader from "./FileUploader";
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from "@mui/material/Box";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import PropTypes from 'prop-types';
+import LinearProgress from '@mui/material/LinearProgress';
+
+
+import Timeline from '@mui/lab/Timeline';
+import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineDot from '@mui/lab/TimelineDot';
+
+import { useRef } from "react";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import MicIcon from '@mui/icons-material/Mic';
+// https://blog.logrocket.com/using-the-react-speech-recognition-hook-for-voice-assistance/
+// https://github.com/JamesBrill/react-speech-recognition#readme
+// https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
+
+
+function LinearProgressWithLabel(props) {
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ width: '100%', mr: 1 }}>
+                <LinearProgress variant="determinate" {...props} />
+            </Box>
+            <Box sx={{ minWidth: 40 }}>
+                <Typography variant="body2" color="text.secondary">{`${Math.round(
+                    props.value,
+                )}%`}</Typography>
+            </Box>
+        </Box>
+    );
+}
+
+
+LinearProgressWithLabel.propTypes = {
+    /**
+     * The value of the progress indicator for the determinate and buffer variants.
+     * Value between 0 and 100.
+     */
+    value: PropTypes.number.isRequired,
 };
 
 
+let speech_language = "Hebrew";
+
 function App() {
+
+
+    const [progress, setProgress] = React.useState(10);
+    React.useEffect(() => {
+        const timer = setInterval(() => {
+            setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
+        }, 1000);
+        return () => {
+            clearInterval(timer);
+        };
+    }, []);
+
+
+
+
+    // React Mic:
+    const { transcript, resetTranscript } = useSpeechRecognition();
+    const [isListening, setIsListening] = useState(false);
+    const microphoneRef = useRef(null);
+    if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
+        return (
+            <div className="mircophone-container">
+                Browser is not Support Speech Recognition.
+            </div>
+        );
+    }
+    const handleListing = () => {
+        console.log("handleListing!")
+        setIsListening(true);
+        microphoneRef.current.classList.add("listening");
+        SpeechRecognition.startListening({
+            continuous: true, language: speech_language="Hebrew" ? 'he' : 'en-US'
+        });
+    };
+    const stopHandle = () => {
+        console.log("stopHandle!")
+        setIsListening(false);
+        microphoneRef.current.classList.remove("listening");
+        SpeechRecognition.stopListening();
+    };
+    const handleReset = () => {
+        console.log("handleReset!")
+        stopHandle();
+        resetTranscript();
+    };
+
+    const set_speech_to_text_language = (event) => {
+        speech_language = event.target.value
+        console.log(speech_language)
+    };
+
     return (
         <div className="App">
             <Navbar bg="dark" variant="dark">
@@ -38,12 +127,141 @@ function App() {
                                 <RegistrationForm/>
                             </CustomizedDialogs>
 
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <FormControl sx={{
+                                color: "#d3d3d3",
+                                "&.Mui-focused": {
+                                    color: "#23A5EB"
+                                }
+                            }}>
+                                <RadioGroup row onClick={set_speech_to_text_language}>
+                                    <FormControlLabel value="Hebrew" control={<Radio/>} label="Hebrew"/>
+                                    <FormControlLabel value="English" control={<Radio />} label="English"/>
+                                </RadioGroup>
+                            </FormControl>
+
                         </ButtonGroup>
                     </Nav>
                 </Container>
             </Navbar>
+
+
+            <Card sx={{ maxWidth: 345 }}>
+                <CardHeader title="Run Demo" />
+                <CardContent>
+                    <Typography variant="body1" color="text.secondary">
+                        We would like to test your microphone.
+                        <br/>
+                        Click the microphone button, say a few words,
+                        and find the best configuration for your audio.
+                    </Typography>
+                </CardContent>
+
+                <div className="microphone-wrapper">
+                    <div className="microphone-container">
+                        <div
+                            className="microphone-icon-container"
+                            ref={microphoneRef}
+                            onClick={handleListing}
+                        >
+                            <MicIcon/>
+
+                        </div>
+                        <div className="microphone-status">
+                            {isListening ? "Listening........." : "Click to start Listening"}
+                        </div>
+                        {isListening && (
+                            <button className="microphone-stop btn" onClick={stopHandle}>
+                                Stop
+                            </button>
+                        )}
+                    </div>
+                    {transcript && (
+                        <div className="microphone-result-container">
+                            <div className="microphone-result-text">{transcript}</div>
+                            <button className="microphone-reset btn" onClick={handleReset}>
+                                Reset
+                            </button>
+                        </div>
+                    )}
+                </div>
+                <br/>
+            </Card>
+
+
+            <Card sx={{ maxWidth: 345 }}>
+                <CardHeader title="Live Transcribe & Notification" />
+                <CardContent>
+                    <Typography variant="body1" color="text.secondary">
+                        Here, you can follow the transcription process.
+                        <br/>
+                        You will be able to see what percentage is left until the end.
+                        <br/>
+                        When done, the transcribed file will be saved to a system.
+                        <br/>
+                        By the 'Download' button above you can download the transcribed file,
+                        and you can share it with other users by clicking the 'Send' button above.
+                    </Typography>
+
+                    <br/>
+                    <Box sx={{ width: '100%' }}>
+                        <LinearProgressWithLabel value={progress} />
+                    </Box>
+
+                </CardContent>
+            </Card>
+
+            <Card sx={{ maxWidth: 345 }}>
+                <CardHeader title="Speech to text Timeline" />
+                <CardContent>
+                    <Typography variant="body1" color="text.secondary">
+                        Your recent actions with Speech to text module.
+                    </Typography>
+
+
+                    <Timeline position="alternate">
+                        <TimelineItem>
+                            <TimelineSeparator>
+                                <TimelineDot />
+                                <TimelineConnector />
+                            </TimelineSeparator>
+                            <TimelineContent>11.3.2021</TimelineContent>
+                        </TimelineItem>
+                        <TimelineItem>
+                            <TimelineSeparator>
+                                <TimelineDot />
+                                <TimelineConnector />
+                            </TimelineSeparator>
+                            <TimelineContent>14.3.2021</TimelineContent>
+                        </TimelineItem>
+                        <TimelineItem>
+                            <TimelineSeparator>
+                                <TimelineDot />
+                                <TimelineConnector />
+                            </TimelineSeparator>
+                            <TimelineContent>11.6.2022</TimelineContent>
+                        </TimelineItem>
+                        <TimelineItem>
+                            <TimelineSeparator>
+                                <TimelineDot />
+                            </TimelineSeparator>
+                            <TimelineContent>21.9.2022</TimelineContent>
+                        </TimelineItem>
+                    </Timeline>
+
+                </CardContent>
+            </Card>
+
+
         </div>
+
+
+
+
     );
 }
 
 export default App;
+
+
+
