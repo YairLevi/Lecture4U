@@ -4,7 +4,11 @@ import CourseCard from "./CourseCard/CourseCard";
 
 
 export function CardSlot(props) {
-    return <Col className={'col-12 col-md-6 col-lg-4 col-xl-3'}><CourseCard {...props}/></Col>
+    return (
+        <Col className={'col-12 col-md-6 col-lg-4 col-xl-3'}>
+            <CourseCard {...props}/>
+        </Col>
+    )
 }
 
 export default function CourseList(props) {

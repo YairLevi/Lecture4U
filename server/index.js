@@ -1,5 +1,6 @@
 require('dotenv').config({ path: './env/.env' })
 const express = require("express")
+const multer = require('multer')
 const cors = require('cors')
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
@@ -10,7 +11,7 @@ const mongoose = require("mongoose");
 mongoose.connect(process.env.URL)
 
 const authRouter = require('./routes/auth')
-const courseRouter = require('./routes/courses')
+const courseRouter = require('./routes/course')
 
 const PORT = 8000
 const HOST = 'localhost'
@@ -50,8 +51,15 @@ app.get('/video', async (req, res) => {
     res.json({ url: metadata })
 })
 
-app.get('/test', (req, res) => {
-    res.json([{ key: 'value' }, { key2: 'value2' }])
+app.get('/test', async (req, res) => {
+    const reqVideo = 'default-course-img-1.png'
+    const bucket = storage.bucket(bucketName);
+    const videoFile = bucket.file(reqVideo)
+    const metadata = await videoFile.getSignedUrl({
+        action: "read",
+        expires: new Date().addHours(1)
+    })
+    res.json({ url: metadata })
 })
 
 app.listen(PORT, HOST, () => console.log(`server started on port ${PORT}`))

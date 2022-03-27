@@ -4,7 +4,7 @@ import { Spinner } from "react-bootstrap";
 
 const CODE_LEN = 24
 
-export default function AddCourseModal(props) {
+export default function AddCourse(props) {
     const [code, setCode] = useState(null)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -18,12 +18,11 @@ export default function AddCourseModal(props) {
             credentials: 'include',
             body: JSON.stringify({ code })
         }
-        const res = await fetch('http://localhost:8000/course/exist', options)
+        const res = await fetch('http://localhost:8000/course/enroll', options)
         if (res.status !== 200) {
             setError("Invalid code")
         } else {
-            setError('Course found!')
-            // const json = await res.json()
+            setError('success')
         }
         setLoading(false)
     }

@@ -11,6 +11,8 @@ import Player from "../video-player/VideoPlayer";
 import { Route, Routes } from 'react-router-dom'
 import TeacherCourses from "../courses/TeacherCourses";
 import NavProvider from "../../components/NavContext";
+import StudentCoursePage from "../courses/StudentCoursePage";
+import TeacherCoursePage from "../courses/TeacherCoursePage";
 
 
 function PlaceholderPage() {
@@ -64,10 +66,12 @@ export default function Main() {
                     <MainNavbar openSidebar={() => openSidebar()} isSticky={sticky}/>
                     <Routes>
                         {/*<PlaceholderPage/>*/}
+
                         <Route path={'/courses/student'} element={<StudentCourses/>}/>
                         {/*<Route path={'/courses'} element={<StudentCourses/>}/>*/}
                         <Route path={'/courses/teacher'} element={<TeacherCourses/>}/>
-
+                        <Route path={'/courses/student/*'} element={<StudentCoursePage/>}/>
+                        <Route path={'/courses/teacher/*'} element={<TeacherCoursePage/>}/>
                         {/*<Player/>*/}
                     </Routes>
                 </Container>

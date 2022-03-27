@@ -1,5 +1,8 @@
 const mongoose = require('mongoose')
 const Image = require('./Image')
+const { Unit } = require('./Unit')
+
+
 
 const courseSchema = new mongoose.Schema({
     name: {
@@ -8,6 +11,7 @@ const courseSchema = new mongoose.Schema({
     },
     teacher: String,
     description: String,
+    units: [mongoose.SchemaTypes.ObjectId],
     createdAt: {
         type: Date,
         immutable: true,
@@ -19,6 +23,18 @@ const courseSchema = new mongoose.Schema({
     }
 })
 
+courseSchema.methods.getCourseData = async function () {
+    const data = {
+        name: this.name,
+        teacher: this.teacher,
+        description: this.description
+    }
+    data.units = []
+    for (const unitId of this.units) {
+        const unit = await Unit.findById(unitId)
+        data.units.push(unit)
+    }
+    return data
+}
 
-
-module.exports = mongoose.model('Course', courseSchema)
+module.exports.Course = mongoose.model('Course', courseSchema)

@@ -13,7 +13,7 @@ async function createCourse(name, teacher, description) {
     return result.status === 200
 }
 
-export default function NewCourseModal(props) {
+export default function NewCourse(props) {
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
     const [name, setName] = useState(null)

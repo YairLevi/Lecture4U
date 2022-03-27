@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import CourseList, { CardSlot } from "../../components/CourseList";
-import { Spinner } from "react-bootstrap";
+import { Spinner, Container } from "react-bootstrap";
 
 
 export default function TeacherCourses() {
@@ -15,14 +15,19 @@ export default function TeacherCourses() {
             if (res.status !== 200) return
             const json = await res.json()
             setData(json)
+            console.log(json)
             setLoading(false)
         }
+
         fetchData()
     }, [])
 
-    return (
+    return loading ? (
+            <Container className={'d-flex justify-content-center align-items-center'}>
+                <Spinner className={'m-3'} animation="border"/>
+            </Container>
+        ) : (
         <CourseList>
-            {loading && <Spinner className={'m-3 align-self-center'} animation="border"/>}
             {data && data.map((value, index) => <CardSlot key={index} {...value}/>)}
         </CourseList>
     )

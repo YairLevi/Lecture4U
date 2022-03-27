@@ -11,8 +11,8 @@ import Item, { Icon } from './Item'
 import { useNav } from "../NavContext";
 import { useNavigate } from "react-router";
 import { Button, FormControl, InputGroup } from "react-bootstrap";
-import AddCourseModal from "../../modals/AddCourseModal";
-import NewCourseModal from "../../modals/NewCourseModal";
+import AddCourse from "../../modals/AddCourse";
+import NewCourse from "../../modals/NewCourse";
 
 
 export default function Sidebar({ closeSidebar, open }) {
@@ -62,8 +62,8 @@ export default function Sidebar({ closeSidebar, open }) {
                 </SidebarFooter>
             </ProSidebar>
 
-            <NewCourseModal centered show={modalShow} onHide={() => setModalShow(false)}/>
-            <AddCourseModal centered show={addCourseShow} onHide={() => setAddCourseShow(false)}/>
+            <NewCourse centered show={modalShow} onHide={() => setModalShow(false)}/>
+            <AddCourse centered show={addCourseShow} onHide={() => setAddCourseShow(false)}/>
         </>
     )
 }

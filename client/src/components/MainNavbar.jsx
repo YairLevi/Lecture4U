@@ -26,12 +26,6 @@ export default function MainNavbar({ openSidebar, isSticky }) {
                     Lecture4U
                 </h4>
             </Bar.Brand>
-            <Bar.Toggle/>
-            <Bar.Collapse>
-                <Form className={'d-flex'}>
-                    <Avatar>JD</Avatar>
-                </Form>
-            </Bar.Collapse>
         </Bar>
     )
 }
