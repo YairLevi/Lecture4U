@@ -38,8 +38,7 @@ import {Alert, AlertTitle} from "@mui/lab";
 
 let speech_language = "Hebrew";
 let isDisplayAccuracy = false
-let file = ""
-let isFileReady = ""
+let transcribe_score  = 0
 
 function LinearProgressWithLabel(props) {
     isDisplayAccuracy = props.value === 100
@@ -70,6 +69,16 @@ LinearProgressWithLabel.propTypes = {
 
 function App() {
 
+    // for display transcribe score:
+    const displayTranscribeScore = () => {
+        axios
+            .get('http://localhost:5000/transcribe_score')
+            .then(res => {
+                transcribe_score = parseFloat(res.data['transcribe_score']).toFixed(3)
+            })
+            .catch(err => console.warn(err));
+    }
+
     // for upload button:
     const hiddenFileInput = React.useRef(null);
 
@@ -77,7 +86,14 @@ function App() {
     const [progress, setProgress] = React.useState(10);
     React.useEffect(() => {
         const timer = setInterval(() => {
-            setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
+            setProgress((prevProgress) => {
+              if (prevProgress >= 100) {
+                  displayTranscribeScore()
+                  return 10;
+              } else {
+                  return prevProgress + 10
+              }
+            });
         }, 1000);
         return () => {
             clearInterval(timer);
@@ -154,21 +170,24 @@ function App() {
     // Transcribe Button func
     /// https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
     const TranscribeHandleChange = () => {
+        let url = 'http://localhost:5000/transcribe?language=' + speech_language
         axios
-            .get('http://localhost:5000/transcribe',{
+            .get(url,{
                 responseType: 'arraybuffer',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
             .then(res => {
+                // console.log(res.data['confidence'])
+                // let num = res.data['confidence']
                 const url = window.URL.createObjectURL(new Blob([res.data]));
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', 'Lecture 1.docx'); //or any other extension
                 document.body.appendChild(link);
                 link.click();
-                // let alert_msg = "Transcription confidence is: " + res.data['confidence']
+                // let alert_msg = "Transcription confidence is: " + num
                 // alert(alert_msg)
             })
             .catch(err => console.warn(err));
@@ -293,7 +312,7 @@ function App() {
 
                         {isDisplayAccuracy &&  (
                             <Typography variant="body1" color="text.secondary">
-                                Accuracy =
+                                Accuracy = {transcribe_score}
                             </Typography>
                         )}
                     </Box>
