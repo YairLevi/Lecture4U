@@ -2,12 +2,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button, ButtonGroup, Container, Card, Nav, Navbar, Form} from "react-bootstrap"
 import './App.css';
 import React, {useState, useEffect} from 'react';
-import NotificationForm from './Notification_Form'
-import {colors, FormControl, Modal, Radio, RadioGroup, Typography} from "@mui/material";
+import {FormControl, Radio, RadioGroup, Typography} from "@mui/material";
 import CustomizedDialogs from "./Dialog";
 import RegistrationForm from "./RegistrationForm";
-import FileUploader from "./FileUploader";
-
+import FixedBottomNavigation from "./Recommendations Forum"
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from "@mui/material/Box";
@@ -27,12 +25,23 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import { useRef } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import MicIcon from '@mui/icons-material/Mic';
+import axios from "axios";
+import {Alert, AlertTitle} from "@mui/lab";
 // https://blog.logrocket.com/using-the-react-speech-recognition-hook-for-voice-assistance/
 // https://github.com/JamesBrill/react-speech-recognition#readme
 // https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
+// https://github.com/devias-io/material-kit-react
 
+
+// for Course recommendation system:
+// https://mui.com/components/bottom-navigation/
+
+let speech_language = "Hebrew";
+let isDisplayAccuracy = false
+let transcribe_score  = 0
 
 function LinearProgressWithLabel(props) {
+    isDisplayAccuracy = props.value === 100
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Box sx={{ width: '100%', mr: 1 }}>
@@ -47,7 +56,6 @@ function LinearProgressWithLabel(props) {
     );
 }
 
-
 LinearProgressWithLabel.propTypes = {
     /**
      * The value of the progress indicator for the determinate and buffer variants.
@@ -57,22 +65,40 @@ LinearProgressWithLabel.propTypes = {
 };
 
 
-let speech_language = "Hebrew";
+
 
 function App() {
 
+    // for display transcribe score:
+    const displayTranscribeScore = () => {
+        axios
+            .get('http://localhost:5000/transcribe_score')
+            .then(res => {
+                transcribe_score = parseFloat(res.data['transcribe_score']).toFixed(3)
+            })
+            .catch(err => console.warn(err));
+    }
 
+    // for upload button:
+    const hiddenFileInput = React.useRef(null);
+
+    // progress bar:
     const [progress, setProgress] = React.useState(10);
     React.useEffect(() => {
         const timer = setInterval(() => {
-            setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
+            setProgress((prevProgress) => {
+              if (prevProgress >= 100) {
+                  displayTranscribeScore()
+                  return 10;
+              } else {
+                  return prevProgress + 10
+              }
+            });
         }, 1000);
         return () => {
             clearInterval(timer);
         };
     }, []);
-
-
 
 
     // React Mic:
@@ -106,10 +132,75 @@ function App() {
         resetTranscript();
     };
 
+    // Choose language - Radio buttons
     const set_speech_to_text_language = (event) => {
         speech_language = event.target.value
         console.log(speech_language)
     };
+
+
+    // Navbar buttons:
+
+    const handleClick = () => {
+        hiddenFileInput.current.click();
+        console.log("inside handleClick!")
+    };
+
+
+    // Upload Button func:
+    const UploadHandleChange = (event) => {
+        const fileUploaded = event.target.files[0];
+        let form = new FormData();
+        form.append('file', fileUploaded)
+
+        axios
+            .post('http://localhost:5000/upload', form)
+            .then(res => {
+                if (res.data['isUploaded'] === true) {
+                    let alert_msg = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
+                    alert(alert_msg)
+                } else {
+                    let alert_msg = "Unable to upload: " + res.data['FileName']
+                    alert(alert_msg)
+                }
+            })
+            .catch(err => console.warn(err));
+    };
+
+    // Transcribe Button func
+    /// https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
+    const TranscribeHandleChange = () => {
+        let url = 'http://localhost:5000/transcribe?language=' + speech_language
+        axios
+            .get(url,{
+                responseType: 'arraybuffer',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                // console.log(res.data['confidence'])
+                // let num = res.data['confidence']
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'Lecture 1.docx'); //or any other extension
+                document.body.appendChild(link);
+                link.click();
+                // let alert_msg = "Transcription confidence is: " + num
+                // alert(alert_msg)
+            })
+            .catch(err => console.warn(err));
+    };
+
+    // Download Button func
+    const DownloadHandleChange = () => {
+        axios
+            .get('http://localhost:5000/download')
+            .then(res => console.log(res))
+            .catch(err => console.warn(err));
+    };
+
 
     return (
         <div className="App">
@@ -119,10 +210,22 @@ function App() {
                     <Nav className="me-auto">
                         <ButtonGroup aria-label="Basic example">
 
-                            <FileUploader/>
+                            <Button variant="outline-light" onClick={handleClick}>Upload</Button>
+                            <input type="file"
+                                   ref={hiddenFileInput}
+                                   multiple={false}
+                                   accept={".m4a"}
+                                   onChange={UploadHandleChange}
+                                   style={{display:'none'}}
+                            />
 
-                            <Button variant="outline-light">Download</Button>
-                            <Button variant="outline-light">Transcribe</Button>
+                            <Button variant="outline-light" onClick={DownloadHandleChange}>Download</Button>
+                            <Button variant="outline-light" onClick={TranscribeHandleChange}>Transcribe</Button>
+                            {/*<FileUploader button_name ={"Upload"} button_func={UploadHandleChange}/>*/}
+                            {/*<FileUploader button_name ={"Transcribe"} button_func={TranscribeHandleChange}/>*/}
+                            {/*<Button variant="outline-light">Transcribe</Button>*/}
+
+
                             <CustomizedDialogs>
                                 <RegistrationForm/>
                             </CustomizedDialogs>
@@ -206,6 +309,12 @@ function App() {
                     <br/>
                     <Box sx={{ width: '100%' }}>
                         <LinearProgressWithLabel value={progress} />
+
+                        {isDisplayAccuracy &&  (
+                            <Typography variant="body1" color="text.secondary">
+                                Accuracy = {transcribe_score}
+                            </Typography>
+                        )}
                     </Box>
 
                 </CardContent>
@@ -251,6 +360,8 @@ function App() {
 
                 </CardContent>
             </Card>
+
+            {/*<FixedBottomNavigation/>*/}
 
 
         </div>

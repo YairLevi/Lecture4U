@@ -6,12 +6,12 @@ from google.cloud import storage
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import googleapiclient.discovery
-
 from moviepy.editor import AudioFileClip
 import asyncio
 import aiohttp
 from gcloud.aio.storage import Storage
 import wave
+import write_to_doc
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'speech_to_text_cloud.json'
 
@@ -118,11 +118,15 @@ def transcribe_gcs_with_word_time_offsets(gcs_uri, number_of_channels, sample_ra
     result = operation.result(timeout=90)
     word_list = []
     word_time_list = []
+    confidence = 0
+    amount_of_results = 0
 
     for result in result.results:
         alternative = result.alternatives[0]
         print("Transcript: {}".format(alternative.transcript))
         print("Confidence: {}".format(alternative.confidence))
+        confidence += alternative.confidence
+        amount_of_results += 1
 
         for word_info in alternative.words:
             word = word_info.word
@@ -135,55 +139,65 @@ def transcribe_gcs_with_word_time_offsets(gcs_uri, number_of_channels, sample_ra
                 f"Word: {word}, start_time: {start_time.total_seconds()}, end_time: {end_time.total_seconds()}"
             )
 
-    return word_list, word_time_list
+    return word_list, word_time_list, (confidence / amount_of_results)
 
 
-# Input:
-source_file_name, transcribed_audio_file_name, language = sys.argv[1], sys.argv[2], sys.argv[3]
+def run(source_name, destination_name, my_language):
+    # Input:
+    source_file_name, transcribed_audio_file_name, language = source_name, destination_name, my_language
 
-# convert .m4a --> .wav file :
-convert_video_2_audio(source_file_name, transcribed_audio_file_name)
+    # convert .m4a --> .wav file :
+    convert_video_2_audio(source_file_name, transcribed_audio_file_name)
 
-# upload file to google cloud storage:
-path = 'speech to text files/{}'.format(transcribed_audio_file_name)
-upload_file_to_bucket('lecture4u-1', transcribed_audio_file_name, path)
+    # upload file to google cloud storage:
+    path = 'speech to text files/{}'.format(transcribed_audio_file_name)
+    upload_file_to_bucket('lecture4u-1', transcribed_audio_file_name, path)
 
-# upload async to google cloud storage :
-# print('Start Async Uploading.')
-# asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-# asyncio.run(main('transcribed_speech.wav'))
-# print("Finish Uploading.")
+    # upload async to google cloud storage :
+    # print('Start Async Uploading.')
+    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    # asyncio.run(main('transcribed_speech.wav'))
+    # print("Finish Uploading.")
 
-# settings:
-path = 'gs://lecture4u-1/speech to text files/{}'.format(transcribed_audio_file_name)
-f1 = wave.open(transcribed_audio_file_name, "r")
-num_of_channels = int(f1.getnchannels())
-sample_rate = int(f1.getframerate())
-language_code = ''
+    # settings:
+    path = 'gs://lecture4u-1/speech to text files/{}'.format(transcribed_audio_file_name)
+    f1 = wave.open(transcribed_audio_file_name, "r")
+    num_of_channels = int(f1.getnchannels())
+    sample_rate = int(f1.getframerate())
+    language_code = ''
 
-if language == "english":
-    language_code = 'en-US'
-elif language == "hebrew":
-    language_code = 'iw-IL'
+    if language == "english":
+        language_code = 'en-US'
+    elif language == "hebrew":
+        language_code = 'iw-IL'
 
-print("\nFile settings:")
-print("num_of_channels = {}".format(num_of_channels))
-print("sample width = {}".format(sample_rate))
-print("language_code = {}\n".format(language_code))
+    print("\nFile settings:")
+    print("num_of_channels = {}".format(num_of_channels))
+    print("sample width = {}".format(sample_rate))
+    print("language_code = {}\n".format(language_code))
 
-# transcribe:
-word_list, timestamps = transcribe_gcs_with_word_time_offsets(path, num_of_channels, sample_rate, language_code)
+    # transcribe:
+    word_list, timestamps, transcribe_confidence = transcribe_gcs_with_word_time_offsets(path, num_of_channels,
+                                                                                         sample_rate, language_code)
 
-if language == "english":
-    word_list = [word.lower() for word in word_list]
+    if language == "english":
+        word_list = [word.lower() for word in word_list]
 
-my_keywords = []
-if language == "english":
-    my_keywords = ['new', 'topic', 'end']
-elif language == "hebrew":
-    my_keywords = ['נושא', 'חדש', 'סוף']
+    my_keywords = []
+    if language == "english":
+        my_keywords = ['new', 'topic', 'end']
+    elif language == "hebrew":
+        my_keywords = ['נושא', 'חדש', 'סוף']
 
-topics_names, topics_content, topics_timestamps = search_word(my_keywords, word_list, timestamps)
-print(topics_names)
-print(topics_content)
-print(topics_timestamps)
+    topics_names, topics_content, topics_timestamps = search_word(my_keywords, word_list, timestamps)
+    print(topics_names)
+    print(topics_content)
+    print(topics_timestamps)
+
+    my_university_name = "Bar Ilan University"
+    my_course_name = "My Course"
+    write_to_doc.write("Lecture 1", my_university_name, my_course_name, "English", [['topic', 'one'], ['topic', 'two']],
+                       [['My', 'name', 'is', 'tal'], ['I', 'like', 'football']],
+                       [(5, 11.4), (11.4, 17.8)])
+
+    return transcribe_confidence
