@@ -12,6 +12,8 @@ const subjectSchema = new mongoose.Schema({
         default: () => Date.now()
     },
     text: String,
-    files: [String]
+    files: [mongoose.SchemaTypes.ObjectId]
 })
-module.exports.Subject = mongoose.model('Subject', subjectSchema)
+
+
+module.exports = mongoose.model('Subject', subjectSchema)

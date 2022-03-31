@@ -25,12 +25,11 @@ export default class requests {
         return await fetch(url, options)
     }
 
-    static async customPost(path, body) {
+    static async postMultipart(path, body) {
         const url = this.prototype.makeUrl(path, {})
         const options = {
             method: 'POST',
             credentials: 'include',
-            headers: { 'Content-type' : 'multipart/form-data' },
             body: body
         }
         return await fetch(url, options)

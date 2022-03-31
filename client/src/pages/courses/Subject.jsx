@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Card } from "react-bootstrap";
+import { useState } from "react";
+import { Card, NavLink } from "react-bootstrap";
 import { Icon } from "../../components/Sidebar/Item";
 
 const toggleStyle = {
@@ -12,18 +12,24 @@ const toggleOnClick = (val, setVal) => {
     else setVal('none')
 }
 
-export default function Subject({ title }) {
+export default function Subject({ subjectId, name, text, files }) {
     const [display, setDisplay] = useState('none')
+
     return (
         <Card className={'mb-3 mt-3'}>
             <Card.Header className={'d-flex'} onClick={() => toggleOnClick(display, setDisplay)} style={toggleStyle}>
                 <Icon iconClass={'bi-bookmark'}/>
-                <Card.Text className={'ms-3'}>{title}</Card.Text>
+                <Card.Text as={'h5'} className={'ms-3'}>{name}</Card.Text>
             </Card.Header>
             <Card.Body className={`d-${display}`}>
-                <Card.Text>
-                    Subject 1
-                </Card.Text>
+                <Card.Text>{text}</Card.Text>
+                {
+                    files && files.map((value, index) => (
+                         <div key={index} >
+                            <a href={value.url}>{value.name}</a>
+                        </div>
+                    ))
+                }
             </Card.Body>
         </Card>
     )

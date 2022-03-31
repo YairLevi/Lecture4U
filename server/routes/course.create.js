@@ -1,10 +1,8 @@
 const express = require('express')
-const Image = require('../models/Image')
-const { Course, Unit, Subject } = require('../models/Course')
-const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 const { Storage } = require('@google-cloud/storage')
 const path = require("path");
+const fs = require('fs')
 const { getQueryParams, getRandomImage, getUserID } = require('../httpUtil')
 
 const router = express.Router()
@@ -13,8 +11,20 @@ const storage = new Storage({
     keyFilename: path.join(__dirname, '..', 'avid-battery-339118-75042e644d3f.json')
 })
 
+const Image = require('../models/Image')
+const Course = require('../models/Course')
+const Unit = require('../models/Unit')
+const Subject = require('../models/Subject')
+const File = require('../models/File')
+const User = require('../models/User')
+
 const multer = require('multer')
-const upload = multer({ dest: '../temp/'})
+const upload = multer({ dest: 'temp/' })
+
+function generateStoragePath(courseId, unitId, subjectId, fileName) {
+    return `courseId-${courseId}/unitId-${unitId}/subjectId-${subjectId}/${fileName}`
+}
+
 
 router.post('/', async (req, res) => {
     try {
@@ -35,7 +45,7 @@ router.post('/', async (req, res) => {
 
 router.post('/unit', async (req, res) => {
     try {
-        const { code, name, text } = {...req.body}
+        const { code, name, text } = { ...req.body }
         const course = await Course.findById(code)
         const unit = await Unit.create({ name, text })
         course.units.push(unit._id)
@@ -47,10 +57,30 @@ router.post('/unit', async (req, res) => {
     }
 })
 
-router.post('/subject',  upload.array("files", 100), async (req, res) => {
+router.post('/subject', upload.array("files"), async (req, res) => {
     try {
-        const { code, name, text, files } = {...req.body}
-        console.log(req.body)
+        const { courseId, unitId, name, text } = { ...req.body }
+
+        const unit = await Unit.findById(unitId)
+        const subject = await Subject.create({ name, text })
+        const Bucket = storage.bucket(bucket)
+        const files = []
+
+        for (const file of req.files) {
+            const filePath = generateStoragePath(courseId, unitId, subject._id, file.originalname)
+            await Bucket.upload(file.path, { destination: filePath })
+            fs.unlinkSync(file.path)
+            const fileObject = await File.create({ bucket: bucket, file: filePath})
+            files.push(fileObject._id)
+        }
+
+        subject.files = files
+        await subject.save()
+
+        unit.subjects.push(subject._id)
+        await unit.save()
+
+        res.sendStatus(200)
     } catch (e) {
         console.log(e.message)
         res.sendStatus(400)

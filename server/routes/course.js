@@ -1,7 +1,4 @@
 const express = require('express')
-const Image = require('../models/Image')
-const { Course, Unit, Subject } = require('../models/Course')
-const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 const { Storage } = require('@google-cloud/storage')
 const path = require("path");
@@ -15,6 +12,13 @@ const bucket = 'lecture4u-1'
 const storage = new Storage({
     keyFilename: path.join(__dirname, '..', 'avid-battery-339118-75042e644d3f.json')
 })
+
+const Image = require('../models/Image')
+const Course = require('../models/Course')
+const Unit = require('../models/Unit')
+const Subject = require('../models/Subject')
+const User = require('../models/User')
+
 
 
 

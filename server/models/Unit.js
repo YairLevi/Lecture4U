@@ -15,4 +15,4 @@ const unitSchema = new mongoose.Schema({
     subjects: [mongoose.SchemaTypes.ObjectId]
 })
 
-module.exports.Unit = mongoose.model('Unit', unitSchema)
+module.exports = mongoose.model('Unit', unitSchema)

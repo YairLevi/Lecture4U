@@ -11,17 +11,18 @@ function getCourseID(location) {
     return arr[arr.length - 1]
 }
 
-async function createSubject(code, name, text, files) {
-    const body = { code, name, text, files }
+async function createSubject(courseId, unitId, name, text, files) {
     const formData = new FormData()
-    formData.append('code', code)
+    formData.append('courseId', courseId)
+    formData.append('unitId', unitId)
     formData.append('name', name)
     formData.append('text', text)
-    formData.append('files', files[0])
-    const res = await requests.customPost('/course/create/subject', formData)
+    for (const file of files) {
+        formData.append('files', file)
+    }
+    const res = await requests.postMultipart('/course/create/subject', formData)
     return res.status
 }
-
 
 
 export default function AddSubject(props) {
@@ -47,7 +48,7 @@ export default function AddSubject(props) {
     }
 
     function makeChanges() {
-        createSubject(getCourseID(location), name, text, files)
+        createSubject(getCourseID(location), props.unitId, name, text, files)
     }
 
 
