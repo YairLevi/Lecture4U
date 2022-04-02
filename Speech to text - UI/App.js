@@ -38,7 +38,7 @@ import {Alert, AlertTitle} from "@mui/lab";
 
 let speech_language = "Hebrew";
 let isDisplayAccuracy = false
-let transcribe_score  = 0
+let file_duration = 0
 
 function LinearProgressWithLabel(props) {
     isDisplayAccuracy = props.value === 100
@@ -74,7 +74,7 @@ function App() {
         axios
             .get('http://localhost:5000/transcribe_score')
             .then(res => {
-                transcribe_score = parseFloat(res.data['transcribe_score']).toFixed(3)
+                setTranscribe_score(parseFloat(res.data['transcribe_score']).toFixed(3))
             })
             .catch(err => console.warn(err));
     }
@@ -83,22 +83,26 @@ function App() {
     const hiddenFileInput = React.useRef(null);
 
     // progress bar:
-    const [progress, setProgress] = React.useState(10);
+    const [progress, setProgress] = React.useState(0);
+    const [isTranscribe, setTranscribe] = React.useState(false);
+    const [transcribe_score, setTranscribe_score] = React.useState(0);
+
     React.useEffect(() => {
+        if (!isTranscribe) { return }
         const timer = setInterval(() => {
             setProgress((prevProgress) => {
-              if (prevProgress >= 100) {
-                  displayTranscribeScore()
-                  return 10;
-              } else {
-                  return prevProgress + 10
-              }
+                if (prevProgress === 100) {
+                    setTranscribe(false)
+                    return 0
+                } else {
+                    return prevProgress + 10
+                }
             });
-        }, 1000);
+        }, file_duration);
         return () => {
             clearInterval(timer);
         };
-    }, []);
+    }, [isTranscribe]);
 
 
     // React Mic:
@@ -149,6 +153,7 @@ function App() {
 
     // Upload Button func:
     const UploadHandleChange = (event) => {
+        console.log("inside UploadHandleChange!")
         const fileUploaded = event.target.files[0];
         let form = new FormData();
         form.append('file', fileUploaded)
@@ -157,6 +162,8 @@ function App() {
             .post('http://localhost:5000/upload', form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
+                    file_duration = (res.data['duration'] * 100)
+                    console.log(file_duration)
                     let alert_msg = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
                     alert(alert_msg)
                 } else {
@@ -165,12 +172,16 @@ function App() {
                 }
             })
             .catch(err => console.warn(err));
+
+        event.target.value = null;
     };
 
     // Transcribe Button func
     /// https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
     const TranscribeHandleChange = () => {
         let url = 'http://localhost:5000/transcribe?language=' + speech_language
+        setTranscribe_score(0)
+        setTranscribe(true)
         axios
             .get(url,{
                 responseType: 'arraybuffer',
@@ -179,16 +190,13 @@ function App() {
                 }
             })
             .then(res => {
-                // console.log(res.data['confidence'])
-                // let num = res.data['confidence']
                 const url = window.URL.createObjectURL(new Blob([res.data]));
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', 'Lecture 1.docx'); //or any other extension
                 document.body.appendChild(link);
                 link.click();
-                // let alert_msg = "Transcription confidence is: " + num
-                // alert(alert_msg)
+                displayTranscribeScore()
             })
             .catch(err => console.warn(err));
     };
@@ -308,9 +316,9 @@ function App() {
 
                     <br/>
                     <Box sx={{ width: '100%' }}>
-                        <LinearProgressWithLabel value={progress} />
+                        {isTranscribe && (<LinearProgressWithLabel value={progress} />)}
 
-                        {isDisplayAccuracy &&  (
+                        {isDisplayAccuracy && transcribe_score > 0 && (
                             <Typography variant="body1" color="text.secondary">
                                 Accuracy = {transcribe_score}
                             </Typography>
