@@ -7,7 +7,7 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }) {
-    const [isLoggedIn, setIsLoggedIn] = useState(true)
+    const [isLoggedIn, setIsLoggedIn] = useState(null)
 
     useEffect(() => {
         (async function () {

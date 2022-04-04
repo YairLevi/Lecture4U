@@ -14,7 +14,7 @@ export default function SignIn(props) {
         <Container className={"w-100 vh-100 d-flex justify-content-center align-items-center"}>
             <Card className={"w-100"} style={{ maxWidth: 400 }}>
                 <Card.Body className={"p-5"}>
-                    <h1 className={"mb-3 text-center"}>Sign In</h1>
+                    <h1 className={"mb-3 text-center"}>Sign Up</h1>
                     <Form>
                         <Form.Group className={"mb-3"}>
                             <Form.Label>First Name</Form.Label>

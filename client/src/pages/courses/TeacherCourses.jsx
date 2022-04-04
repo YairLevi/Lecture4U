@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import CourseList, { CardSlot } from "../../components/CourseList";
-import { Spinner, Container } from "react-bootstrap";
+import { Spinner, Container, InputGroup, FormControl, Row } from "react-bootstrap";
 
 
 export default function TeacherCourses() {
     const [data, setData] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [searchValue, setSearchValue] = useState('')
 
     useEffect(() => {
         async function fetchData() {
@@ -27,8 +28,18 @@ export default function TeacherCourses() {
                 <Spinner className={'m-3'} animation="border"/>
             </Container>
         ) : (
-        <CourseList>
-            {data && data.map((value, index) => <CardSlot key={index} {...value}/>)}
-        </CourseList>
+        <Container fluid className={'vh-100 p-3'}>
+            <Container>
+                <InputGroup className="mb-5">
+                    <FormControl placeholder="Search for a course..." onChange={e => setSearchValue(e.target.value)}/>
+                </InputGroup>
+            </Container>
+            <Row>
+                {data && data.map((value, index) => {
+                    if (value.name.includes(searchValue))
+                        return <CardSlot key={index} {...value}/>
+                })}
+            </Row>
+        </Container>
     )
 }

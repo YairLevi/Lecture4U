@@ -50,6 +50,7 @@ export default function TeacherCoursePage() {
                                  name={value.name}
                                  text={value.text}
                                  subjects={value.subjects}
+                                 isStudent={true}
                     />
                 })}
                 <Button className={'mt-3 mb-3'} onClick={() => setShowAddUnit(true)}>

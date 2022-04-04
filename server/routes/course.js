@@ -55,6 +55,7 @@ router.get('/student', async (req, res) => {
     for (const course of courses) {
         const obj = {}
         const courseObj = await Course.findById(course)
+        obj.id = courseObj._id
         obj.name = courseObj.name
         obj.teacher = courseObj.teacher
         obj.description = courseObj.description

@@ -5,7 +5,7 @@ import AddSubject from "../../modals/AddSubject";
 import requests from "../../helpers/requests";
 
 
-export default function Unit({ unitId, courseId, name, text, subjects }) {
+export default function Unit({ unitId, courseId, name, text, subjects, isStudent }) {
     const [showAddSubject, setShowAddSubject] = useState(false)
 
     return (
@@ -13,7 +13,7 @@ export default function Unit({ unitId, courseId, name, text, subjects }) {
             <Card className={'mt-5 mb-5'}>
                 <Card.Header className={'d-flex justify-content-between'}>
                     <Card.Title>{name}</Card.Title>
-                    <Button variant={'primary'} onClick={() => setShowAddSubject(true)}>Add Subject</Button>
+                    { isStudent && <Button variant={'primary'} onClick={() => setShowAddSubject(true)}>Add Subject</Button> }
                 </Card.Header>
                 <Card.Body>
                     <Card.Text>{text}</Card.Text>
