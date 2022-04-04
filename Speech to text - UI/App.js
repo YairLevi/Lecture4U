@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Button, ButtonGroup, Container, Card, Nav, Navbar, Form} from "react-bootstrap"
+import {Button, ButtonGroup, Container, Card, Nav, Navbar, Modal} from "react-bootstrap"
 import './App.css';
 import React, {useState, useEffect} from 'react';
 import {FormControl, Radio, RadioGroup, Typography} from "@mui/material";
@@ -36,7 +36,7 @@ import {Alert, AlertTitle} from "@mui/lab";
 // for Course recommendation system:
 // https://mui.com/components/bottom-navigation/
 
-let speech_language = "Hebrew";
+let speech_language = "";
 let isDisplayAccuracy = false
 let file_duration = 0
 
@@ -68,6 +68,16 @@ LinearProgressWithLabel.propTypes = {
 
 
 function App() {
+
+    // alert message Modal:
+    const [ModalShow, ModalSetShow] = useState(false);
+    const [ModalSuccess, SetModalSuccess] = useState(false);
+    const [ModalError, SetModalError] = useState(false);
+    const [ModalAlertMessage, SetModalAlertMessage] = useState("");
+    const ModalHandleClose = () => ModalSetShow(false);
+    const ModalHandleShow = () => ModalSetShow(true);
+    let alert_message = ""
+
 
     // for display transcribe score:
     const displayTranscribeScore = () => {
@@ -117,6 +127,14 @@ function App() {
         );
     }
     const handleListing = () => {
+        if (speech_language === "") {
+            SetModalAlertMessage("Choose a language! (Hebrew / English)")
+            ModalHandleShow()
+            SetModalSuccess(false)
+            SetModalError(true)
+            /// alert("Choose a language! (Hebrew / English)")
+            return
+        }
         console.log("handleListing!")
         setIsListening(true);
         microphoneRef.current.classList.add("listening");
@@ -164,11 +182,19 @@ function App() {
                 if (res.data['isUploaded'] === true) {
                     file_duration = (res.data['duration'] * 100)
                     console.log(file_duration)
-                    let alert_msg = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
-                    alert(alert_msg)
+                    alert_message = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
+                    SetModalAlertMessage(alert_message)
+                    ModalHandleShow()
+                    SetModalSuccess(true)
+                    SetModalError(false)
+                    /// alert(alert_msg)
                 } else {
-                    let alert_msg = "Unable to upload: " + res.data['FileName']
-                    alert(alert_msg)
+                    let alert_message = "Unable to upload: " + res.data['FileName']
+                    SetModalAlertMessage(alert_message)
+                    ModalHandleShow()
+                    SetModalSuccess(false)
+                    SetModalError(true)
+                    /// alert(alert_msg)
                 }
             })
             .catch(err => console.warn(err));
@@ -179,6 +205,15 @@ function App() {
     // Transcribe Button func
     /// https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
     const TranscribeHandleChange = () => {
+        if (speech_language === "") {
+            SetModalAlertMessage("Choose a language! (Hebrew / English)")
+            ModalHandleShow()
+            SetModalSuccess(false)
+            SetModalError(true)
+            /// alert("Choose a language! (Hebrew / English)")
+            return
+        }
+
         let url = 'http://localhost:5000/transcribe?language=' + speech_language
         setTranscribe_score(0)
         setTranscribe(true)
@@ -212,6 +247,37 @@ function App() {
 
     return (
         <div className="App">
+
+            {/* alert modal */}
+            <Modal
+                show={ModalShow}
+                onHide={ModalHandleClose}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header closeButton>
+                    {ModalSuccess && (
+                        <Alert severity="success">
+                            <AlertTitle>Uploaded successfully</AlertTitle>
+                        </Alert>
+                    )}
+                    {ModalError && (
+                        <Alert severity="error">
+                            <AlertTitle>An Error Occurred</AlertTitle>
+                        </Alert>
+                    )}
+                </Modal.Header>
+                <Modal.Body>
+                    <strong>{ModalAlertMessage}</strong>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={ModalHandleClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+
             <Navbar bg="dark" variant="dark">
                 <Container>
                     <Navbar.Brand href="#home">Speech to Text</Navbar.Brand>
