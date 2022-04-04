@@ -74,6 +74,7 @@ function App() {
     const [ModalSuccess, SetModalSuccess] = useState(false);
     const [ModalError, SetModalError] = useState(false);
     const [ModalAlertMessage, SetModalAlertMessage] = useState("");
+    const [isUpload, setIsUpload] = useState(false);
     const ModalHandleClose = () => ModalSetShow(false);
     const ModalHandleShow = () => ModalSetShow(true);
     let alert_message = ""
@@ -127,19 +128,27 @@ function App() {
         );
     }
     const handleListing = () => {
+        console.log("handleListing!")
+
         if (speech_language === "") {
             SetModalAlertMessage("Choose a language! (Hebrew / English)")
             ModalHandleShow()
             SetModalSuccess(false)
             SetModalError(true)
-            /// alert("Choose a language! (Hebrew / English)")
             return
         }
-        console.log("handleListing!")
+
         setIsListening(true);
         microphoneRef.current.classList.add("listening");
+
+        let flag = ''
+        if (speech_language === "Hebrew") {
+            flag = 'he'
+        } else {
+            flag = 'en-US'
+        }
         SpeechRecognition.startListening({
-            continuous: true, language: speech_language="Hebrew" ? 'he' : 'en-US'
+            continuous: true, language: flag
         });
     };
     const stopHandle = () => {
@@ -187,14 +196,14 @@ function App() {
                     ModalHandleShow()
                     SetModalSuccess(true)
                     SetModalError(false)
-                    /// alert(alert_msg)
+                    setIsUpload(true)
                 } else {
                     let alert_message = "Unable to upload: " + res.data['FileName']
                     SetModalAlertMessage(alert_message)
                     ModalHandleShow()
                     SetModalSuccess(false)
                     SetModalError(true)
-                    /// alert(alert_msg)
+                    setIsUpload(false)
                 }
             })
             .catch(err => console.warn(err));
@@ -210,7 +219,12 @@ function App() {
             ModalHandleShow()
             SetModalSuccess(false)
             SetModalError(true)
-            /// alert("Choose a language! (Hebrew / English)")
+            return
+        } else if (!isUpload) {
+            SetModalAlertMessage("Select a file and then click Transcript!")
+            ModalHandleShow()
+            SetModalSuccess(false)
+            SetModalError(true)
             return
         }
 

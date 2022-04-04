@@ -37,11 +37,13 @@ def upload():
 @cross_origin()
 def transcribe():
     global language, transcribe_confidence
-    language = request.args.get('language')
     transcribe_confidence = 0
+    language = request.args.get('language')
     print("Transcribe language is: {}".format(language))
     print("-----Run speech to text-----\n")
-    transcribe_confidence = speech_to_text.run(file_name, 'zoom_record.wav', 'hebrew')
+
+    target_name = file_name.split('.')[0] + '.wav'
+    transcribe_confidence = speech_to_text.run(file_name, target_name, language)
     print("transcribe_confidence = {}".format(transcribe_confidence))
     docx_file_name = 'Lecture 1.docx'
     return send_file(docx_file_name, as_attachment=True)

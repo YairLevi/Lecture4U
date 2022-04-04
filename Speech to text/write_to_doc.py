@@ -1,8 +1,14 @@
 from docx import Document
 from datetime import date
+from docx.enum.style import WD_STYLE_TYPE
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
 def write(document_name, university_name, course_name, language, topics_names, topics_content, topics_timestamps):
+    is_hebrew = False
+    if language == "Hebrew":
+        is_hebrew = True
+
     today = date.today()
 
     # Textual month, day and year
@@ -16,21 +22,33 @@ def write(document_name, university_name, course_name, language, topics_names, t
     paragraph.text = "{}\t{}\t{}".format(today, university_name, course_name)
     paragraph.style = document.styles["Header"]
 
-    document.add_heading(document_name, 0)
+    h = document.add_heading(document_name, 0)
+    if is_hebrew:
+        h.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
     for topic, content, timestamp in zip(topics_names, topics_content, topics_timestamps):
-        heading = ""
+        heading, topic_content = "", ""
+
         for word in topic:
             heading += (word + " ")
 
-        heading += " (Timestamp In Lecture: {} - {})".format(timestamp[0], timestamp[1])
-        document.add_heading(heading, 1)
-
-        topic_content = ""
         for word in content:
             topic_content += (word + " ")
 
-        document.add_paragraph(topic_content)
+        if is_hebrew:
+            heading += " נקודת הזמן בהקלטה: {} - {}".format(timestamp[0], timestamp[1])
+        else:
+            heading += " (Timestamp In Lecture: {} - {})".format(timestamp[0], timestamp[1])
+
+        h = document.add_heading(heading, 1)
+        p = document.add_paragraph(topic_content)
+
+        for run in p.runs:
+            run.font.name = 'Arial'
+
+        if is_hebrew:
+            h.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+            p.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
     document.save('{}.docx'.format(document_name))
 
@@ -38,6 +56,6 @@ def write(document_name, university_name, course_name, language, topics_names, t
 # my_university_name = "Bar Ilan University"
 # my_course_name = "My Course"
 #
-# write("Lecture 1", my_university_name, my_course_name, "English", [['topic', 'one'], ['topic', 'two']],
-#       [['My', 'name', 'is', 'tal'], ['I', 'like', 'football']],
+# write("הרצאה ראשונה", my_university_name, my_course_name, "Hebrew", [['נושא', 'ראשון'], ['נושא', 'שני']],
+#       [['שלום', 'קוראים', 'לי', 'טל'], ['אני', 'אוהב', 'כדורגל']],
 #       [(5, 11.4), (11.4, 17.8)])

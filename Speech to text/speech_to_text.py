@@ -166,9 +166,9 @@ def run(source_name, destination_name, my_language):
     sample_rate = int(f1.getframerate())
     language_code = ''
 
-    if language == "english":
+    if language == "English":
         language_code = 'en-US'
-    elif language == "hebrew":
+    elif language == "Hebrew":
         language_code = 'iw-IL'
 
     print("\nFile settings:")
@@ -180,13 +180,13 @@ def run(source_name, destination_name, my_language):
     word_list, timestamps, transcribe_confidence = transcribe_gcs_with_word_time_offsets(path, num_of_channels,
                                                                                          sample_rate, language_code)
 
-    if language == "english":
+    if language == "English":
         word_list = [word.lower() for word in word_list]
 
     my_keywords = []
-    if language == "english":
+    if language == "English":
         my_keywords = ['new', 'topic', 'end']
-    elif language == "hebrew":
+    elif language == "Hebrew":
         my_keywords = ['נושא', 'חדש', 'סוף']
 
     topics_names, topics_content, topics_timestamps = search_word(my_keywords, word_list, timestamps)
@@ -196,8 +196,8 @@ def run(source_name, destination_name, my_language):
 
     my_university_name = "Bar Ilan University"
     my_course_name = "My Course"
-    write_to_doc.write("Lecture 1", my_university_name, my_course_name, "English", [['topic', 'one'], ['topic', 'two']],
-                       [['My', 'name', 'is', 'tal'], ['I', 'like', 'football']],
-                       [(5, 11.4), (11.4, 17.8)])
+    write_to_doc.write("Lecture 1", my_university_name, my_course_name, language, topics_names,
+                       topics_content,
+                       topics_timestamps)
 
     return transcribe_confidence
