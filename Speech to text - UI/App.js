@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Button, ButtonGroup, Container, Card, Nav, Navbar, Form} from "react-bootstrap"
+import {Button, ButtonGroup, Container, Card, Nav, Navbar, Modal} from "react-bootstrap"
 import './App.css';
 import React, {useState, useEffect} from 'react';
 import {FormControl, Radio, RadioGroup, Typography} from "@mui/material";
@@ -36,9 +36,9 @@ import {Alert, AlertTitle} from "@mui/lab";
 // for Course recommendation system:
 // https://mui.com/components/bottom-navigation/
 
-let speech_language = "Hebrew";
+let speech_language = "";
 let isDisplayAccuracy = false
-let transcribe_score  = 0
+let file_duration = 0
 
 function LinearProgressWithLabel(props) {
     isDisplayAccuracy = props.value === 100
@@ -69,12 +69,22 @@ LinearProgressWithLabel.propTypes = {
 
 function App() {
 
+    // alert message Modal:
+    const [ModalShow, ModalSetShow] = useState(false);
+    const [ModalSuccess, SetModalSuccess] = useState(false);
+    const [ModalError, SetModalError] = useState(false);
+    const [ModalAlertMessage, SetModalAlertMessage] = useState("");
+    const ModalHandleClose = () => ModalSetShow(false);
+    const ModalHandleShow = () => ModalSetShow(true);
+    let alert_message = ""
+
+
     // for display transcribe score:
     const displayTranscribeScore = () => {
         axios
             .get('http://localhost:5000/transcribe_score')
             .then(res => {
-                transcribe_score = parseFloat(res.data['transcribe_score']).toFixed(3)
+                setTranscribe_score(parseFloat(res.data['transcribe_score']).toFixed(3))
             })
             .catch(err => console.warn(err));
     }
@@ -83,22 +93,26 @@ function App() {
     const hiddenFileInput = React.useRef(null);
 
     // progress bar:
-    const [progress, setProgress] = React.useState(10);
+    const [progress, setProgress] = React.useState(0);
+    const [isTranscribe, setTranscribe] = React.useState(false);
+    const [transcribe_score, setTranscribe_score] = React.useState(0);
+
     React.useEffect(() => {
+        if (!isTranscribe) { return }
         const timer = setInterval(() => {
             setProgress((prevProgress) => {
-              if (prevProgress >= 100) {
-                  displayTranscribeScore()
-                  return 10;
-              } else {
-                  return prevProgress + 10
-              }
+                if (prevProgress === 100) {
+                    setTranscribe(false)
+                    return 0
+                } else {
+                    return prevProgress + 10
+                }
             });
-        }, 1000);
+        }, file_duration);
         return () => {
             clearInterval(timer);
         };
-    }, []);
+    }, [isTranscribe]);
 
 
     // React Mic:
@@ -113,6 +127,14 @@ function App() {
         );
     }
     const handleListing = () => {
+        if (speech_language === "") {
+            SetModalAlertMessage("Choose a language! (Hebrew / English)")
+            ModalHandleShow()
+            SetModalSuccess(false)
+            SetModalError(true)
+            /// alert("Choose a language! (Hebrew / English)")
+            return
+        }
         console.log("handleListing!")
         setIsListening(true);
         microphoneRef.current.classList.add("listening");
@@ -149,6 +171,7 @@ function App() {
 
     // Upload Button func:
     const UploadHandleChange = (event) => {
+        console.log("inside UploadHandleChange!")
         const fileUploaded = event.target.files[0];
         let form = new FormData();
         form.append('file', fileUploaded)
@@ -157,20 +180,43 @@ function App() {
             .post('http://localhost:5000/upload', form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
-                    let alert_msg = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
-                    alert(alert_msg)
+                    file_duration = (res.data['duration'] * 100)
+                    console.log(file_duration)
+                    alert_message = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
+                    SetModalAlertMessage(alert_message)
+                    ModalHandleShow()
+                    SetModalSuccess(true)
+                    SetModalError(false)
+                    /// alert(alert_msg)
                 } else {
-                    let alert_msg = "Unable to upload: " + res.data['FileName']
-                    alert(alert_msg)
+                    let alert_message = "Unable to upload: " + res.data['FileName']
+                    SetModalAlertMessage(alert_message)
+                    ModalHandleShow()
+                    SetModalSuccess(false)
+                    SetModalError(true)
+                    /// alert(alert_msg)
                 }
             })
             .catch(err => console.warn(err));
+
+        event.target.value = null;
     };
 
     // Transcribe Button func
     /// https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
     const TranscribeHandleChange = () => {
+        if (speech_language === "") {
+            SetModalAlertMessage("Choose a language! (Hebrew / English)")
+            ModalHandleShow()
+            SetModalSuccess(false)
+            SetModalError(true)
+            /// alert("Choose a language! (Hebrew / English)")
+            return
+        }
+
         let url = 'http://localhost:5000/transcribe?language=' + speech_language
+        setTranscribe_score(0)
+        setTranscribe(true)
         axios
             .get(url,{
                 responseType: 'arraybuffer',
@@ -179,16 +225,13 @@ function App() {
                 }
             })
             .then(res => {
-                // console.log(res.data['confidence'])
-                // let num = res.data['confidence']
                 const url = window.URL.createObjectURL(new Blob([res.data]));
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', 'Lecture 1.docx'); //or any other extension
                 document.body.appendChild(link);
                 link.click();
-                // let alert_msg = "Transcription confidence is: " + num
-                // alert(alert_msg)
+                displayTranscribeScore()
             })
             .catch(err => console.warn(err));
     };
@@ -204,6 +247,37 @@ function App() {
 
     return (
         <div className="App">
+
+            {/* alert modal */}
+            <Modal
+                show={ModalShow}
+                onHide={ModalHandleClose}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header closeButton>
+                    {ModalSuccess && (
+                        <Alert severity="success">
+                            <AlertTitle>Uploaded successfully</AlertTitle>
+                        </Alert>
+                    )}
+                    {ModalError && (
+                        <Alert severity="error">
+                            <AlertTitle>An Error Occurred</AlertTitle>
+                        </Alert>
+                    )}
+                </Modal.Header>
+                <Modal.Body>
+                    <strong>{ModalAlertMessage}</strong>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={ModalHandleClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+
             <Navbar bg="dark" variant="dark">
                 <Container>
                     <Navbar.Brand href="#home">Speech to Text</Navbar.Brand>
@@ -308,9 +382,9 @@ function App() {
 
                     <br/>
                     <Box sx={{ width: '100%' }}>
-                        <LinearProgressWithLabel value={progress} />
+                        {isTranscribe && (<LinearProgressWithLabel value={progress} />)}
 
-                        {isDisplayAccuracy &&  (
+                        {isDisplayAccuracy && transcribe_score > 0 && (
                             <Typography variant="body1" color="text.secondary">
                                 Accuracy = {transcribe_score}
                             </Typography>

@@ -1,3 +1,4 @@
+# deletes empty strings from line
 def del_empties(text_d):
     lst = []
     for t in text_d:
@@ -6,50 +7,44 @@ def del_empties(text_d):
     return lst
 
 
-def evaluate_line(user_data, text_data):
+# splits the sentence into lowered words and compares their parsing to words and their order
+def evaluate_line(user_data, text_data, u_len, t_len):
     counter = 0
-    user_d = user_data.lower().split(' ')
-    text_d = del_empties(text_data.lower().split(' '))
-    min_len = min(len(user_d), len(text_d))
+    min_len = min(len(user_data), len(text_data))
     for i in range(min_len):
-        u, t = user_d[i], text_d[i]
-        if u == t:
-            counter += 1
-    return counter / (min_len + abs(len(user_data) - len(text_data)))
+        u, t = user_data[i], text_data[i]
+        counter = counter + 1 if u == t else counter
+    return counter / (min_len + abs(u_len - t_len))
 
 
-def evaluate_words(user_data, text_data):
+# splits the sentence into lowered words and compares their parsing - forward and backward alphabetically
+def evaluate_words(user_data, text_data, u_len, t_len):
     counter1 = counter2 = 0
-    user_d = sorted(user_data.lower().split(' '))
-    text_d = sorted(del_empties(text_data.lower().split(' ')))
+    user_d = sorted(user_data)
+    text_d = sorted(text_data)
     min_len = min(len(user_d), len(text_d))
     for i in range(min_len):
         u, t = user_d[i], text_d[i]
-        if u == t:
-            counter1 += 1
+        counter1 = counter1 + 1 if u == t else counter1
     for i in range(min_len):
         u, t = user_d[len(user_d) - i - 1], text_d[len(text_d) - i - 1]
-        if u == t:
-            counter2 += 1
-    counter = max(counter1, counter2)
-    return counter / (min_len + abs(len(user_data) - len(text_data)))
+        counter2 = counter2 + 1 if u == t else counter2
+    return max(counter1, counter2) / (min_len + abs(u_len - t_len))
 
 
+# merges all chars in the sentence into lowered stream and compares their order
 def evaluate_stream(user_data, text_data):
     counter1 = counter2 = 0
-    user_d = user_data.lower().replace(' ', '')
-    text_d = text_data.lower().replace(' ', '')
+    user_d = user_data.replace(' ', '')
+    text_d = text_data.replace(' ', '')
     min_len = min(len(user_d), len(text_d))
     for i in range(min_len):
         u, t = user_d[i], text_d[i]
-        if u == t:
-            counter1 += 1
+        counter1 = counter1 + 1 if u == t else counter1
     for i in range(min_len):
         u, t = user_d[len(user_d) - i - 1], text_d[len(text_d) - i - 1]
-        if u == t:
-            counter2 += 1
-    counter = max(counter1, counter2)
-    return counter / (min_len + abs(len(user_data) - len(text_data)))
+        counter2 = counter2 + 1 if u == t else counter2
+    return max(counter1, counter2) / (min_len + abs(len(user_data) - len(text_data)))
 
 
 def read_input(input_file):
@@ -59,18 +54,36 @@ def read_input(input_file):
     return user_data
 
 
+def write_evaluation(evaluation, lines_eval, words_eval, streams_eval, vals):
+    # geometric average of all 3 evaluations equally in total evaluation (and algebraic average of the lines)
+    # each other semi-evaluation uses algebraic average of the lines
+    eval_file = open(evaluation, "r+")
+    eval_file.write("evaluation of words in order (compared to original text) = " + str(sum(lines_eval) / len(lines_eval)) + "\n")
+    eval_file.write("evaluation of words (compared to the words in the original text) = " + str(sum(words_eval) / len(words_eval)) + "\n")
+    eval_file.write("evaluation of chars' stream in order (compared to original text) = " + str(sum(streams_eval) / len(streams_eval)) + "\n")
+    eval_file.write("total evaluation = " + str(sum(vals) / len(vals)))
+    eval_file.close()
+
+
+def process_data(user_data, text_data):
+    u_len, t_len = len(user_data), len(text_data)
+    u_data, t_data = user_data, text_data
+    u_data, t_data = u_data.split(' '), del_empties(t_data.split(' '))
+    return u_len, t_len, u_data, t_data
+
+
 def evaluate(text, evaluation, input_file):
-    user = read_input(input_file)
-    vals = []
-    f = open(text, "r")
-    data = f.readlines()
-    f.close()
+    user, data = read_input(input_file), read_input(text)
+    vals, lines_eval, words_eval, streams_eval = [], [], [], []
     idx = 0
     for line in data:
-        v = evaluate_line(user[idx], line) * evaluate_words(user[idx], line) * evaluate_stream(user[idx], line)
+        line = line[:-2] if line == data[-1] else line
+        user_data, text_data = user[idx].lower(), line.lower()
+        u_len, t_len, u_data, t_data = process_data(user_data, text_data)
+        lines_eval.append(evaluate_line(u_data, t_data, u_len, t_len))
+        words_eval.append(evaluate_words(u_data, t_data, u_len, t_len))
+        streams_eval.append(evaluate_stream(user_data, text_data))
+        v = lines_eval[-1] * words_eval[-1] * streams_eval[-1]
         vals.append(v ** (1. / 3))
         idx += 1
-    val = sum(vals) / len(vals)
-    eval_file = open(evaluation, "r+")
-    eval_file.write("evaluation = " + str(val))
-    eval_file.close()
+    write_evaluation(evaluation, lines_eval, words_eval, streams_eval, vals)
