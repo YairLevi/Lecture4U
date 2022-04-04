@@ -1,3 +1,6 @@
+import os
+
+
 # deletes empty strings from line
 def del_empties(text_d):
     lst = []
@@ -54,14 +57,19 @@ def read_input(input_file):
     return user_data
 
 
-def write_evaluation(evaluation, lines_eval, words_eval, streams_eval, vals):
-    # geometric average of all 3 evaluations equally in total evaluation (and algebraic average of the lines)
-    # each other semi-evaluation uses algebraic average of the lines
+def write_evaluation(text_data, evaluation, lines_eval, words_eval, streams_eval, vals):
+    # geometric average of all 3 evaluations equally in total evaluation: algebraic average of the geometric average
+    # of each line. each other semi-evaluation uses algebraic average of the lines
     eval_file = open(evaluation, "r+")
-    eval_file.write("evaluation of words in order (compared to original text) = " + str(sum(lines_eval) / len(lines_eval)) + "\n")
-    eval_file.write("evaluation of words (compared to the words in the original text) = " + str(sum(words_eval) / len(words_eval)) + "\n")
-    eval_file.write("evaluation of chars' stream in order (compared to original text) = " + str(sum(streams_eval) / len(streams_eval)) + "\n")
-    eval_file.write("total evaluation = " + str(sum(vals) / len(vals)))
+    eval_file.write(text_data + "\n\n\n*****************************************************************************\n")
+    line_eval = str(round(sum(lines_eval) / len(lines_eval), 8))
+    eval_file.write("evaluation of words in order (compared to original text) = " + line_eval + "\n")
+    word_eval = str(round(sum(words_eval) / len(words_eval), 8))
+    eval_file.write("evaluation of words (compared to the words in the original text) = " + word_eval + "\n")
+    stream_eval = str(round(sum(streams_eval) / len(streams_eval), 8))
+    eval_file.write("evaluation of chars' stream in order (compared to original text) = " + stream_eval + "\n")
+    total_eval = str(round(sum(vals) / len(vals), 8))
+    eval_file.write("total evaluation = " + total_eval)
     eval_file.close()
 
 
@@ -77,7 +85,7 @@ def evaluate(text, evaluation, input_file):
     vals, lines_eval, words_eval, streams_eval = [], [], [], []
     idx = 0
     for line in data:
-        line = line[:-2] if line == data[-1] else line
+        line = line.rstrip() if line == data[-1] else line
         user_data, text_data = user[idx].lower(), line.lower()
         u_len, t_len, u_data, t_data = process_data(user_data, text_data)
         lines_eval.append(evaluate_line(u_data, t_data, u_len, t_len))
@@ -86,4 +94,6 @@ def evaluate(text, evaluation, input_file):
         v = lines_eval[-1] * words_eval[-1] * streams_eval[-1]
         vals.append(v ** (1. / 3))
         idx += 1
-    write_evaluation(evaluation, lines_eval, words_eval, streams_eval, vals)
+    write_evaluation(''.join(data).rstrip(), evaluation, lines_eval, words_eval, streams_eval, vals)
+    os.remove(text)
+    return 0

@@ -7,6 +7,7 @@ from pathlib import Path
 import cv2
 
 
+# define constants
 LINES_ROI = "..\\ROIS"
 WORDS_ROI = "..\\ROIw"
 LINES_ROI_PNG = LINES_ROI + "\\*.png"
@@ -49,12 +50,16 @@ def init_eval(evaluation, to_eval):
         os.remove(evaluation)
 
 
+def temp_folders():
+    remove_irrelevant_images(LINES_ROI_PNG) if Path(LINES_ROI).is_dir() else os.mkdir(LINES_ROI)
+    remove_irrelevant_images(WORDS_ROI_PNG) if Path(WORDS_ROI).is_dir() else os.mkdir(WORDS_ROI)
+
+
 def init_htr(to_eval):
     text, evaluation = "text.txt", "evaluation.txt"
     open(text, "w+").close()
     init_eval(evaluation, to_eval)
-    remove_irrelevant_images(LINES_ROI_PNG)
-    remove_irrelevant_images(WORDS_ROI_PNG)
+    temp_folders()
     fn = open("filename.txt", "r+")
     filename = fn.read()
     fn.close()
@@ -87,23 +92,23 @@ def handle_htr(text):
     lines = glob.glob(LINES_ROI_PNG)                                            # 59
     l_idx = 0                                          # 18: 58 -> 0.48, 59 -> 0.74, 60 -> 0.48, 61 -> 0.48, 62 -> 0.48
     for img in lines:                                  # 17: 58 -> 0.43, 59 -> 0.43, 60 -> 0.43, 61 -> 0.49, 62 -> 0.43
-        split_text_to_lines(img, WORDS_ROI, 45)         # 14: 58 -> 0.48, 59 -> 0.50, 60 -> 0.48, 61 -> 0.53, 62 -> 0.39
+        split_text_to_lines(img, WORDS_ROI, 45)        # 14: 58 -> 0.48, 59 -> 0.50, 60 -> 0.48, 61 -> 0.53, 62 -> 0.39
         current_line = glob.glob(WORDS_ROI_PNG)        # 16: 58 -> 0.74, 59 -> 0.74, 60 -> 0.74, 61 -> 0.54, 62 -> 0.54
         if (l_idx != (len(lines) - 1)) or len(lines) == 1:
             for img in current_line:
                 htr(img, text)
-            new_line(text)
+            if len(lines) > 1:
+                new_line(text)
             l_idx += 1
         else:
             for img in current_line[::-1]:
                 htr(img, text)
         remove_irrelevant_images(WORDS_ROI_PNG)
+    remove_irrelevant_images(LINES_ROI_PNG)
 
 
 def transcript(to_eval):
     text, evaluation, filename = init_htr(to_eval)
     split_text_to_lines("..\\image examples\\" + filename, LINES_ROI, 150)
     handle_htr(text)
-    if to_eval:
-        evaluate(text, evaluation, "input.txt")
-    return write_to_word(text)
+    return evaluate(text, evaluation, "input.txt") if to_eval else write_to_word(text)
