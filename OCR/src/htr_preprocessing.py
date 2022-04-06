@@ -10,9 +10,9 @@ Sample = namedtuple('Sample', 'gt_text, file_path')
 Batch = namedtuple('Batch', 'imgs, gt_texts, batch_size')
 
 
-# loads data which corresponds to the IAM format
 class DataLoaderIAM:
     def __init__(self, data_dir, batch_size, data_split=0.95, fast=True):
+        # loads data which corresponds to the IAM format
         self.fast = fast
         self.env = lmdb.open(str(data_dir / 'lmdb'), readonly=True) if fast else None
         self.data_augmentation = False
@@ -31,9 +31,9 @@ class DataLoaderIAM:
             file_name_split = line_split[0].split('-')
             file_name_subdir = f'{file_name_split[0]}-{file_name_split[1]}'
             file_name = data_dir / 'img' / file_name_split[0] / file_name_subdir / (line_split[0] + '.png')
-            if line_split[0] in ['a01-117-05-02', 'r06-022-03-05']:  # known images in IAM dataset:
+            if line_split[0] in ['a01-117-05-02', 'r06-022-03-05']:  # known images in the IAM dataset
                 continue
-            # GT text are columns starting at 9
+            # GT texts are columns starting at 9
             gt_text = ' '.join(line_split[8:])
             chars = chars.union(set(list(gt_text)))
             # puts sample into list
@@ -68,37 +68,33 @@ class DataLoaderIAM:
     def validation_has_next(self):
         return self.curr_idx < len(self.samples)  # validation set: allows the last batch to be smaller
 
+    def load_img(self):
+        return pickle.loads(self.env.begin().get(Path(self.samples[i].file_path).basename().encode("ascii")))
+
     def get_next(self):
         batch_range = range(self.curr_idx, min(self.curr_idx + self.batch_size, len(self.samples)))
         images = []
         for i in range(batch_range):
-            if self.fast:
-                with self.env.begin() as txn:
-                    basename = Path(self.samples[i].file_path).basename()
-                    data = txn.get(basename.encode("ascii"))
-                    img = pickle.loads(data)
-            else:
-                img = cv2.imread(self.samples[i].file_path, cv2.IMREAD_GRAYSCALE)
-            images.append(img)
+            images.append(self.load_img() if self.fast else cv2.imread(self.samples[i].file_path, cv2.IMREAD_GRAYSCALE))
         self.curr_idx += self.batch_size
         return Batch(images, [self.samples[i].gt_text for i in batch_range], len(images))
 
 
 class Preprocessor:
-    def __init__(self, img_size, padding=0, dynamic_width=False, data_augmentation=False, line_mode=False):
+    def __init__(self, img_size, padding=0, dynamic_width=False, data_augmentation=False, l_mode=False):
+        # initializes preprocessor
         self.img_size = img_size
         self.padding = padding
         self.dynamic_width = dynamic_width
         self.data_augmentation = data_augmentation
-        self.line_mode = line_mode
+        self.l_mode = l_mode
 
     def _simulate_text_line(self, batch):
-        # creates image of a text line by pasting multiple word images into a single image. goes over all batch elements
+        # creates image of a text line by pasting multiple word images into a single image; goes over all batch elements
         res_imgs, res_gt_texts = [], []
         for i in range(batch.batch_size):
-            # number of words to put into current line
+            # number of words to put into current line and the concat of the ground truth texts
             num_words = random.randint(1, 8) if self.data_augmentation else 5  # default_num_words = 5
-            # concat ground truth texts
             curr_gt = ' '.join([batch.gt_texts[(i + j) % batch.batch_size] for j in range(num_words)])
             res_gt_texts.append(curr_gt)
             # puts selected word images into list and computes target image size
@@ -114,21 +110,19 @@ class Preprocessor:
                 if j + 1 < num_words:
                     w += curr_word_sep
                     word_seps.append(curr_word_sep)
-            # put all selected word images into target image
-            target = np.ones([h, w], np.uint8) * 255
+            target = np.ones([h, w], np.uint8) * 255  # puts all the selected word images into target image
             for curr_sel_img, curr_word_sep in zip(sel_imgs, word_seps):
                 x += curr_word_sep
                 y = (h - curr_sel_img.shape[0]) // 2
                 target[y:y + curr_sel_img.shape[0]:, x:x + curr_sel_img.shape[1]] = curr_sel_img
                 x += curr_sel_img.shape[1]
-            # put image of line into result
+            # puts an image of a line into the result
             res_imgs.append(target)
         return Batch(res_imgs, res_gt_texts, batch.batch_size)
 
     @staticmethod
-    # returns a random odd number (3, 5, 7)
     def random_odd():
-        return random.randint(1, 3) * 2 + 1
+        return random.randint(1, 3) * 2 + 1  # returns a random odd number (3, 5, 7)
 
     def augmentation(self, img):
         # geometric data augmentation
@@ -138,15 +132,12 @@ class Preprocessor:
         fx = f * np.random.uniform(0.75, 1.05)
         fy = f * np.random.uniform(0.75, 1.05)
         # random position around center
-        txc = (wt - w * fx) / 2
-        tyc = (ht - h * fy) / 2
         freedom_x = max((wt - fx * w) / 2, 0)
         freedom_y = max((ht - fy * h) / 2, 0)
-        tx = txc + np.random.uniform(-freedom_x, freedom_x)
-        ty = tyc + np.random.uniform(-freedom_y, freedom_y)
-        # map image into target image
-        M = np.float32([[fx, 0, tx], [0, fy, ty]])
-        target = np.ones(self.img_size[::-1]) * 255
+        tx = (wt - w * fx) / 2 + np.random.uniform(-freedom_x, freedom_x)
+        ty = (ht - h * fy) / 2 + np.random.uniform(-freedom_y, freedom_y)
+        # maps an image into target image
+        M, target = np.float32([[fx, 0, tx], [0, fy, ty]]), np.ones(self.img_size[::-1]) * 255
         return cv2.warpAffine(img, M, dsize=self.img_size, dst=target, borderMode=cv2.BORDER_TRANSPARENT)
 
     def process_augmented(self, img):
@@ -181,10 +172,9 @@ class Preprocessor:
             f = min(wt / w, ht / h)
             tx = (wt - w * f) / 2
             ty = (ht - h * f) / 2
-        # map image into target image
-        M = np.float32([[f, 0, tx], [0, f, ty]])
-        target = np.ones([ht, wt]) * 255
-        return cv2.warpAffine(img, M, dsize=(wt, ht), dst=target, borderMode=cv2.BORDER_TRANSPARENT)  # img
+        # maps an image into target image
+        M, target = np.float32([[f, 0, tx], [0, f, ty]]), np.ones([ht, wt]) * 255
+        return cv2.warpAffine(img, M, dsize=(wt, ht), dst=target, borderMode=cv2.BORDER_TRANSPARENT)
 
     def process_img(self, img):
         # resizes to target size, apply data augmentation. there are damaged files in dataset, use black image instead
@@ -194,12 +184,12 @@ class Preprocessor:
         return cv2.transpose(img) / 255 - 0.5  # transpose for TF and convert to range [-1, 1]
 
     def process_batch(self, batch):
-        if self.line_mode:
+        if self.l_mode:
             batch = self._simulate_text_line(batch)
         res_imgs = [self.process_img(img) for img in batch.imgs]
         max_text_len = res_imgs[0].shape[0] // 4
-        # function ctc_loss cannot compute loss if it cannot find a mapping between text label and input labels.
-        # repeat letters cost double because of the blank symbol needing to be inserted.
+        # ctc_loss function cannot compute the loss if it cannot find any mapping between text labels and input labels.
+        # repeats letters cost double because of the blank symbol need to be inserted.
         # if the label is too-long label, ctc_loss returns an infinite gradient
         res_gt_texts = []
         for gt_text in batch.gt_texts:

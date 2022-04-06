@@ -5,46 +5,43 @@ import editdistance
 from path import Path
 from htr_preprocessing import Batch, DataLoaderIAM, Preprocessor
 from htr_model import Model, DecoderType
-import sys
-import warnings
 
 
-warnings.filterwarnings('ignore')
-old_stdout = sys.stdout  # backup current stdout
-sys.stdout = open("errors.txt", "w")
-
-
-def train(model, loader, img_size, line_mode, early_stopping=25):
+# returns initialized variables to the training main loop
+def train_input(img_size, l_mode):
     summary_char_error_rates, summary_word_accuracies = [], []
-    preprocessor = Preprocessor(img_size, data_augmentation=True, line_mode=line_mode)
-    best_char_error_rate = float('inf')  # best validation character error rate
-    epoch = no_improvement_since = 0  # number of epochs (general; no improvement of character error rate occurred)
-    # stop training after this number of epochs without improvement
+    preprocessor = Preprocessor(img_size, data_augmentation=True, l_mode=l_mode)
+    best_char_error_rate, no_improvement_since = float('inf'), 0  # best validation error, epochs no. without improve.
+    return summary_char_error_rates, summary_word_accuracies, preprocessor, best_char_error_rate, no_improvement_since
+
+
+# training of the HTR model
+def train(model, loader, i_size, l_mode=False, early_stop=25):
+    summary_char_error, word_accuracies, preprocess, best_char_error, no_improve_since = train_input(i_size, l_mode)
     while True:
-        epoch += 1
         loader.train_set()
         while train_has_next():
-            preprocessor.process_batch(loader.get_next())  # batch
+            preprocess.process_batch(loader.get_next())  # batch
         # validates and writes summary file
-        char_error_rate, word_accuracy = validate(model, loader, line_mode)
-        summary_char_error_rates.append(char_error_rate)
-        summary_word_accuracies.append(word_accuracy)
+        char_error_rate, word_accuracy = validate(model, loader, l_mode)
+        summary_char_error.append(char_error_rate)
+        word_accuracies.append(word_accuracy)
         with open('../model/summary.json', 'w') as f:
-            json.dump({'charErrorRates': summary_char_error_rates, 'wordAccuracies': summary_word_accuracies}, f)
+            json.dump({'charErrorRates': summary_char_error, 'wordAccuracies': word_accuracies}, f)
         # saves model parameters if best validation accuracy so far
-        if char_error_rate < best_char_error_rate:
-            best_char_error_rate = char_error_rate
-            no_improvement_since = 0
+        if char_error_rate < best_char_error:
+            best_char_error = char_error_rate
+            no_improve_since = 0
             model.save()
         else:
-            no_improvement_since += 1
-        if no_improvement_since >= early_stopping:
-            break  # stop training if no more improvement in the last x epochs
+            no_improve_since += 1
+        if no_improve_since >= early_stop:
+            break  # stops training if no more improvement in the last 'no_improve_since' epochs
 
 
-def validate(model, loader, img_size, line_mode):
-    loader.validation_set()
-    preprocessor = Preprocessor(img_size, line_mode=line_mode)
+# validation of the HTR model
+def validate(model, loader, img_size, l_mode):
+    preprocessor = Preprocessor(img_size, l_mode=l_mode)
     num_char_err = num_char_total = num_word_ok = num_word_total = 0
     while validation_has_next():
         batch = preprocessor.process_batch(loader.get_next())
@@ -52,14 +49,13 @@ def validate(model, loader, img_size, line_mode):
         for i in range(len(recognized)):
             num_word_ok += 1 if batch.gt_texts[i] == recognized[i] else 0
             num_word_total += 1
-            dist = editdistance.eval(recognized[i], batch.gt_texts[i])
-            num_char_err += dist
+            num_char_err += editdistance.eval(recognized[i], batch.gt_texts[i])
             num_char_total += len(batch.gt_texts[i])
     return num_char_err / num_char_total, num_word_ok / num_word_total
 
 
-def infer(model, fn_img, text):
-    img = cv2.imread(fn_img, cv2.IMREAD_GRAYSCALE)
+# infer of the trained model on the user's handwriting
+def infer(model, img, text):
     if img is not None:
         preprocessor = Preprocessor((128, 32), dynamic_width=True, padding=16)
         recognized, probability = model.infer_batch(Batch([preprocessor.process_img(img)], None, 1), True)
@@ -69,6 +65,7 @@ def infer(model, fn_img, text):
             f.close()
 
 
+# definition of HTR model arguments
 def def_args(image_name):
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', choices=['train', 'validate', 'infer'], default='infer')
@@ -76,34 +73,37 @@ def def_args(image_name):
     parser.add_argument('--batch_size', help='Batch size.', type=int, default=100)
     parser.add_argument('--data_dir', help='Directory containing dataset', type=Path, required=False, default=None)
     parser.add_argument('--fast', help='Load samples from LMDB.', action='store_true', default=False)
-    parser.add_argument('--line_mode', help='for text lines (not single words)', action='store_true', default=False)
+    parser.add_argument('--l_mode', help='for text lines (not single words)', action='store_true', default=False)
     parser.add_argument('--img_file', help='Image used for inference.', type=Path, default=image_name)
-    parser.add_argument('--early_stopping', help='Early stopping epochs.', type=int, default=25)
+    parser.add_argument('--early_stop', help='Early stopping epochs.', type=int, default=25)
     parser.add_argument('--dump', help='Dump output of NN to CSV file(s).', action='store_true', default=False)
     args = parser.parse_args()
     return args, {'bestpath': DecoderType['BestPath'], 'beamsearch': DecoderType['BeamSearch'],
                   'wordbeamsearch': DecoderType['WordBeamSearch']}[args.decoder]
 
 
+# gets the image size and chars' list (another model arguments)
 def get_char_list(args):
     loader = DataLoaderIAM(args.data_dir, args.batch_size, fast=args.fast)
     char_list = loader.char_list
-    # when in line mode, take care to have a whitespace in the char list
-    char_list = [' '] + char_list if args.line_mode and ' ' not in char_list else char_list
+    # in l_mode, it takes care to have a whitespace in the char list
+    char_list = [' '] + char_list if args.l_mode and ' ' not in char_list else char_list
     # saves characters of model for inference mode and words contained in dataset into file
     open('../model/charList.txt', 'w').write(''.join(char_list))
     open('../data/corpus.txt', 'w').write(' '.join(loader.train_words + loader.validation_words))
-    img_size = (256, 32) if args.line_mode else (128, 32)
+    img_size = (256, 32) if args.l_mode else (128, 32)
     return char_list, loader, img_size
 
 
-def htr(image_name, text):
-    args, decoder_type = def_args(image_name)
+# main HTR function
+def htr(image_name, t):
+    args, dcd_t = def_args(image_name)
     if args.mode in ['train', 'validate']:
-        char_list, loader, img_size = get_char_list(args)
+        chr_lst, loader, i_size = get_char_list(args)
         if args.mode == 'train':
-            train(Model(char_list, decoder_type), loader, img_size, line_mode=args.line_mode, early_stopping=args.early_stopping)
+            train(Model(chr_lst, dcd_t), loader, i_size, l_mode=args.l_mode, early_stop=args.early_stop)
         elif args.mode == 'validate':
-            error_rate, accuracy = validate(Model(char_list, decoder_type, must_restore=True), loader, img_size, args.line_mode)
+            err, acc = validate(Model(chr_lst, dcd_t, must_restore=True), loader.validation_set(), i_size, args.l_mode)
     elif args.mode == 'infer':
-        infer(Model(list(open('../model/charList.txt').read()), decoder_type, must_restore=True, dump=args.dump), args.img_file, text)
+        lst = list(open('../model/charList.txt').read())
+        infer(Model(lst, dcd_t, must_restore=True, dump=args.dump), cv2.imread(args.img_file, cv2.IMREAD_GRAYSCALE), t)
