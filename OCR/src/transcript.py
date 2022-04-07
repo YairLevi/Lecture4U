@@ -17,7 +17,8 @@ WORDS_ROI_PNG = WORDS_ROI + "\\*.png"
 
 # filters the warnings
 def ignore_warnings():
-    warnings.filterwarnings('ignore')
+    if not sys.warnoptions:
+        warnings.simplefilter("ignore")
     old_stdout = sys.stdout  # backup current stdout
     sys.stdout = open("errors.txt", "w")
 

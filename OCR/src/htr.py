@@ -10,16 +10,16 @@ from htr_model import Model, DecoderType
 # returns initialized variables to the training main loop
 def train_input(img_size, l_mode):
     summary_char_error_rates, summary_word_accuracies = [], []
-    preprocessor = Preprocessor(img_size, data_augmentation=True, l_mode=l_mode)
+    preprocessor = Preprocessor(img_size, augmentation=True, l_mode=l_mode)
     best_char_error_rate, no_improvement_since = float('inf'), 0  # best validation error, epochs no. without improve.
     return summary_char_error_rates, summary_word_accuracies, preprocessor, best_char_error_rate, no_improvement_since
 
 
 # training of the HTR model
-def train(model, loader, i_size, l_mode=False, early_stop=25):
+def train_mode(model, loader, i_size, l_mode=False, early_stop=25):
     summary_char_error, word_accuracies, preprocess, best_char_error, no_improve_since = train_input(i_size, l_mode)
     while True:
-        loader.train_set()
+        loader.set_train()
         while train_has_next():
             preprocess.process_batch(loader.get_next())  # batch
         # validates and writes summary file
@@ -40,7 +40,7 @@ def train(model, loader, i_size, l_mode=False, early_stop=25):
 
 
 # validation of the HTR model
-def validate(model, loader, img_size, l_mode):
+def validate_mode(model, loader, img_size, l_mode):
     preprocessor = Preprocessor(img_size, l_mode=l_mode)
     num_char_err = num_char_total = num_word_ok = num_word_total = 0
     while validation_has_next():
@@ -55,10 +55,10 @@ def validate(model, loader, img_size, l_mode):
 
 
 # infer of the trained model on the user's handwriting
-def infer(model, img, text):
+def infer_mode(model, img, text):
     if img is not None:
-        preprocessor = Preprocessor((128, 32), dynamic_width=True, padding=16)
-        recognized, probability = model.infer_batch(Batch([preprocessor.process_img(img)], None, 1), True)
+        preprocessor = Preprocessor((128, 32), width=True, padding_size=16)
+        recognized, probability = model.infer_batch(Batch([preprocessor.process_image(img)], None, 1), True)
         if recognized[0] not in ['"', ' ', '.', ':', ',', ';', '']:
             f = open(text, "a+")
             f.write(recognized[0] + " ")
@@ -74,9 +74,9 @@ def def_args(image_name):
     parser.add_argument('--data_dir', help='Directory containing dataset', type=Path, required=False, default=None)
     parser.add_argument('--fast', help='Load samples from LMDB.', action='store_true', default=False)
     parser.add_argument('--l_mode', help='for text lines (not single words)', action='store_true', default=False)
-    parser.add_argument('--img_file', help='Image used for inference.', type=Path, default=image_name)
+    parser.add_argument('--image', help='Image used for inference.', type=Path, default=image_name)
     parser.add_argument('--early_stop', help='Early stopping epochs.', type=int, default=25)
-    parser.add_argument('--dump', help='Dump output of NN to CSV file(s).', action='store_true', default=False)
+    parser.add_argument('--dmp', help='Dump output of NN to CSV file(s).', action='store_true', default=False)
     args = parser.parse_args()
     return args, {'bestpath': DecoderType['BestPath'], 'beamsearch': DecoderType['BeamSearch'],
                   'wordbeamsearch': DecoderType['WordBeamSearch']}[args.decoder]
@@ -99,11 +99,11 @@ def get_char_list(args):
 def htr(image_name, t):
     args, dcd_t = def_args(image_name)
     if args.mode in ['train', 'validate']:
-        chr_lst, loader, i_size = get_char_list(args)
+        ch_ls, loader, i_size = get_char_list(args)
         if args.mode == 'train':
-            train(Model(chr_lst, dcd_t), loader, i_size, l_mode=args.l_mode, early_stop=args.early_stop)
+            train_mode(Model(ch_ls, dcd_t), loader, i_size, l_mode=args.l_mode, early_stop=args.early_stop)
         elif args.mode == 'validate':
-            err, acc = validate(Model(chr_lst, dcd_t, must_restore=True), loader.validation_set(), i_size, args.l_mode)
+            e, a = validate_mode(Model(ch_ls, dcd_t, restore=True), loader.set_validation(), i_size, args.l_mode)
     elif args.mode == 'infer':
         lst = list(open('../model/charList.txt').read())
-        infer(Model(lst, dcd_t, must_restore=True, dump=args.dump), cv2.imread(args.img_file, cv2.IMREAD_GRAYSCALE), t)
+        infer_mode(Model(lst, dcd_t, restore=True, dmp=args.dmp), cv2.imread(args.image, cv2.IMREAD_GRAYSCALE), t)
