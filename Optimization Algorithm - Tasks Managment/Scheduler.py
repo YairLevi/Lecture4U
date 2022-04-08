@@ -24,21 +24,19 @@ class CreateConstraint(constraint.Constraint):
     task_at_same_time = 1
     check_priority = 2
 
-    def __init__(self, constrain_type, tasks):
-        self.constrain_type = constrain_type
+    def __init__(self, constraint_type, tasks):
+        self.constraint_type = constraint_type
         self.tasks = tasks
 
     def get_constraint(self):
-        if self.constrain_type == CreateConstraint.task_at_same_time:
-            constrain = constraint.FunctionConstraint(no_task_at_same_time)
-            return constrain, self.tasks
+        if self.constraint_type == CreateConstraint.task_at_same_time:
+            return constraint.FunctionConstraint(no_task_at_same_time), self.tasks
 
-        if self.constrain_type == CreateConstraint.check_priority:
-            constrain = constraint.FunctionConstraint(higher_priority_first)
-            return constrain, self.tasks
+        if self.constraint_type == CreateConstraint.check_priority:
+            return constraint.FunctionConstraint(higher_priority_first), self.tasks
 
 
-# Constrain 1: two different tasks can't be at same time and day.
+# Constraint 1: two different tasks can't be at same time and day.
 def no_task_at_same_time(*arg):
     list_of_pairs = [(arg[v1], arg[v2]) for v1 in range(len(arg)) for v2 in range(v1 + 1, len(arg))]
     for pair in list_of_pairs:
@@ -53,7 +51,7 @@ def is_overlapping(domain_time1, domain_time2):
     if domain_time1.day != domain_time2.day:
         return False
 
-    if domain_time1.start == domain_time2.start and domain_time1.end == domain_time2.end:
+    if domain_time1.start == domain_time2.start:
         return True
 
     if (domain_time1.start < domain_time2.start < domain_time1.end) or (
@@ -63,38 +61,38 @@ def is_overlapping(domain_time1, domain_time2):
     return False
 
 
-# Constrain 2: For a task that has the higher priority, it will be schedule earlier.
+# Constraint 2: For a task that has the higher priority, it will be schedule earlier.
 def higher_priority_first(*arg):
     list_of_pairs = [(arg[v1], arg[v2]) for v1 in range(len(arg)) for v2 in range(v1 + 1, len(arg))]
     for pair in list_of_pairs:
         domain_time1, domain_time2 = pair[0], pair[1]
 
-        if domain_time1.priority <= domain_time2.priority and domain_time1.day > domain_time2.day:
+        if domain_time1.priority < domain_time2.priority and domain_time1.day > domain_time2.day:
             return False
 
-        elif domain_time1.priority <= domain_time2.priority and (domain_time1.day == domain_time2.day
-                                                                 and domain_time1.start > domain_time2.start):
+        elif domain_time1.priority < domain_time2.priority and (domain_time1.day == domain_time2.day
+                                                                and domain_time1.start > domain_time2.start):
             return False
 
-        elif domain_time2.priority <= domain_time1.priority and domain_time2.day > domain_time1.day:
+        elif domain_time2.priority < domain_time1.priority and domain_time2.day > domain_time1.day:
             return False
 
-        elif domain_time2.priority <= domain_time1.priority and (domain_time2.day == domain_time1.day
-                                                                 and domain_time2.start > domain_time1.start):
+        elif domain_time2.priority < domain_time1.priority and (domain_time2.day == domain_time1.day
+                                                                and domain_time2.start > domain_time1.start):
             return False
 
     return True
 
 
-def get_scheduler(scheduler_variables, scheduler_domains, scheduler_constrains):
+def get_scheduler(scheduler_variables, scheduler_domains, scheduler_constraints):
     problem = Problem()
 
     for var, domain in zip(scheduler_variables, scheduler_domains):
         problem.addVariable(var, domain)
 
-    for constrain in scheduler_constrains:
-        new_constrain, tasks = constrain.get_constraint()
-        problem.addConstraint(new_constrain, tasks)
+    for my_constraint in scheduler_constraints:
+        new_constraint, tasks = my_constraint.get_constraint()
+        problem.addConstraint(new_constraint, tasks)
 
     results(problem)
 
@@ -148,15 +146,15 @@ def main():
     variable3_domain = Domain([d7, d8, d9])
 
     domains = [variable1_domain, variable2_domain, variable3_domain]
-    constrains = []
+    constraints = []
 
     task_at_same_time = CreateConstraint(CreateConstraint.task_at_same_time, variables)
     priority_first = CreateConstraint(CreateConstraint.check_priority, variables)
 
-    constrains.append(task_at_same_time)
-    constrains.append(priority_first)
+    constraints.append(task_at_same_time)
+    constraints.append(priority_first)
 
-    get_scheduler(variables, domains, constrains)
+    get_scheduler(variables, domains, constraints)
 
 
 if __name__ == '__main__':
