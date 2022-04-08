@@ -13,6 +13,7 @@ import TeacherCourses from "../courses/TeacherCourses";
 import NavProvider from "../../components/NavContext";
 import StudentCoursePage from "../courses/StudentCoursePage";
 import TeacherCoursePage from "../courses/TeacherCoursePage";
+import SpeechToTest from "../speechToText/SpeechToText";
 
 
 function PlaceholderPage() {
@@ -72,6 +73,7 @@ export default function Main() {
                         <Route path={'/courses/teacher'} element={<TeacherCourses/>}/>
                         <Route path={'/courses/student/*'} element={<StudentCoursePage/>}/>
                         <Route path={'/courses/teacher/*'} element={<TeacherCoursePage/>}/>
+                        <Route path={'/speech'} element={<SpeechToTest/>}/>
                         {/*<Player/>*/}
                     </Routes>
                 </Container>
