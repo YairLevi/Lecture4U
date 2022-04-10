@@ -27,6 +27,7 @@ class Calendar extends Component {
         super(props);
         this.ModalHandleShow = this.ModalHandleShow.bind(this);
         this.ModalHandleClose = this.ModalHandleClose.bind(this);
+        this.addNewRow = this.addNewRow.bind(this);
 
         this.state = {
             viewType: "Week",
@@ -57,9 +58,19 @@ class Calendar extends Component {
                 isModalOpen : false
             },
             RatingValue : {
-                value : 0
-            }
+                value : [0]
+            },
+            customDiv: ['div1']
         };
+    }
+
+    addNewRow(){
+        let cDivs = this.state.customDiv;
+        let len = cDivs.length
+        let name = 'div' + ++len
+        cDivs.push(name)
+        this.state.RatingValue.value.push(0)
+        this.setState({customDiv: cDivs })
     }
 
     componentDidMount() {
@@ -125,7 +136,7 @@ class Calendar extends Component {
 
                 <br/><br/>
 
-                {this.state.ModalData.isModalOpen && <label>{this.state.RatingValue.value}</label>}
+                {/*{this.state.ModalData.isModalOpen && <label>{this.state.RatingValue.value}</label>}*/}
 
                 <Modal
                     show={this.state.ModalData.isModalOpen}
@@ -137,21 +148,42 @@ class Calendar extends Component {
                         Schedule Your Tasks
                     </Modal.Header>
                     <Modal.Body>
-                        <TextField
-                            id="outlined-name"
-                            label="Task Name"
-                            // value={name}
-                            onChange={()=>{console.log("tal")}}
-                        />
-                        <br/><br/>
-                        <MaterialUIPickers/>
-                        <Rating
-                            name="simple-controlled"
-                            value={this.state.RatingValue.value}
-                            onChange={(event, newValue) => {
-                                this.setState({RatingValue:{value: newValue}})
-                            }}
-                        />
+
+                            {
+                                this.state.customDiv.map((cdiv, i) => (<div className="expense-block" key={cdiv} id="expense-block-`${i}`" data-block={i}>
+                                    <br/>
+
+                                    <div style={{display: 'flex',
+                                        flexDirection: 'row'}}>
+                                        <TextField
+                                            id="outlined-name"
+                                            label="Task Name"
+                                            // value={name}
+                                            onChange={()=>{console.log("tal")}}
+                                        />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <MaterialUIPickers/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <Rating
+                                            name="simple-controlled"
+                                            value={this.state.RatingValue.value[i]}
+                                            onChange={(event, newValue) => {
+                                                let newList = this.state.RatingValue.value
+                                                newList[i] = newValue
+                                                this.setState({RatingValue:{value: newList}})
+                                            }}
+                                        />
+                                    </div>
+
+                                </div>))
+                            }
+                        <br/>
+
+                        <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+                            <br/>
+                            <Button variant="secondary" onClick={this.addNewRow}>Add Task</Button>
+                        </div>
+
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={this.ModalHandleClose}>

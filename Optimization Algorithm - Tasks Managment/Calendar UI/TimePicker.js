@@ -17,11 +17,13 @@ export default function MaterialUIPickers() {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateTimePicker
-                label="Date&Time picker"
+                label="Date & Time picker"
                 value={value}
                 onChange={handleChange}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => <TextField {...params} sx={{width: '120%'}} />}
             />
+
         </LocalizationProvider>
+
     );
 }
