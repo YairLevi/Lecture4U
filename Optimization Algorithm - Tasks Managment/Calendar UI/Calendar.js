@@ -4,6 +4,11 @@ import "./CalendarStyles.css";
 import {Button, ButtonGroup, Container, Modal, Nav, Navbar} from "react-bootstrap";
 import MaterialUIPickers from "./TimePicker";
 import {TextField, Rating} from "@mui/material";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import DateTimePicker from "@mui/lab/DateTimePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import {TimePicker} from "@mui/lab";
+import axios from "axios";
 
 
 /// https://code.daypilot.org/42221/react-weekly-calendar-tutorial
@@ -28,8 +33,10 @@ class Calendar extends Component {
         this.ModalHandleShow = this.ModalHandleShow.bind(this);
         this.ModalHandleClose = this.ModalHandleClose.bind(this);
         this.addNewRow = this.addNewRow.bind(this);
+        this.sendTaskData = this.sendTaskData.bind(this);
 
         this.state = {
+            startDate : "2022-03-20",
             viewType: "Week",
             durationBarVisible: false,
             timeRangeSelectedHandling: "Enabled",
@@ -60,6 +67,15 @@ class Calendar extends Component {
             RatingValue : {
                 value : [0]
             },
+            TaskNames : {
+              names: [""]
+            },
+            TasksTime: [
+                {
+                    start: new Date(),
+                    end: new Date()
+                },
+            ],
             customDiv: ['div1']
         };
     }
@@ -70,40 +86,52 @@ class Calendar extends Component {
         let name = 'div' + ++len
         cDivs.push(name)
         this.state.RatingValue.value.push(0)
+        this.state.TaskNames.names.push("")
+        this.state.TasksTime.push({
+            start: new Date(),
+            end: new Date()
+        })
         this.setState({customDiv: cDivs })
     }
 
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     console.log("inside componentDidUpdate!")
+    //     if (prevState && prevState.state && prevState.state.startDate &&  (prevState.state.startDate !== this.state.startDate)) {
+    //         /* your setState logic*/
+    //     }
+    // }
+
     componentDidMount() {
 
-        // // load event data
+        // load event data
         this.setState({
-            startDate: "2022-03-07",
+            startDate: "2022-03-20",
             events: [
                 {
                     id: 1,
                     text: "Event 1",
-                    start: "2022-03-07T10:30:00",
-                    end: "2022-03-07T13:00:00"
+                    start: "2022-03-20T10:30:00",
+                    end: "2022-03-20T13:00:00"
                 },
                 {
                     id: 2,
                     text: "Event 2",
-                    start: "2022-03-08T09:30:00",
-                    end: "2022-03-08T11:30:00",
+                    start: "2022-03-20T09:30:00",
+                    end: "2022-03-20T11:30:00",
                     backColor: "#6aa84f"
                 },
                 {
                     id: 3,
                     text: "Event 3",
-                    start: "2022-03-08T12:00:00",
-                    end: "2022-03-08T15:00:00",
+                    start: "2022-03-21T12:00:00",
+                    end: "2022-03-21T15:00:00",
                     backColor: "#f1c232"
                 },
                 {
                     id: 4,
                     text: "Event 4",
-                    start: "2022-03-06T11:30:00",
-                    end: "2022-03-06T14:30:00",
+                    start: "2022-03-22T11:30:00",
+                    end: "2022-03-22T14:30:00",
                     backColor: "#cc4125"
                 },
             ]
@@ -116,6 +144,33 @@ class Calendar extends Component {
 
     ModalHandleClose() {
         this.setState({ModalData:{isModalOpen: false}});
+    }
+
+    getTime(time) {
+        let hour = time.getHours()
+        let minutes = (time.getMinutes()) / 60
+        return parseFloat((hour + minutes)).toFixed(2)
+    }
+
+    sendTaskData() {
+        let data = []
+        for(let i = 0 ; i < this.state.TasksTime.length;  i++) {
+            data.push({
+                start : this.getTime(this.state.TasksTime[i].start),
+                end : this.getTime(this.state.TasksTime[i].end),
+                day : this.state.TasksTime[i].start.getDay(),
+                priority :  (6 - this.state.RatingValue.value[i]),
+                task_name : this.state.TaskNames.names[i]
+            })
+        }
+        console.log(data)
+        this.ModalHandleClose()
+        axios
+            .post('http://localhost:5000/calendar_task_data', data)
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => console.warn(err));
     }
 
 
@@ -136,16 +191,15 @@ class Calendar extends Component {
 
                 <br/><br/>
 
-                {/*{this.state.ModalData.isModalOpen && <label>{this.state.RatingValue.value}</label>}*/}
-
                 <Modal
                     show={this.state.ModalData.isModalOpen}
                     onHide={this.ModalHandleClose}
                     backdrop="static"
                     keyboard={false}
+                    size={"lg"}
                 >
                     <Modal.Header closeButton>
-                        Schedule Your Tasks
+                        <strong>Schedule Your Tasks</strong>
                     </Modal.Header>
                     <Modal.Body>
 
@@ -158,11 +212,46 @@ class Calendar extends Component {
                                         <TextField
                                             id="outlined-name"
                                             label="Task Name"
-                                            // value={name}
-                                            onChange={()=>{console.log("tal")}}
+                                            value={this.state.TaskNames.names[i]}
+                                            onChange={(event) => {
+                                                let newList = this.state.TaskNames.names
+                                                newList[i] = event.target.value
+                                                this.setState({TaskNames:{names: newList}})
+                                            }}
                                         />
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <MaterialUIPickers/>
+                                        {/*<MaterialUIPickers/>*/}
+
+
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                            <DateTimePicker
+                                                label="Start Date & Time"
+                                                value={this.state.TasksTime[i].start.toString()}
+                                                onChange={(event) => {
+                                                    let newList = this.state.TasksTime
+                                                    console.log(newList)
+                                                    newList[i].start = event
+                                                    this.setState({TasksTime: newList})
+                                                }}
+                                                renderInput={(params) => <TextField {...params} />}/>
+                                        </LocalizationProvider>
+
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                            <DateTimePicker
+                                                label="End Time"
+                                                value={this.state.TasksTime[i].end.toString()}
+                                                onChange={(event) => {
+                                                    let newList = this.state.TasksTime
+                                                    console.log(newList)
+                                                    newList[i].end = event
+                                                    this.setState({TasksTime: newList})
+                                                }}
+                                                renderInput={(params) => <TextField {...params} />}/>
+                                        </LocalizationProvider>
+
+
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         <Rating
                                             name="simple-controlled"
@@ -185,10 +274,8 @@ class Calendar extends Component {
                         </div>
 
                     </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={this.ModalHandleClose}>
-                            Close
-                        </Button>
+                    <Modal.Footer style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+                            <Button variant="success" onClick={this.sendTaskData}>Approve</Button>
                     </Modal.Footer>
                 </Modal>
 
@@ -198,13 +285,13 @@ class Calendar extends Component {
                             selectMode={"week"}
                             showMonths={2}
                             skipMonths={2}
-                            startDate={"2022-03-19"}
-                            selectionDay={"2022-03-19"}
-                            // onTimeRangeSelected={ args => {
-                            //     this.setState({
-                            //         startDate: args.day
-                            //     });
-                            // }}
+                            startDate={this.state.startDate}
+                            selectionDay={this.state.startDate}
+                            onTimeRangeSelected={ args => {
+                                this.setState({
+                                    startDate: args.day
+                                });
+                            }}
                         />
                     </div>
                     <div style={styles.main}>
