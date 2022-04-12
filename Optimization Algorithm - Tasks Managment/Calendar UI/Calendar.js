@@ -9,6 +9,7 @@ import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import {TimePicker} from "@mui/lab";
 import axios from "axios";
+import moment from "moment";
 
 
 /// https://code.daypilot.org/42221/react-weekly-calendar-tutorial
@@ -36,7 +37,7 @@ class Calendar extends Component {
         this.sendTaskData = this.sendTaskData.bind(this);
 
         this.state = {
-            startDate : "2022-03-20",
+            startDate : "2022-04-10",
             viewType: "Week",
             durationBarVisible: false,
             timeRangeSelectedHandling: "Enabled",
@@ -101,42 +102,42 @@ class Calendar extends Component {
     //     }
     // }
 
-    componentDidMount() {
-
-        // load event data
-        this.setState({
-            startDate: "2022-03-20",
-            events: [
-                {
-                    id: 1,
-                    text: "Event 1",
-                    start: "2022-03-20T10:30:00",
-                    end: "2022-03-20T13:00:00"
-                },
-                {
-                    id: 2,
-                    text: "Event 2",
-                    start: "2022-03-20T09:30:00",
-                    end: "2022-03-20T11:30:00",
-                    backColor: "#6aa84f"
-                },
-                {
-                    id: 3,
-                    text: "Event 3",
-                    start: "2022-03-21T12:00:00",
-                    end: "2022-03-21T15:00:00",
-                    backColor: "#f1c232"
-                },
-                {
-                    id: 4,
-                    text: "Event 4",
-                    start: "2022-03-22T11:30:00",
-                    end: "2022-03-22T14:30:00",
-                    backColor: "#cc4125"
-                },
-            ]
-        });
-    }
+    // componentDidMount() {
+    //
+    //     // load event data
+    //     this.setState({
+    //         startDate: this.state.startDate,
+    //         events: [
+    //             {
+    //                 id: 1,
+    //                 text: "Event 1",
+    //                 start: "2022-03-20T10:30:00",
+    //                 end: "2022-03-20T13:00:00"
+    //             },
+    //             {
+    //                 id: 2,
+    //                 text: "Event 2",
+    //                 start: "2022-03-20T09:30:00",
+    //                 end: "2022-03-20T11:30:00",
+    //                 backColor: "#6aa84f"
+    //             },
+    //             {
+    //                 id: 3,
+    //                 text: "Event 3",
+    //                 start: "2022-03-21T12:00:00",
+    //                 end: "2022-03-21T15:00:00",
+    //                 backColor: "#f1c232"
+    //             },
+    //             {
+    //                 id: 4,
+    //                 text: "Event 4",
+    //                 start: "2022-03-22T11:30:00",
+    //                 end: "2022-03-22T14:30:00",
+    //                 backColor: "#cc4125"
+    //             },
+    //         ]
+    //     });
+    // }
 
     ModalHandleShow() {
         this.setState({ModalData:{isModalOpen: true}});
@@ -160,15 +161,45 @@ class Calendar extends Component {
                 end : this.getTime(this.state.TasksTime[i].end),
                 day : this.state.TasksTime[i].start.getDay(),
                 priority :  (6 - this.state.RatingValue.value[i]),
-                task_name : this.state.TaskNames.names[i]
+                task_name : this.state.TaskNames.names[i],
+                start_date : moment(this.state.TasksTime[i].start).set('second', 0).format("YYYY-MM-DDTHH:mm:ss"),
+                end_date : moment(this.state.TasksTime[i].end).set('second', 0).format("YYYY-MM-DDTHH:mm:ss")
             })
         }
-        console.log(data)
         this.ModalHandleClose()
         axios
             .post('http://localhost:5000/calendar_task_data', data)
             .then(res => {
-                console.log(res)
+                let options = res.data
+                let my_events = []
+                let color_list = ["#6aa84f", "#f1c232", "#cc4125", "#0099ff"]
+
+                let key  = 0
+                for (let i = 0; i < options[key].length; i++) {
+                    let task_dict = options[key][i]
+                    my_events.push({
+                        id: (i + 1),
+                        text: task_dict['task'],
+                        start: task_dict['start_date'],
+                        end: task_dict['end_date'],
+                        backColor: color_list[i % color_list.length]
+                    })
+                }
+
+                // Object.keys(options).forEach(function(key) {
+                //     my_events.push({
+                //         id: (parseInt(key) + 1),
+                //         text: options[key][0]['task'],
+                //         start: options[key][0]['start_date'],
+                //         end: options[key][0]['end_date'],
+                //     })
+                // });
+
+                this.setState({
+                    startDate: this.state.startDate,
+                    events: my_events
+                });
+
             })
             .catch(err => console.warn(err));
     }
@@ -225,11 +256,11 @@ class Calendar extends Component {
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <DateTimePicker
+                                                ampm={false}
                                                 label="Start Date & Time"
                                                 value={this.state.TasksTime[i].start.toString()}
                                                 onChange={(event) => {
                                                     let newList = this.state.TasksTime
-                                                    console.log(newList)
                                                     newList[i].start = event
                                                     this.setState({TasksTime: newList})
                                                 }}
@@ -240,11 +271,11 @@ class Calendar extends Component {
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <DateTimePicker
+                                                ampm={false}
                                                 label="End Time"
                                                 value={this.state.TasksTime[i].end.toString()}
                                                 onChange={(event) => {
                                                     let newList = this.state.TasksTime
-                                                    console.log(newList)
                                                     newList[i].end = event
                                                     this.setState({TasksTime: newList})
                                                 }}
