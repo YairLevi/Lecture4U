@@ -1,10 +1,21 @@
 import json
-from flask import Flask, request, send_file, jsonify, make_response
+from flask import Flask, request
 from flask_cors import CORS, cross_origin
 import Scheduler
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
+
+scheduling_tasks_data = {}
+
+
+@app.route("/save_task_scheduling", methods=["POST"])
+@cross_origin()
+def save_task_scheduling():
+    global scheduling_tasks_data
+    scheduling_tasks_data = json.loads(request.data)
+    print(scheduling_tasks_data)
+    return "****** Send scheduling_tasks_data Successfully ******"
 
 
 @app.route("/calendar_task_data", methods=["POST"])

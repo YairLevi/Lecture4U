@@ -23,6 +23,7 @@
     "express": "^4.17.3",
     "formik": "^2.2.9",
     "get-audio-duration": "^3.0.1",
+    "moment": "^2.29.2",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",

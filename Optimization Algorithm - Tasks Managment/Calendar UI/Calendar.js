@@ -10,6 +10,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import {TimePicker} from "@mui/lab";
 import axios from "axios";
 import moment from "moment";
+import Select from "react-select";
 
 
 /// https://code.daypilot.org/42221/react-weekly-calendar-tutorial
@@ -35,6 +36,8 @@ class Calendar extends Component {
         this.ModalHandleClose = this.ModalHandleClose.bind(this);
         this.addNewRow = this.addNewRow.bind(this);
         this.sendTaskData = this.sendTaskData.bind(this);
+        this.saveTasks = this.saveTasks.bind(this);
+        this.TasksHandleChange = this.TasksHandleChange.bind(this);
 
         this.state = {
             startDate : "2022-04-10",
@@ -77,7 +80,10 @@ class Calendar extends Component {
                     end: new Date()
                 },
             ],
-            customDiv: ['div1']
+            customDiv: ['div1'],
+
+            UserScheduleOptions: "",
+            schedulingOptions: []
         };
     }
 
@@ -167,42 +173,68 @@ class Calendar extends Component {
             })
         }
         this.ModalHandleClose()
+
         axios
             .post('http://localhost:5000/calendar_task_data', data)
             .then(res => {
                 let options = res.data
-                let my_events = []
                 let color_list = ["#6aa84f", "#f1c232", "#cc4125", "#0099ff"]
+                let ScheduleOptions = {}
+                let id = 1
 
-                let key  = 0
-                for (let i = 0; i < options[key].length; i++) {
-                    let task_dict = options[key][i]
-                    my_events.push({
-                        id: (i + 1),
-                        text: task_dict['task'],
-                        start: task_dict['start_date'],
-                        end: task_dict['end_date'],
-                        backColor: color_list[i % color_list.length]
+                Object.entries(options).forEach(function([key,value]) {
+                    let my_events = []
+                    for (let i = 0; i < value.length; i++) {
+                        let task_dict = value[i]
+                        my_events.push({
+                            id: id++,
+                            text: task_dict['task'],
+                            start: task_dict['start_date'],
+                            end: task_dict['end_date'],
+                            backColor: color_list[i % color_list.length]
+                        })
+                    }
+                    ScheduleOptions[parseInt(key)] = my_events
+                });
+
+                const keys = Object.keys(ScheduleOptions);
+                for (let k in keys) {
+                    this.state.schedulingOptions.push({
+                        value: ScheduleOptions[k], label: "Scheduling " + k
                     })
                 }
 
-                // Object.keys(options).forEach(function(key) {
-                //     my_events.push({
-                //         id: (parseInt(key) + 1),
-                //         text: options[key][0]['task'],
-                //         start: options[key][0]['start_date'],
-                //         end: options[key][0]['end_date'],
-                //     })
-                // });
-
-                this.setState({
-                    startDate: this.state.startDate,
-                    events: my_events
-                });
-
+                if (Object.keys(ScheduleOptions).length > 0) {
+                    this.setState({
+                        UserScheduleOptions: ScheduleOptions,
+                        startDate: this.state.startDate,
+                        events: ScheduleOptions[0]
+                    });
+                } else {
+                    alert("There is no valid assignment according to the constraints you have set")
+                }
             })
             .catch(err => console.warn(err));
     }
+
+    saveTasks() {
+        axios
+            .post('http://localhost:5000/save_task_scheduling', this.state.UserScheduleOptions)
+            .then(res => {
+                console.log(res)
+                alert("Your task scheduling  saved ")
+            })
+            .catch(err => console.warn(err));
+    }
+
+    TasksHandleChange(selectedOption) {
+        console.log(`Option selected:`, selectedOption);
+        let label = selectedOption.label.split(" ")[1];
+        this.setState({
+            events: this.state.UserScheduleOptions[parseInt(label)]
+        });
+    }
+
 
 
     render() {
@@ -215,7 +247,13 @@ class Calendar extends Component {
                         <Nav className="me-auto">
                             <ButtonGroup aria-label="Basic example">
                                 <Button variant="outline-light" onClick={this.ModalHandleShow}>Schedule Tasks</Button>
+                                <Button variant="outline-light" onClick={this.saveTasks}>Save Tasks</Button>
                             </ButtonGroup>
+
+                            <div className="select_style" style={{width: '210px'}}>
+                                <Select onChange={this.TasksHandleChange} options={this.state.schedulingOptions} defaultValue={{ label: "Scheduling Options", value: 0 }}/>
+                            </div>
+
                         </Nav>
                     </Container>
                 </Navbar>
