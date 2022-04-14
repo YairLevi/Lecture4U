@@ -197,6 +197,11 @@ class Calendar extends Component {
                     ScheduleOptions[parseInt(key)] = my_events
                 });
 
+                /// delete the last scheduling options.
+                this.setState({
+                    schedulingOptions: [],
+                    events: []
+                });
                 const keys = Object.keys(ScheduleOptions);
                 for (let k in keys) {
                     this.state.schedulingOptions.push({
