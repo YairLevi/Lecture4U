@@ -2,18 +2,17 @@ import React, {Component} from 'react';
 import {DayPilot, DayPilotCalendar, DayPilotNavigator} from "@daypilot/daypilot-lite-react";
 import "./CalendarStyles.css";
 import {Button, ButtonGroup, Container, Modal, Nav, Navbar} from "react-bootstrap";
-import MaterialUIPickers from "./TimePicker";
 import {TextField, Rating} from "@mui/material";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import {TimePicker} from "@mui/lab";
 import axios from "axios";
 import moment from "moment";
 import Select from "react-select";
-
+import {Alert, AlertTitle} from '@mui/material';
 
 /// https://code.daypilot.org/42221/react-weekly-calendar-tutorial
+/// https://stackoverflow.com/questions/43638938/updating-an-object-with-setstate-in-react
 
 
 const styles = {
@@ -38,6 +37,10 @@ class Calendar extends Component {
         this.sendTaskData = this.sendTaskData.bind(this);
         this.saveTasks = this.saveTasks.bind(this);
         this.TasksHandleChange = this.TasksHandleChange.bind(this);
+        this.resetCalendar = this.resetCalendar.bind(this);
+        this.resetForm = this.resetForm.bind(this);
+        this.AlertMessageHandleShow = this.AlertMessageHandleShow.bind(this);
+        this.AlertMessageHandleClose = this.AlertMessageHandleClose.bind(this);
 
         this.state = {
             startDate : "2022-04-10",
@@ -83,8 +86,26 @@ class Calendar extends Component {
             customDiv: ['div1'],
 
             UserScheduleOptions: "",
-            schedulingOptions: []
+            schedulingOptions: [],
+            events: [],
+            counter: 0,
+
+            AlertMessageModal: {
+                isOpen : false,
+                message: "",
+                header: "",
+                isError: false,
+                isSuccess: false
+            }
         };
+    }
+
+    AlertMessageHandleShow() {
+        this.setState({AlertMessageModal: {isOpen: true}})
+    }
+
+    AlertMessageHandleClose() {
+        this.setState({AlertMessageModal: {isOpen: false}})
     }
 
     addNewRow(){
@@ -100,50 +121,6 @@ class Calendar extends Component {
         })
         this.setState({customDiv: cDivs })
     }
-
-    // componentDidUpdate(prevProps, prevState, snapshot) {
-    //     console.log("inside componentDidUpdate!")
-    //     if (prevState && prevState.state && prevState.state.startDate &&  (prevState.state.startDate !== this.state.startDate)) {
-    //         /* your setState logic*/
-    //     }
-    // }
-
-    // componentDidMount() {
-    //
-    //     // load event data
-    //     this.setState({
-    //         startDate: this.state.startDate,
-    //         events: [
-    //             {
-    //                 id: 1,
-    //                 text: "Event 1",
-    //                 start: "2022-03-20T10:30:00",
-    //                 end: "2022-03-20T13:00:00"
-    //             },
-    //             {
-    //                 id: 2,
-    //                 text: "Event 2",
-    //                 start: "2022-03-20T09:30:00",
-    //                 end: "2022-03-20T11:30:00",
-    //                 backColor: "#6aa84f"
-    //             },
-    //             {
-    //                 id: 3,
-    //                 text: "Event 3",
-    //                 start: "2022-03-21T12:00:00",
-    //                 end: "2022-03-21T15:00:00",
-    //                 backColor: "#f1c232"
-    //             },
-    //             {
-    //                 id: 4,
-    //                 text: "Event 4",
-    //                 start: "2022-03-22T11:30:00",
-    //                 end: "2022-03-22T14:30:00",
-    //                 backColor: "#cc4125"
-    //             },
-    //         ]
-    //     });
-    // }
 
     ModalHandleShow() {
         this.setState({ModalData:{isModalOpen: true}});
@@ -177,16 +154,22 @@ class Calendar extends Component {
         axios
             .post('http://localhost:5000/calendar_task_data', data)
             .then(res => {
+                this.setState({
+                    counter: (this.state.counter + 1)
+                })
                 let options = res.data
                 let color_list = ["#6aa84f", "#f1c232", "#cc4125", "#0099ff"]
                 let ScheduleOptions = {}
                 let id = 1
+                let my_counter = this.state.counter
 
                 Object.entries(options).forEach(function([key,value]) {
                     let my_events = []
                     for (let i = 0; i < value.length; i++) {
                         let task_dict = value[i]
+
                         my_events.push({
+                            counter: my_counter,
                             id: id++,
                             text: task_dict['task'],
                             start: task_dict['start_date'],
@@ -199,8 +182,7 @@ class Calendar extends Component {
 
                 /// delete the last scheduling options.
                 this.setState({
-                    schedulingOptions: [],
-                    events: []
+                    schedulingOptions: []
                 });
                 const keys = Object.keys(ScheduleOptions);
                 for (let k in keys) {
@@ -212,11 +194,26 @@ class Calendar extends Component {
                 if (Object.keys(ScheduleOptions).length > 0) {
                     this.setState({
                         UserScheduleOptions: ScheduleOptions,
-                        startDate: this.state.startDate,
-                        events: ScheduleOptions[0]
                     });
+
+                    let buffer = this.state.events
+                    for (let index in ScheduleOptions[0]) {
+                        buffer.push(ScheduleOptions[0][index])
+                    }
+                    this.setState({
+                        events: buffer
+                    })
+
                 } else {
-                    alert("There is no valid assignment according to the constraints you have set")
+                    this.setState(({
+                        AlertMessageModal: {
+                            isOpen: true,
+                            message: "There is no valid assignment according to the constraints you have set",
+                            header: "Unable to satisfy the constraints you have set.",
+                            isError: true,
+                            isSuccess: false
+                        }
+                    }))
                 }
             })
             .catch(err => console.warn(err));
@@ -226,18 +223,66 @@ class Calendar extends Component {
         axios
             .post('http://localhost:5000/save_task_scheduling', this.state.UserScheduleOptions)
             .then(res => {
-                console.log(res)
-                alert("Your task scheduling  saved ")
+                this.setState(({
+                    AlertMessageModal: {
+                        isOpen: true,
+                        message: "Your task scheduling saved, in each time you will enter this page," +
+                            " your scheduling will be reload and display in the calendar.",
+                        header: "Your task scheduling saved.",
+                        isError: false,
+                        isSuccess: true
+                    }
+                }))
             })
             .catch(err => console.warn(err));
     }
 
     TasksHandleChange(selectedOption) {
         console.log(`Option selected:`, selectedOption);
+        let counter = selectedOption.value[0]['counter']
         let label = selectedOption.label.split(" ")[1];
+
+        // removed the last scheduling option (the user switch between scheduling options)
+        this.state.events = this.state.events.filter(dict => dict['counter'] !== counter)
+
+        // insert the new scheduling option to the event list.
+        let buffer1 = this.state.UserScheduleOptions[parseInt(label)]
+        let buffer2 = this.state.events
+        for(let j = 0; j < buffer1.length; j++) {
+            buffer2.push(buffer1[j])
+        }
         this.setState({
-            events: this.state.UserScheduleOptions[parseInt(label)]
+            events : buffer2
+        })
+
+        console.log(this.state.events)
+
+    }
+
+    resetCalendar() {
+        this.setState({
+            schedulingOptions: [],
+            events: [],
+            counter: 0
         });
+    }
+
+    resetForm() {
+        this.setState({
+            RatingValue : {
+                value : [0]
+            },
+            TaskNames : {
+                names: [""]
+            },
+            TasksTime: [
+                {
+                    start: new Date(),
+                    end: new Date()
+                },
+            ],
+            customDiv: ['div1'],
+        })
     }
 
 
@@ -253,10 +298,12 @@ class Calendar extends Component {
                             <ButtonGroup aria-label="Basic example">
                                 <Button variant="outline-light" onClick={this.ModalHandleShow}>Schedule Tasks</Button>
                                 <Button variant="outline-light" onClick={this.saveTasks}>Save Tasks</Button>
+                                <Button variant="outline-light" onClick={this.resetCalendar}>Reset Calendar</Button>
                             </ButtonGroup>
 
                             <div className="select_style" style={{width: '210px'}}>
-                                <Select onChange={this.TasksHandleChange} options={this.state.schedulingOptions} defaultValue={{ label: "Scheduling Options", value: 0 }}/>
+                                <Select onChange={this.TasksHandleChange} options={this.state.schedulingOptions}
+                                        defaultValue={{ label: "Scheduling Options", value: 0 }}/>
                             </div>
 
                         </Nav>
@@ -264,6 +311,36 @@ class Calendar extends Component {
                 </Navbar>
 
                 <br/><br/>
+
+                {/* Alert Message Modal: */}
+                <Modal
+                    show={this.state.AlertMessageModal.isOpen}
+                    onHide={this.AlertMessageHandleClose}
+                    backdrop="static"
+                    keyboard={false}>
+
+                    <Modal.Header closeButton>
+                        {this.state.AlertMessageModal.isError && (
+                            <Alert severity="error">
+                                <AlertTitle>{this.state.AlertMessageModal.header}</AlertTitle>
+                            </Alert>
+                        )}
+                        {this.state.AlertMessageModal.isSuccess && (
+                            <Alert severity="success">
+                                <AlertTitle>{this.state.AlertMessageModal.header}</AlertTitle>
+                            </Alert>
+                        )}
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <strong>{this.state.AlertMessageModal.message}</strong>
+                    </Modal.Body>
+                    <Modal.Footer style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+                        <Button variant="secondary" onClick={this.AlertMessageHandleClose}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
+
+
 
                 <Modal
                     show={this.state.ModalData.isModalOpen}
@@ -294,7 +371,6 @@ class Calendar extends Component {
                                             }}
                                         />
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        {/*<MaterialUIPickers/>*/}
 
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -343,8 +419,11 @@ class Calendar extends Component {
                         <br/>
 
                         <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
-                            <br/>
                             <Button variant="secondary" onClick={this.addNewRow}>Add Task</Button>
+                        </div>
+                        <br/>
+                        <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+                            <Button variant="secondary" onClick={this.resetForm}>Reset</Button>
                         </div>
 
                     </Modal.Body>
