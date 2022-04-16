@@ -49,20 +49,21 @@ class Calendar extends Component {
             timeRangeSelectedHandling: "Enabled",
             onTimeRangeSelected: async args => {
                 const dp = this.calendar;
-                const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
+                const modal = await DayPilot.Modal.prompt("Create a new task:", "Task 1");
                 dp.clearSelection();
                 if (!modal.result) { return; }
                 dp.events.add({
                     start: args.start,
                     end: args.end,
                     id: DayPilot.guid(),
-                    text: modal.result
+                    text: modal.result,
+                    priority: 1
                 });
             },
             eventDeleteHandling: "Update",
             onEventClick: async args => {
                 const dp = this.calendar;
-                const modal = await DayPilot.Modal.prompt("Update event text:", args.e.text());
+                const modal = await DayPilot.Modal.prompt("Update task text:", args.e.text());
                 if (!modal.result) { return; }
                 const e = args.e;
                 e.data.text = modal.result;
@@ -142,14 +143,27 @@ class Calendar extends Component {
             data.push({
                 start : this.getTime(this.state.TasksTime[i].start),
                 end : this.getTime(this.state.TasksTime[i].end),
-                day : this.state.TasksTime[i].start.getDay(),
                 priority :  (6 - this.state.RatingValue.value[i]),
                 task_name : this.state.TaskNames.names[i],
                 start_date : moment(this.state.TasksTime[i].start).set('second', 0).format("YYYY-MM-DDTHH:mm:ss"),
                 end_date : moment(this.state.TasksTime[i].end).set('second', 0).format("YYYY-MM-DDTHH:mm:ss")
             })
         }
+        for (let i = 0; i < this.state.events.length; i++) {
+            let dict = this.state.events[i]
+            data.push({
+                start : this.getTime(dict.start),
+                end : this.getTime(dict.end),
+                priority :  (6 - dict.priority),
+                task_name : dict.text,
+                start_date : dict.start,
+                end_date : dict.end
+            })
+        }
         this.ModalHandleClose()
+
+        console.log("Data:")
+        console.log(data)
 
         axios
             .post('http://localhost:5000/calendar_task_data', data)
@@ -158,7 +172,7 @@ class Calendar extends Component {
                     counter: (this.state.counter + 1)
                 })
                 let options = res.data
-                let color_list = ["#6aa84f", "#f1c232", "#cc4125", "#0099ff"]
+                let color_list = ["#6aa84f", "#f1c232", "#cc4125", "#0099ff","#999999","#ff944d","#00b3b3"]
                 let ScheduleOptions = {}
                 let id = 1
                 let my_counter = this.state.counter
@@ -174,6 +188,7 @@ class Calendar extends Component {
                             text: task_dict['task'],
                             start: task_dict['start_date'],
                             end: task_dict['end_date'],
+                            priority: task_dict['priority'],
                             backColor: color_list[i % color_list.length]
                         })
                     }
@@ -193,16 +208,9 @@ class Calendar extends Component {
 
                 if (Object.keys(ScheduleOptions).length > 0) {
                     this.setState({
-                        UserScheduleOptions: ScheduleOptions,
+                        events: ScheduleOptions[0],
+                        UserScheduleOptions: ScheduleOptions
                     });
-
-                    let buffer = this.state.events
-                    for (let index in ScheduleOptions[0]) {
-                        buffer.push(ScheduleOptions[0][index])
-                    }
-                    this.setState({
-                        events: buffer
-                    })
 
                 } else {
                     this.setState(({

@@ -13,10 +13,9 @@ class Task:
 
 
 class TimePlace:
-    def __init__(self, start, end, day, priority, start_date, end_date):
+    def __init__(self, start, end, priority, start_date, end_date):
         self.start = start
         self.end = end
-        self.day = day
         self.priority = priority
         self.start_date = start_date
         self.end_date = end_date
@@ -50,7 +49,7 @@ def no_task_at_same_time(*arg):
 
 # two different tasks can't be at same time and day.
 def is_overlapping(domain_time1, domain_time2):
-    if domain_time1.day != domain_time2.day:
+    if not is_equal_dates(domain_time1.start_date, domain_time2.start_date):
         return False
 
     if domain_time1.start == domain_time2.start:
@@ -69,18 +68,22 @@ def higher_priority_first(*arg):
     for pair in list_of_pairs:
         domain_time1, domain_time2 = pair[0], pair[1]
 
-        if domain_time1.priority < domain_time2.priority and domain_time1.day > domain_time2.day:
+        if domain_time1.priority < domain_time2.priority and \
+                is_earlier_date(domain_time2.start_date, domain_time1.start_date):
             return False
 
-        elif domain_time1.priority < domain_time2.priority and (domain_time1.day == domain_time2.day
-                                                                and domain_time1.start > domain_time2.start):
+        elif domain_time1.priority < domain_time2.priority and \
+                (is_equal_dates(domain_time1.start_date, domain_time2.start_date)
+                 and domain_time1.start > domain_time2.start):
             return False
 
-        elif domain_time2.priority < domain_time1.priority and domain_time2.day > domain_time1.day:
+        elif domain_time2.priority < domain_time1.priority and \
+                is_earlier_date(domain_time1.start_date, domain_time2.start_date):
             return False
 
-        elif domain_time2.priority < domain_time1.priority and (domain_time2.day == domain_time1.day
-                                                                and domain_time2.start > domain_time1.start):
+        elif domain_time2.priority < domain_time1.priority and \
+                (is_equal_dates(domain_time1.start_date, domain_time2.start_date)
+                 and domain_time2.start > domain_time1.start):
             return False
 
     return True
@@ -103,54 +106,40 @@ def results(problem):
     scheduler_results = {}
     for index, result in enumerate(problem.getSolutions()):
         for k in result.keys():
-            # find day:
-            day = find_day(result[k].day)
             start = result[k].start
             end = result[k].end
             start_date = result[k].start_date
             end_date = result[k].end_date
+            priority = result[k].priority
 
             print("----------")
             print("Task: {}".format(k.name))
-            print("Day: {}, Start Hour = {}, End Hour = {}".format(day, start, end))
+            print("Start Date = {}, End Date = {}".format(start_date, end_date))
 
             keys = scheduler_results.keys()
             if index not in keys:
                 scheduler_results[index] = [{
                     'task': k.name,
-                    'day': day,
                     'start': start,
                     'end': end,
                     'start_date': start_date,
-                    'end_date': end_date
+                    'end_date': end_date,
+                    'priority': (6 - priority)
                 }]
             else:
                 scheduler_list = scheduler_results[index]
                 scheduler_list.append({
                     'task': k.name,
-                    'day': day,
                     'start': start,
                     'end': end,
                     'start_date': start_date,
-                    'end_date': end_date
+                    'end_date': end_date,
+                    'priority': (6 - priority)
                 })
 
         print("------------------------------------\n\n")
 
     return scheduler_results
-
-
-def find_day(i):
-    switcher = {
-        0: 'Sunday',
-        1: 'Monday',
-        2: 'Tuesday',
-        3: 'Wednesday',
-        4: 'Thursday',
-        5: 'Friday',
-        6: 'Saturday'
-    }
-    return switcher.get(i, "Invalid day of week")
 
 
 def set_variables_and_domains(scheduler_data):
@@ -164,12 +153,20 @@ def set_variables_and_domains(scheduler_data):
 
         for domain_dict in scheduler_data[task_name]['domains']:
             variable_domains.append(TimePlace(float(domain_dict['start']), float(domain_dict['end']),
-                                              domain_dict['day'], scheduler_data[task_name]['priority'],
+                                              scheduler_data[task_name]['priority'],
                                               domain_dict['start_date'], domain_dict['end_date']))
 
         domains.append(Domain(variable_domains))
 
     return variables, domains
+
+
+def is_earlier_date(date1, date2):
+    return date1 < date2
+
+
+def is_equal_dates(date1, date2):
+    return date1.split("T")[0] == date2.split("T")[0]
 
 
 def main(scheduler_data):

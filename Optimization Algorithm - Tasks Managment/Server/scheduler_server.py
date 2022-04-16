@@ -26,7 +26,6 @@ def calendar_task_data():
     for dic in data:
         start_time = dic["start"]
         end_time = dic["end"]
-        day = dic["day"]
         priority = dic["priority"]
         task_name = dic["task_name"]
         start_date = dic["start_date"]
@@ -39,7 +38,6 @@ def calendar_task_data():
                 'domains': [{
                     'start': start_time,
                     'end': end_time,
-                    'day': day,
                     'start_date': start_date,
                     'end_date': end_date
                 }]
@@ -49,7 +47,6 @@ def calendar_task_data():
             domains_list.append({
                 'start': start_time,
                 'end': end_time,
-                'day': day,
                 'start_date': start_date,
                 'end_date': end_date
             })
