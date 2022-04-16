@@ -50,6 +50,8 @@ class Calendar extends Component {
             onTimeRangeSelected: async args => {
                 const dp = this.calendar;
                 const modal = await DayPilot.Modal.prompt("Create a new task:", "Task 1");
+                const modal2 = await DayPilot.Modal.prompt("Your Task Priority (Lowest to highest: 1 - 5)", "1");
+
                 dp.clearSelection();
                 if (!modal.result) { return; }
                 dp.events.add({
@@ -57,7 +59,7 @@ class Calendar extends Component {
                     end: args.end,
                     id: DayPilot.guid(),
                     text: modal.result,
-                    priority: 1
+                    priority: Number(modal2.result),
                 });
             },
             eventDeleteHandling: "Update",
