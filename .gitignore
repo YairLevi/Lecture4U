@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+server/avid-battery-339118-75042e644d3f.json
 # My Ignore
 
 node_modules/
