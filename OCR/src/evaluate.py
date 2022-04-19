@@ -89,6 +89,6 @@ def evaluate(text, evaluation, input_file):
         lines_eval.append(evaluate_line(u_data, t_data, u_len, t_len))
         words_eval.append(evaluate_words(u_data, t_data, u_len, t_len))
         streams_eval.append(evaluate_stream(user_data, text_data))
-        values.append(max_len * (lines_eval[-1] * (words_eval[-1] ** 3) * streams_eval[-1]) ** (1. / 5))
+        values.append(max_len * (lines_eval[-1] * words_eval[-1] * (streams_eval[-1]) ** 4) ** (1. / 6))
         idx += 1
     return write_evaluation(''.join(data).rstrip(), evaluation, lines_eval, words_eval, streams_eval, values, lens)
