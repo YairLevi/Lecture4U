@@ -3,8 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-server/avid-battery-339118-75042e644d3f.json
 # My Ignore
+steam-treat-347709-a75748e8fbdc.json
 
 node_modules/
 .idea/
