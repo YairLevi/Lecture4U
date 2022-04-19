@@ -18,6 +18,7 @@ const courseSchema = new mongoose.Schema({
         immutable: true,
         default: () => Date.now()
     },
+    discussions: [mongoose.SchemaTypes.ObjectId],
     image: {
         type: Image.schema,
         immutable: true

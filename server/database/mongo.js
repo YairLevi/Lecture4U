@@ -1,6 +1,0 @@
-/*
-
-main MongoDB connection API file.
-To be renewed.
-
- */

@@ -2,7 +2,7 @@ const { Storage } = require("@google-cloud/storage");
 const path = require("path");
 
 const storage = new Storage({
-    keyFilename: path.join(__dirname, '../avid-battery-339118-75042e644d3f.json')
+    keyFilename: path.join(__dirname, '../../steam-treat-347709-462a24be0c62.json')
 });
 
 module.exports = storage

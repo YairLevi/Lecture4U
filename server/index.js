@@ -12,6 +12,7 @@ mongoose.connect(process.env.URL)
 
 const authRouter = require('./routes/auth')
 const courseRouter = require('./routes/course')
+const speechRouter = require('./routes/speech')
 
 const PORT = 8000
 const HOST = 'localhost'
@@ -23,14 +24,15 @@ app.use(cors({ origin: process.env.CLIENT, credentials: true, }))
 app.use(cookieParser())
 app.use(express.json())
 app.use('/', authRouter)
+app.use('/speech', speechRouter)
 app.use('/course', courseRouter)
 app.use(express.static(__dirname + '/static'));
 
-const { Storage } = require('@google-cloud/storage');
-
-const storage = new Storage({
-    keyFilename: path.join(__dirname, 'avid-battery-339118-75042e644d3f.json')
-});
+// const { Storage } = require('@google-cloud/storage');
+//
+// const storage = new Storage({
+//     keyFilename: path.join(__dirname, 'avid-battery-339118-75042e644d3f.json')
+// });
 
 const bucketName = 'lecture4u-1';
 
