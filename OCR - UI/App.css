@@ -37,6 +37,10 @@
   }
 }
 
+.body{
+  background-color: #f7f7f7;
+}
+
 .button {
   color: #343333;
   background-color: #b0d4de;
@@ -44,7 +48,7 @@
 }
 
 .card {
-  background-color: #f3f3f3;
+  background-color: #f7f7f7;
 }
 
 .image-card {
