@@ -60,7 +60,7 @@ def write_evaluation(text_data, evaluation, lines_eval, words_eval, streams_eval
     eval_file.write("evaluation of words (compared to the words in the original text) = " + word_eval + "\n")
     stream_eval = str(round(sum(streams_eval) / len(streams_eval), 8))
     eval_file.write("evaluation of chars' stream in order (compared to original text) = " + stream_eval + "\n")
-    total_eval = str(round(sum(values) / sum(lens), 8))  # str(round(sum(values) / len(values), 8))
+    total_eval = str(round(sum(values) / sum(lens), 8))
     eval_file.write("total evaluation = " + total_eval)
     eval_file.close()
     return total_eval
@@ -89,6 +89,6 @@ def evaluate(text, evaluation, input_file):
         lines_eval.append(evaluate_line(u_data, t_data, u_len, t_len))
         words_eval.append(evaluate_words(u_data, t_data, u_len, t_len))
         streams_eval.append(evaluate_stream(user_data, text_data))
-        values.append(max_len * (lines_eval[-1] * words_eval[-1] * (streams_eval[-1]) ** 4) ** (1. / 6))
+        values.append(max_len * (lines_eval[-1] + 2 * words_eval[-1] + 5 * streams_eval[-1]) / 8)
         idx += 1
     return write_evaluation(''.join(data).rstrip(), evaluation, lines_eval, words_eval, streams_eval, values, lens)
