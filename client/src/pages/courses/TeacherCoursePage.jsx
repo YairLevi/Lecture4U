@@ -10,9 +10,8 @@ import { useRefresh } from "../../hooks/useRefresh";
 
 
 function getCourseID(location) {
-    const path = location.pathname
-    const arr = path.split('/')
-    return arr[arr.length - 1]
+    const params = requests.parseParams(location)
+    return params.courseId
 }
 
 export default function TeacherCoursePage() {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navbar as Bar, Button, Form } from "react-bootstrap";
+import { Navbar as Bar, Button, Form, Nav } from "react-bootstrap";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import UserAvatar from "./Avatar";
@@ -17,15 +17,29 @@ function SideButton({ onClick, breakpoint }) {
     )
 }
 
-export default function MainNavbar({ openSidebar, isSticky }) {
+export default function MainNavbar({ openSidebar, isSticky, children }) {
     return (
         <Bar className={"p-3"} bg={"white"} expand="xl" sticky={isSticky}>
             <SideButton breakpoint={'lg'} onClick={openSidebar}/>
             <Bar.Brand href="/">
-                <h4>
-                    Lecture4U
-                </h4>
+                <h4>Lecture4U</h4>
             </Bar.Brand>
+            {/*<Nav variant="pills">*/}
+            {/*    <Nav.Item>*/}
+            {/*        <Nav.Link href="/home">Active</Nav.Link>*/}
+            {/*    </Nav.Item>*/}
+            {/*    <Nav.Item>*/}
+            {/*        <Nav.Link eventKey="link-1">Option 2</Nav.Link>*/}
+            {/*    </Nav.Item>*/}
+            {/*    <Nav.Item>*/}
+            {/*        <Nav.Link eventKey="disabled" disabled>*/}
+            {/*            Disabled*/}
+            {/*        </Nav.Link>*/}
+            {/*    </Nav.Item>*/}
+            {/*</Nav>*/}
+            <Nav variant={'pills'}>
+                {children}
+            </Nav>
         </Bar>
     )
 }

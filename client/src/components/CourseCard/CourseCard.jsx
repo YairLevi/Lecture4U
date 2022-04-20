@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, Container } from 'react-bootstrap'
 import './CourseCard.scss'
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router"
 
 
 export default function CourseCard({ image, width, name, teacher, description, id }) {
@@ -15,7 +15,7 @@ export default function CourseCard({ image, width, name, teacher, description, i
 
     function handleClick() {
         const route = isStudent() ? 'student' : 'teacher'
-        navigate(`/main/courses/${route}/${id}`)
+        navigate(`/main/courses/${route}/material?courseId=${id}`)
     }
 
     return (

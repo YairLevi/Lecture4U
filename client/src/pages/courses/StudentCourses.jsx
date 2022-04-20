@@ -29,7 +29,7 @@ export default function StudentCourses() {
             <Spinner className={'m-3'} animation="border"/>
         </Container>
     ) : (
-        <Container fluid className={'vh-100 p-3'}>
+        <Container fluid className={'h-100 w-100 bg-primary p-3'}>
             <Container>
                 <InputGroup className="mb-5">
                     <FormControl placeholder="Search for a course..." onChange={e => setSearchValue(e.target.value)}/>

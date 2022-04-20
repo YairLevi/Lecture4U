@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from "../../components/Sidebar/Sidebar";
-import { Button, Container, Row, Col } from 'react-bootstrap'
+import { Button, Container, Row, Col, Nav } from 'react-bootstrap'
 import Navbar from "../../components/Navbar";
 import '../../components/CourseCard/CourseCard'
 import image1 from '../../assets/default-course-img-2.PNG'
@@ -10,40 +10,21 @@ import StudentCourses from "../courses/StudentCourses";
 import Player from "../video-player/VideoPlayer";
 import { Route, Routes } from 'react-router-dom'
 import TeacherCourses from "../courses/TeacherCourses";
-import NavProvider from "../../components/NavContext";
 import StudentCoursePage from "../courses/StudentCoursePage";
 import TeacherCoursePage from "../courses/TeacherCoursePage";
 import SpeechToTest from "../speechToText/SpeechToText";
+import Course from "../Course";
+import { useRefresh } from "../../hooks/useRefresh";
 
 
-function PlaceholderPage() {
-    return (
-        <Container fluid className={'p-5'}>
-            <h1>This is a placeholder page. Hello!</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>|</h1>
-            <h1>Text</h1>
-        </Container>
-    )
-}
-
+import { useCourse } from "../../components/CourseContext";
+import { courseTabs } from "../Course";
+import Calendar from "../Calendar/Calendar";
 
 export default function Main() {
     const [open, setOpen] = useState(false)
     const [sticky, setSticky] = useState('top')
+    const { course } = useCourse()
 
     const openSidebar = () => {
         setOpen(true)
@@ -55,29 +36,36 @@ export default function Main() {
         setSticky('top')
     }
 
-    const title = 'This is the title'
-    const author = "I'm the author"
-    const text = 'Hello everyone! This is Me, typing some shit right here'
-
     return (
-        <NavProvider>
-            <div className={'d-flex vh-100'}>
-                <Sidebar closeSidebar={() => closeSidebar()} open={open}/>
-                <Container fluid className={'p-0 h-100 overflow-auto'}>
-                    <MainNavbar openSidebar={() => openSidebar()} isSticky={sticky}/>
+        <div className={'d-flex vh-100'}>
+            <Sidebar closeSidebar={() => closeSidebar()} open={open}/>
+            <Container fluid className={'d-flex fluid flex-column p-0 vh-100'}>
+                <MainNavbar openSidebar={() => openSidebar()} isSticky={false}>
+                    {
+                        course && courseTabs.map((value, index) => {
+                            return (
+                                <Nav.Item key={index}>
+                                    <Nav.Link href={''}>{value}</Nav.Link>
+                                </Nav.Item>
+                            )
+                        })
+                    }
+                </MainNavbar>
+                <Container fluid className={'h-100 overflow-auto'}>
                     <Routes>
                         {/*<PlaceholderPage/>*/}
 
                         <Route path={'/courses/student'} element={<StudentCourses/>}/>
                         {/*<Route path={'/courses'} element={<StudentCourses/>}/>*/}
                         <Route path={'/courses/teacher'} element={<TeacherCourses/>}/>
-                        <Route path={'/courses/student/*'} element={<StudentCoursePage/>}/>
+                        <Route path={'/courses/student/*'} element={<Course/>}/>
                         <Route path={'/courses/teacher/*'} element={<TeacherCoursePage/>}/>
                         <Route path={'/speech'} element={<SpeechToTest/>}/>
+                        <Route path={'/calendar'} element={<Calendar/>}/>
                         {/*<Player/>*/}
                     </Routes>
                 </Container>
-            </div>
-        </NavProvider>
+            </Container>
+        </div>
     )
 }

@@ -6,20 +6,24 @@ import { useLocation } from "react-router";
 import requests from "../../helpers/requests";
 import AddUnit from "../../modals/AddUnit";
 
+import { useCourse } from "../../components/CourseContext";
+
 
 function getCourseID(location) {
-    const path = location.pathname
-    const arr = path.split('/')
-    return arr[arr.length - 1]
+    const params = requests.parseParams(location)
+    return params.courseId
 }
 
 export default function StudentCoursePage(props) {
     const [showAddUnit, setShowAddUnit] = useState(false)
     const [data, setData] = useState(null)
     const location = useLocation()
+    const { updateCourse } = useCourse()
+
 
     useEffect(async () => {
         const id = getCourseID(location)
+        updateCourse(id)
         const res = await requests.get('/course/data', { code: id })
         if (res.status !== 200) {
             // error. put some error screen here.
@@ -29,8 +33,7 @@ export default function StudentCoursePage(props) {
         }
     }, [])
 
-    return !data ?
-        (
+    return !data ? (
             <Container className={'d-flex justify-content-center align-items-center'}>
                 <Spinner className={'m-3'} animation="border"/>
             </Container>

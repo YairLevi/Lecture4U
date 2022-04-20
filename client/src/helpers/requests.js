@@ -34,4 +34,16 @@ export default class requests {
         }
         return await fetch(url, options)
     }
+
+    static parseParams(location) {
+        const obj = {}
+        const params = location.search.replace('?', '')
+        const pairs = params.split('&')
+        for (const pair of pairs) {
+            if (!pair) continue
+            const keyValue = pair.split('=')
+            obj[keyValue[0]] = keyValue[1]
+        }
+        return obj
+    }
 }
