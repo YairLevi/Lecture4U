@@ -17,7 +17,7 @@ $breakpoint-xl: 1200px !default;
 
  */
 
-$sidebar-width: 380px;
+$sidebar-width: 300px;
 $hover-color: rgba(220, 220, 220, 0.3);
 $background-color: #ffffff;
 $sidebar-bg-color: $background-color;
@@ -29,8 +29,9 @@ $title-color: #808080FF;
 
 .pro-inner-item {
   border-radius: 1rem;
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+  padding-left: 0.8rem !important;
 }
 
 .pro-inner-list-item {
@@ -45,16 +46,9 @@ $title-color: #808080FF;
   background-color: lightgray;
 }
 
-.title {
+.title1 {
   color: $title-color;
+  user-select: none;
+  pointer-events: none;
 }
-
-.title:hover .pro-item-content {
-  color: $title-color;
-}
-
-.title:hover > .pro-inner-item {
-  background-color: transparent;
-}
-
 

@@ -8,11 +8,12 @@ import './Sidebar.scss'
 import Menu from './Menu'
 import InnerMenu from "./InnerMenu";
 import Item, { Icon } from './Item'
-import { useNav } from "../NavContext";
 import { useNavigate } from "react-router";
-import { Button, FormControl, InputGroup } from "react-bootstrap";
+import { Button, FormControl, InputGroup, Nav } from "react-bootstrap";
 import AddCourse from "../../modals/AddCourse";
 import NewCourse from "../../modals/NewCourse";
+
+import { useCourse } from "../CourseContext";
 
 
 export default function Sidebar({ closeSidebar, open }) {
@@ -20,6 +21,7 @@ export default function Sidebar({ closeSidebar, open }) {
     const { logout } = useAuth()
     const [modalShow, setModalShow] = useState(false)
     const [addCourseShow, setAddCourseShow] = useState(false)
+    const { course } = useCourse()
 
     return (
         <>
@@ -32,6 +34,23 @@ export default function Sidebar({ closeSidebar, open }) {
                     <UserAvatar name={'John Doe'} email={'johndoe@gmail.com'}/>
                 </SidebarHeader>
                 <SidebarContent>
+                    {
+                        course && <SidebarHeader>
+                            <Menu title={'Course Navigation'}>
+                                {
+                                    ['Material', 'Forum', 'Assignments'].map((value, index) => {
+                                        return (
+                                            <Item key={index} onClick={() => {
+                                                navigate(`/main/courses/student/${value.toLowerCase()}?courseId=${course}`)
+                                            }}>
+                                                {value}
+                                            </Item>
+                                        )
+                                    })
+                                }
+                            </Menu>
+                        </SidebarHeader>
+                    }
                     <Menu title={"General"}>
                         <Item>Profile</Item>
                         <Item>Settings</Item>
@@ -43,21 +62,28 @@ export default function Sidebar({ closeSidebar, open }) {
                                 <Item>Course 2</Item>
                             </InnerMenu>
                             <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>
-                            <Item icon={'bi-collection'} onClick={() => navigate('/main/courses/student')}>Show all
-                                courses</Item>
+                            <Item icon={'bi-collection'} onClick={() => navigate('/main/courses/student')}>
+                                Show all courses
+                            </Item>
                         </InnerMenu>
                     </Menu>
                     <Menu title={"Instructor View"}>
                         <InnerMenu title={"My Courses"}>
                             <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>
-                            <Item icon={'bi-collection'} onClick={() => navigate('/main/courses/teacher')}>Show all courses</Item>
+                            <Item icon={'bi-collection'} onClick={() => navigate('/main/courses/teacher')}>
+                                Show all courses
+                            </Item>
                         </InnerMenu>
+                    </Menu>
+                    <Menu title={"Tools"}>
+                        <Item icon={'bi-mic'} onClick={() => navigate('/main/speech')}>Speech To Text</Item>
+                        <Item icon={'bi-calendar-range'} onClick={() => navigate('/main/calendar')}>Calender</Item>
                     </Menu>
                 </SidebarContent>
                 <SidebarFooter>
                     <Menu>
-                        <MenuItem icon={<Icon iconClass={'bi-question-circle'}/>}>Support</MenuItem>
-                        <MenuItem icon={<Icon iconClass={'bi-box-arrow-in-left'}/>} onClick={logout}>Sign Out</MenuItem>
+                        <Item icon={'bi-question-circle'}>Support</Item>
+                        <Item icon={'bi-box-arrow-in-left'} onClick={logout}>Sign Out</Item>
                     </Menu>
                 </SidebarFooter>
             </ProSidebar>
