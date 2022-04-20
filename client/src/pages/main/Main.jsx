@@ -20,11 +20,13 @@ import { useRefresh } from "../../hooks/useRefresh";
 import { useCourse } from "../../components/CourseContext";
 import { courseTabs } from "../Course";
 import Calendar from "../Calendar/Calendar";
+import { useLocation, useNavigate } from "react-router";
 
 export default function Main() {
     const [open, setOpen] = useState(false)
     const [sticky, setSticky] = useState('top')
     const { course } = useCourse()
+    const navigate = useNavigate()
 
     const openSidebar = () => {
         setOpen(true)
@@ -45,7 +47,11 @@ export default function Main() {
                         course && courseTabs.map((value, index) => {
                             return (
                                 <Nav.Item key={index}>
-                                    <Nav.Link href={''}>{value}</Nav.Link>
+                                    <Nav.Link onClick={() => {
+                                        navigate(`/main/courses/student/${value.toLowerCase()}?courseId=${course}`)
+                                    }}>
+                                        {value}
+                                    </Nav.Link>
                                 </Nav.Item>
                             )
                         })

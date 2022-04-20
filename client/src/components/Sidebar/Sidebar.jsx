@@ -34,23 +34,7 @@ export default function Sidebar({ closeSidebar, open }) {
                     <UserAvatar name={'John Doe'} email={'johndoe@gmail.com'}/>
                 </SidebarHeader>
                 <SidebarContent>
-                    {
-                        course && <SidebarHeader>
-                            <Menu title={'Course Navigation'}>
-                                {
-                                    ['Material', 'Forum', 'Assignments'].map((value, index) => {
-                                        return (
-                                            <Item key={index} onClick={() => {
-                                                navigate(`/main/courses/student/${value.toLowerCase()}?courseId=${course}`)
-                                            }}>
-                                                {value}
-                                            </Item>
-                                        )
-                                    })
-                                }
-                            </Menu>
-                        </SidebarHeader>
-                    }
+
                     <Menu title={"General"}>
                         <Item>Profile</Item>
                         <Item>Settings</Item>
