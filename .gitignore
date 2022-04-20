@@ -5,11 +5,10 @@ __pycache__/
 
 # My Ignore
 steam-treat-347709-462a24be0c62.json
-
+testing/
 node_modules/
 .idea/
 package-lock.json
-testing
 
 # C extensions
 *.so
