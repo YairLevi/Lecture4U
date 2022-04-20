@@ -13,6 +13,7 @@ mongoose.connect(process.env.URL)
 const authRouter = require('./routes/auth')
 const courseRouter = require('./routes/course')
 const speechRouter = require('./routes/speech')
+const forumRouter = require('./routes/forum')
 
 const PORT = 8000
 const HOST = 'localhost'
@@ -26,6 +27,7 @@ app.use(express.json())
 app.use('/', authRouter)
 app.use('/speech', speechRouter)
 app.use('/course', courseRouter)
+app.use('/forum', forumRouter)
 app.use(express.static(__dirname + '/static'));
 
 // const { Storage } = require('@google-cloud/storage');

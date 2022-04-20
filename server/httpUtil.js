@@ -36,7 +36,7 @@ module.exports = {
         try {
             const token = req.cookies.jwt
             if (!token) return console.log('token is Null')
-            jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+            jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
                 if (err) return console.log(err.message)
                 id = decodedToken._id
             })

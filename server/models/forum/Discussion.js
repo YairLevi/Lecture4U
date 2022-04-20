@@ -2,9 +2,14 @@ const mongoose = require('mongoose')
 
 
 const discussionSchema = new mongoose.Schema({
-    createdAt: Date,
-    mostRecent: Date,
-    course: [mongoose.SchemaTypes.ObjectId],
+    createdAt: {
+        type: Date,
+        default: () => Date.now()
+    },
+    mostRecent: {
+        type: Date,
+        default: () => Date.now()
+    },
     title: String,
     author: mongoose.SchemaTypes.ObjectId,
     question: String,
