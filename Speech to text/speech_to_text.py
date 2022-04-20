@@ -13,8 +13,8 @@ from gcloud.aio.storage import Storage
 import wave
 import write_to_doc
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'speech_to_text_cloud.json'
-
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '../steam-treat-347709-462a24be0c62.json'
+name_bucket = 'lecture4u-3'
 
 # Write speech to document instead of txt file.
 def create_document(doc_name=None, doc_content=None):
@@ -54,7 +54,7 @@ async def async_upload_to_bucket(bucket_name, destination_blob_name, file_object
 async def main(file_name):
     with io.open(file_name, 'rb') as audio_file:
         content = audio_file.read()
-        url = await async_upload_to_bucket('lecture4u-1', 'speech to text files/transcribed_speech.wav', content)
+        url = await async_upload_to_bucket(name_bucket, 'speech to text files/transcribed_speech.wav', content)
         print(url)
 
 
@@ -151,7 +151,7 @@ def run(source_name, destination_name, my_language):
 
     # upload file to google cloud storage:
     path = 'speech to text files/{}'.format(transcribed_audio_file_name)
-    upload_file_to_bucket('lecture4u-1', transcribed_audio_file_name, path)
+    upload_file_to_bucket(name_bucket, transcribed_audio_file_name, path)
 
     # upload async to google cloud storage :
     # print('Start Async Uploading.')
@@ -160,7 +160,7 @@ def run(source_name, destination_name, my_language):
     # print("Finish Uploading.")
 
     # settings:
-    path = 'gs://lecture4u-1/speech to text files/{}'.format(transcribed_audio_file_name)
+    path = 'gs://'+name_bucket+'/speech to text files/{}'.format(transcribed_audio_file_name)
     f1 = wave.open(transcribed_audio_file_name, "r")
     num_of_channels = int(f1.getnchannels())
     sample_rate = int(f1.getframerate())
