@@ -217,6 +217,7 @@ function SpeechToTest() {
             SetModalSuccess(false)
             SetModalError(true)
             return
+
         } else if (!isUpload) {
             SetModalAlertMessage("Select a file and then click Transcript!")
             ModalHandleShow()
@@ -257,7 +258,7 @@ function SpeechToTest() {
 
 
     return (
-        <div className="App">
+        <div>
 
             {/* alert modal */}
             <Modal

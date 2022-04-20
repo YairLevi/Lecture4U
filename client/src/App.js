@@ -20,18 +20,16 @@ function App() {
             <Spinner animation='grow'/>
         </Container>
     ) : (
-        <Router>
-            <Routes>
-                <Route path={"/"} element={<Home/>}/>
-                <Route element={<PublicRoute/>}>
-                    <Route path={"/sign-up"} element={<SignUp/>}/>
-                    <Route path={"/sign-in"} element={<SignIn/>}/>
-                </Route>
-                <Route element={<PrivateRoute/>}>
-                    <Route path={"/main/*"} element={<Main/>}/>
-                </Route>
-            </Routes>
-        </Router>
+        <Routes>
+            <Route path={"/"} element={<Home/>}/>
+            <Route element={<PublicRoute/>}>
+                <Route path={"/sign-up"} element={<SignUp/>}/>
+                <Route path={"/sign-in"} element={<SignIn/>}/>
+            </Route>
+            <Route element={<PrivateRoute/>}>
+                <Route path={"/main/*"} element={<Main/>}/>
+            </Route>
+        </Routes>
     );
 }
 
