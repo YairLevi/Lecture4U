@@ -161,10 +161,10 @@ function App() {
         </Navbar>
         <Card sx={{maxWidth: 345}}>
             <CardHeader title="Run Demo" />
+            Calibrate the system to your handwriting - upload an image through the 'Upload' button above.<br/>
+            Then, press the buttons to upload your sample txt, to check the image's identification and run it!
             <ButtonGroup aria-label="Basic example">
-                For calibrating the system to your handwriting style, upload an image through the 'Upload' button above.<br/>
-                Then, press on the button on the right and get your handwriting recognition and the recognition's accuracy.
-                <br/><p>&emsp;</p><Button className="button" onClick={handleClickT}>Choose Text File With The Content</Button>
+                <Button className="button" onClick={handleClickT}>Choose Text File With The Content</Button>
                 <input type="file" ref={hiddenFileInputTranscript} multiple={false}
                        accept={".txt"} onChange={UploadTxtHandleChange} style={{display:'none'}}/>
                 <br/><p>&emsp;</p><Button className="button"  onClick={GetColImage}>Check Detection</Button>
