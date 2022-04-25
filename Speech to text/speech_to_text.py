@@ -13,8 +13,9 @@ from gcloud.aio.storage import Storage
 import wave
 import write_to_doc
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '../steam-treat-347709-462a24be0c62.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'steam-treat-347709-a75748e8fbdc.json'
 name_bucket = 'lecture4u-3'
+
 
 # Write speech to document instead of txt file.
 def create_document(doc_name=None, doc_content=None):
@@ -58,35 +59,56 @@ async def main(file_name):
         print(url)
 
 
-# key_words = ['new', 'topic', 'end']
-def search_word(key_words, my_word_list, my_timestamps):
-    topic_name = []
-    topic_content = []
-    topic_timestamp = []
-    topic_indexes = []
-    start_words = []
-    end_words = []
+def check_for_keyword_variations(target_word, word_variations):
+    for word_variation in word_variations:
+        if target_word == word_variation:
+            return True
+    return False
 
-    # find the index of each topic:
-    for word_index in range(0, len(my_word_list) - 1):
-        if my_word_list[word_index] == key_words[0] and my_word_list[word_index + 1] == key_words[1]:
-            start_words.append(word_index + 1)
-        elif my_word_list[word_index] == key_words[2]:
-            end_words.append(word_index)
 
-    for start_index in start_words:
-        for end_index in end_words:
-            if end_index > start_index:
-                topic_indexes.append((start_index, end_index))
-                topic_name.append(my_word_list[start_index + 1: end_index])
-                break
+# key_words for english: ['new', 'topic', 'end', 'topic']
+# key_words for hebrew: my_keywords = ['נושא', 'סוף', 'חדש', 'נושא']
+def search_word(key_words, my_word_list, my_timestamps, language):
+    topic_name, topic_content, topic_timestamp, topic_indexes = [], [], [], []
+    word_index = 0
+    keyword_variations = []
+    is_hebrew, is_english = False, False
+
+    if language == "Hebrew":
+        is_hebrew = True
+        keyword_variations = ['נושא', 'נוסא', 'נושע', 'נוסע']
+    elif language == "English":
+        is_english = True
+        keyword_variations = ['end', 'and']
+
+    while word_index < (len(my_word_list) - 1):
+        if (is_hebrew and check_for_keyword_variations(my_word_list[word_index], keyword_variations)
+            and my_word_list[word_index + 1] == key_words[1]) or \
+                (is_english and my_word_list[word_index] == key_words[0]
+                 and my_word_list[word_index + 1] == key_words[1]):
+
+            start_index = word_index + 1  # start of the topic.
+
+            for i in range(word_index + 2, len(my_word_list) - 1):
+                if (is_hebrew and my_word_list[i] == key_words[2] and
+                    check_for_keyword_variations(my_word_list[i + 1], keyword_variations)) or \
+                        (is_english and check_for_keyword_variations(my_word_list[i], keyword_variations)
+                         and my_word_list[i + 1] == key_words[3]):
+
+                    end_index = i + 1  # end of the topic.
+                    topic_indexes.append((start_index, end_index))
+                    topic_name.append(my_word_list[start_index + 1: end_index - 1])
+                    word_index = end_index + 1
+                    break
+
+        word_index += 1
 
     for index in range(0, len(topic_indexes) - 1):
         first = topic_indexes[index]
         second = topic_indexes[index + 1]
         topic_content.append(my_word_list[first[1] + 1: second[0] - 1])
         start_time = my_timestamps[first[1] + 1][0]
-        end_time = my_timestamps[second[0] - 1][1]
+        end_time = my_timestamps[second[0] - 2][1]
         topic_timestamp.append((start_time.total_seconds(), end_time.total_seconds()))
 
     # get the last topic content:
@@ -160,7 +182,7 @@ def run(source_name, destination_name, my_language):
     # print("Finish Uploading.")
 
     # settings:
-    path = 'gs://'+name_bucket+'/speech to text files/{}'.format(transcribed_audio_file_name)
+    path = 'gs://' + name_bucket + '/speech to text files/{}'.format(transcribed_audio_file_name)
     f1 = wave.open(transcribed_audio_file_name, "r")
     num_of_channels = int(f1.getnchannels())
     sample_rate = int(f1.getframerate())
@@ -185,11 +207,11 @@ def run(source_name, destination_name, my_language):
 
     my_keywords = []
     if language == "English":
-        my_keywords = ['new', 'topic', 'end']
+        my_keywords = ['new', 'topic', 'end', 'topic']
     elif language == "Hebrew":
-        my_keywords = ['נושא', 'חדש', 'סוף']
+        my_keywords = ['נושא', 'חדש', 'סוף', 'נושא']
 
-    topics_names, topics_content, topics_timestamps = search_word(my_keywords, word_list, timestamps)
+    topics_names, topics_content, topics_timestamps = search_word(my_keywords, word_list, timestamps, language)
     print(topics_names)
     print(topics_content)
     print(topics_timestamps)
@@ -198,6 +220,6 @@ def run(source_name, destination_name, my_language):
     my_course_name = "My Course"
     write_to_doc.write("Lecture 1", my_university_name, my_course_name, language, topics_names,
                        topics_content,
-                       topics_timestamps)
+                       topics_timestamps, word_list)
 
     return transcribe_confidence

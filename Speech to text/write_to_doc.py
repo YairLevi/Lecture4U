@@ -1,10 +1,14 @@
 from docx import Document
 from datetime import date
-from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
-def write(document_name, university_name, course_name, language, topics_names, topics_content, topics_timestamps):
+def write(document_name, university_name, course_name, language, topics_names, topics_content, topics_timestamps,
+          word_list):
+    is_empty = False
+    if not topics_names and not topics_content and not topics_timestamps:
+        is_empty = True
+
     is_hebrew = False
     if language == "Hebrew":
         is_hebrew = True
@@ -50,12 +54,16 @@ def write(document_name, university_name, course_name, language, topics_names, t
             h.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
             p.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
 
+    # can't divide the given topics according to timestamps, so just write the text in single paragraph:
+    if is_empty:
+        text = ""
+        for word in word_list:
+            text += word + " "
+
+        p = document.add_paragraph(text)
+        for run in p.runs:
+            run.font.name = 'Arial'
+        if is_hebrew:
+            p.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+
     document.save('{}.docx'.format(document_name))
-
-
-# my_university_name = "Bar Ilan University"
-# my_course_name = "My Course"
-#
-# write("הרצאה ראשונה", my_university_name, my_course_name, "Hebrew", [['נושא', 'ראשון'], ['נושא', 'שני']],
-#       [['שלום', 'קוראים', 'לי', 'טל'], ['אני', 'אוהב', 'כדורגל']],
-#       [(5, 11.4), (11.4, 17.8)])
