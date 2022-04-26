@@ -29,8 +29,6 @@ import {Alert, AlertTitle} from "@mui/lab";
 // https://github.com/JamesBrill/react-speech-recognition#readme
 // https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
 // https://github.com/devias-io/material-kit-react
-import useInterval from '../../hooks/useInterval'
-
 // for Course recommendation system:
 // https://mui.com/components/bottom-navigation/
 
