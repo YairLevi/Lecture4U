@@ -46,4 +46,12 @@ export default class requests {
         }
         return obj
     }
+
+    static createParams(keyValuePairs) {
+        let search = '?'
+        Object.keys(keyValuePairs).forEach(key => {
+            search += `${key}=${keyValuePairs[key]}&`
+        })
+        return search
+    }
 }
