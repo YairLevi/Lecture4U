@@ -3,7 +3,7 @@ import { Card } from 'react-bootstrap'
 
 export default function ForumSubject({ title, author, content, createdAt }) {
     return (
-        <Card>
+        <Card className={'mb-3'}>
             <Card.Body>
                 <Card.Text as={'h1'}>
                     {title}

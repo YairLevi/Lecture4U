@@ -16,7 +16,7 @@ function App() {
     const { isLoggedIn } = useAuth()
 
     return isLoggedIn === null ? (
-        <Container className={'d-flex justify-content-center align-items-center'}>
+        <Container className={'d-flex vh-100 justify-content-center align-items-center'}>
             <Spinner animation='grow'/>
         </Container>
     ) : (

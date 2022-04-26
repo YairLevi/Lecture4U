@@ -25,7 +25,7 @@ router.post('/discussion', async (req, res) => {
 
         discussionIDs.push(newDiscussion)
         await course.save()
-        res.sendStatus(200)
+        res.status(200).json(newDiscussion)
 
     } catch (e) {
         console.log(`at creating new discussion:\n${e.message}`)

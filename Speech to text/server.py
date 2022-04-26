@@ -70,14 +70,6 @@ def update_repository():
           .format(message_for_course, message_for_group, course_name, group_name))
     return "****** update_repository Successfully ******"
 
-
-@app.route("/download", methods=["GET"])
-@cross_origin()
-def download():
-    print("Get request in order to download the file")
-    return "****** Send Transcribed File Successfully ******"
-
-
 # @app.after_request
 # def after_request(response):
 #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
@@ -87,4 +79,4 @@ def download():
 
 
 if __name__ == "__main__":
-    app.run(host='localhost', port=5000, debug=True)
+    app.run(host='localhost', port=5001, debug=True)

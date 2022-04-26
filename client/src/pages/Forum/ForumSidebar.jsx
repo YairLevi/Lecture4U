@@ -6,6 +6,7 @@ import NewDiscussion from "../../modals/NewDiscussion";
 import { useState } from "react";
 import requests from "../../helpers/requests";
 import { useCourse } from "../../components/CourseContext";
+import { useLocation } from "react-router-dom";
 
 
 function getStringDate(d) {
@@ -16,41 +17,27 @@ function getStringDate(d) {
     return `${month}/${day}/${year}`
 }
 
-export default function ForumSidebar({ setCurrentDiscussion }) {
+export default function ForumSidebar({ setCurrentDiscussion, discussions, addDiscussion }) {
     const [openNewDiscussion, setOpenNewDiscussion] = useState(false)
-    const [discussions, setDiscussions] = useState(null)
-    const { course } = useCourse()
+    const [searchValue, setSearchValue] = useState('')
 
-    useEffect(() => {
-        async function fetchData() {
-            const res = await requests.get('/forum/data', { courseId: course })
-            const data = await res.json()
-            setDiscussions(data)
-        }
-
-        fetchData()
-    }, [])
 
     return (
         <>
             <Container className={'d-flex flex-column h-100'} style={{
                 width: '500px'
             }}>
-                <ForumTopBar onClick={() => setOpenNewDiscussion(true)}/>
+                <ForumTopBar onClick={() => setOpenNewDiscussion(true)} onChange={e => setSearchValue(e.target.value)}/>
                 <Container fluid className={'h-100 overflow-auto p-0 me-2'}>
                     {
-                        !discussions
-                            ?
-                            <Container className={'d-flex justify-content-center align-items-center'}>
-                                <Spinner className={'m-3'} animation="border"/>
-                            </Container>
-                            :
-                            discussions.map((value, index) => {
+                            discussions && discussions.slice(0).reverse().map((value, index) => {
+                                const condition = value.title.includes(searchValue) || value.question.includes(searchValue)
+                                if (!condition) return
                                 const createdAt = getStringDate(value.createdAt)
                                 const mostRecent = getStringDate(value.mostRecent)
                                 return <ForumTab key={index}
                                                  value={{
-                                                     id: value._id,
+                                                     _id: value._id,
                                                      author: value.author,
                                                      createdAt: createdAt,
                                                      mostRecent: mostRecent,
@@ -64,7 +51,7 @@ export default function ForumSidebar({ setCurrentDiscussion }) {
                 </Container>
             </Container>
 
-            <NewDiscussion centered show={openNewDiscussion} onHide={() => setOpenNewDiscussion(false)}/>
+            <NewDiscussion centered show={openNewDiscussion} onHide={() => setOpenNewDiscussion(false)} addDiscussion={addDiscussion}/>
         </>
     )
 }
