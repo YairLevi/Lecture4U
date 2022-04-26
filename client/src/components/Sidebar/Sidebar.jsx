@@ -51,7 +51,7 @@ export default function Sidebar({ closeSidebar, open }) {
                             </Item>
                         </InnerMenu>
                     </Menu>
-                    <Menu title={"Instructor View"}>
+                    <Menu title={"Teacher View"}>
                         <InnerMenu title={"My Courses"}>
                             <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>
                             <Item icon={'bi-collection'} onClick={() => navigate('/main/courses/teacher')}>
