@@ -37,9 +37,7 @@ userSchema.statics.isTaken = function (email) {
 userSchema.statics.login = async function (email, password) {
     try {
         const user = await this.findOne({ email })
-        console.log(`user: ${user}`)
         const auth = await bcrypt.compare(password, user.password)
-        console.log(`auth: ${auth}`)
         if (!auth) return null
         return user
     } catch (e) {
