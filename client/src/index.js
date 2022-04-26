@@ -4,17 +4,17 @@ import App from './App';
 import AuthProvider from "./components/AuthContext";
 import CourseProvider from "./components/CourseContext";
 import { BrowserRouter } from 'react-router-dom'
-
+import NavProvider from "./hooks/NavContext";
 
 
 ReactDOM.render(
     <BrowserRouter>
-        <AuthProvider>
-            <CourseProvider>
-                <App/>
-            </CourseProvider>
-        </AuthProvider>
+        <NavProvider>
+            <AuthProvider>
+                <CourseProvider>
+                    <App/>
+                </CourseProvider>
+            </AuthProvider>
+        </NavProvider>
     </BrowserRouter>,
-document.getElementById('root')
-)
-;
+    document.getElementById('root'));

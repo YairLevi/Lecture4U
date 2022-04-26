@@ -24,7 +24,7 @@ const RegistrationForm = () => {
     const send = (values) => {
         console.log("send RegistrationForm to server!")
         axios
-            .post('http://localhost:5000/update_repository', values)
+            .post('http://localhost:5001/update_repository', values)
             .then(res => {
                 console.log(res)
             })

@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
-import {DayPilot, DayPilotCalendar, DayPilotNavigator} from '@daypilot/daypilot-lite-react';
+import React, { Component } from 'react';
+import { DayPilot, DayPilotCalendar, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import "./CalendarStyles.scss";
-import {Button, ButtonGroup, Container, Modal, Nav, Navbar} from "react-bootstrap";
-import {TextField, Rating} from "@mui/material";
+import { Button, ButtonGroup, Container, Modal, Nav, Navbar, Spinner } from "react-bootstrap";
+import { TextField, Rating } from "@mui/material";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import axios from "axios";
 import moment from "moment";
 import Select from "react-select";
-import {Alert, AlertTitle} from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
 
 /// https://code.daypilot.org/42221/react-weekly-calendar-tutorial
 /// https://stackoverflow.com/questions/43638938/updating-an-object-with-setstate-in-react
@@ -41,9 +41,21 @@ class Calendar extends Component {
         this.resetForm = this.resetForm.bind(this);
         this.AlertMessageHandleShow = this.AlertMessageHandleShow.bind(this);
         this.AlertMessageHandleClose = this.AlertMessageHandleClose.bind(this);
+        this.getTasks = this.getTasks.bind(this);
+
+        // get start of week
+        let d = new Date(Date.now())
+        const diff = d.getDate() - d.getDay() + (d.getDay() == 0 ? -7 : 0)
+        d = new Date(d.setDate(diff));
+        const year = d.getFullYear()
+        let month = d.getMonth()+1
+        if (month < 10) month = `0${month}`
+        const day = d.getDate()
+        //
 
         this.state = {
-            startDate : "2022-04-26",
+            loading: false,
+            startDate: `${year}-${month}-${day}`,
             viewType: "Week",
             durationBarVisible: false,
             timeRangeSelectedHandling: "Enabled",
@@ -53,7 +65,9 @@ class Calendar extends Component {
                 const modal2 = await DayPilot.Modal.prompt("Your Task Priority (Lowest to highest: 1 - 5)", "1");
 
                 dp.clearSelection();
-                if (!modal.result) { return; }
+                if (!modal.result) {
+                    return;
+                }
                 dp.events.add({
                     start: args.start,
                     end: args.end,
@@ -66,19 +80,21 @@ class Calendar extends Component {
             onEventClick: async args => {
                 const dp = this.calendar;
                 const modal = await DayPilot.Modal.prompt("Update task text:", args.e.text());
-                if (!modal.result) { return; }
+                if (!modal.result) {
+                    return;
+                }
                 const e = args.e;
                 e.data.text = modal.result;
                 dp.events.update(e);
             },
-            ModalData : {
-                isModalOpen : false
+            ModalData: {
+                isModalOpen: false
             },
-            RatingValue : {
-                value : [0]
+            RatingValue: {
+                value: [0]
             },
-            TaskNames : {
-              names: [""]
+            TaskNames: {
+                names: [""]
             },
             TasksTime: [
                 {
@@ -94,24 +110,25 @@ class Calendar extends Component {
             counter: 0,
 
             AlertMessageModal: {
-                isOpen : false,
+                isOpen: false,
                 message: "",
                 header: "",
                 isError: false,
                 isSuccess: false
             }
         };
+        // this.getTasks()
     }
 
     AlertMessageHandleShow() {
-        this.setState({AlertMessageModal: {isOpen: true}})
+        this.setState({ AlertMessageModal: { isOpen: true } })
     }
 
     AlertMessageHandleClose() {
-        this.setState({AlertMessageModal: {isOpen: false}})
+        this.setState({ AlertMessageModal: { isOpen: false } })
     }
 
-    addNewRow(){
+    addNewRow() {
         let cDivs = this.state.customDiv;
         let len = cDivs.length
         let name = 'div' + ++len
@@ -122,15 +139,15 @@ class Calendar extends Component {
             start: new Date(),
             end: new Date()
         })
-        this.setState({customDiv: cDivs })
+        this.setState({ customDiv: cDivs })
     }
 
     ModalHandleShow() {
-        this.setState({ModalData:{isModalOpen: true}});
+        this.setState({ ModalData: { isModalOpen: true } });
     }
 
     ModalHandleClose() {
-        this.setState({ModalData:{isModalOpen: false}});
+        this.setState({ ModalData: { isModalOpen: false } });
     }
 
     getTime(time) {
@@ -141,25 +158,25 @@ class Calendar extends Component {
 
     sendTaskData() {
         let data = []
-        for(let i = 0 ; i < this.state.TasksTime.length;  i++) {
+        for (let i = 0; i < this.state.TasksTime.length; i++) {
             data.push({
-                start : this.getTime(this.state.TasksTime[i].start),
-                end : this.getTime(this.state.TasksTime[i].end),
-                priority :  (6 - this.state.RatingValue.value[i]),
-                task_name : this.state.TaskNames.names[i],
-                start_date : moment(this.state.TasksTime[i].start).set('second', 0).format("YYYY-MM-DDTHH:mm:ss"),
-                end_date : moment(this.state.TasksTime[i].end).set('second', 0).format("YYYY-MM-DDTHH:mm:ss")
+                start: this.getTime(this.state.TasksTime[i].start),
+                end: this.getTime(this.state.TasksTime[i].end),
+                priority: (6 - this.state.RatingValue.value[i]),
+                task_name: this.state.TaskNames.names[i],
+                start_date: moment(this.state.TasksTime[i].start).set('second', 0).format("YYYY-MM-DDTHH:mm:ss"),
+                end_date: moment(this.state.TasksTime[i].end).set('second', 0).format("YYYY-MM-DDTHH:mm:ss")
             })
         }
         for (let i = 0; i < this.state.events.length; i++) {
             let dict = this.state.events[i]
             data.push({
-                start : this.getTime(dict.start),
-                end : this.getTime(dict.end),
-                priority :  (6 - dict.priority),
-                task_name : dict.text,
-                start_date : dict.start,
-                end_date : dict.end
+                start: this.getTime(dict.start),
+                end: this.getTime(dict.end),
+                priority: (6 - dict.priority),
+                task_name: dict.text,
+                start_date: dict.start,
+                end_date: dict.end
             })
         }
         this.ModalHandleClose()
@@ -174,12 +191,12 @@ class Calendar extends Component {
                     counter: (this.state.counter + 1)
                 })
                 let options = res.data
-                let color_list = ["#6aa84f", "#f1c232", "#cc4125", "#0099ff","#999999","#ff944d","#00b3b3"]
+                let color_list = ["#6aa84f", "#f1c232", "#cc4125", "#0099ff", "#999999", "#ff944d", "#00b3b3"]
                 let ScheduleOptions = {}
                 let id = 1
                 let my_counter = this.state.counter
 
-                Object.entries(options).forEach(function([key,value]) {
+                Object.entries(options).forEach(function ([key, value]) {
                     let my_events = []
                     for (let i = 0; i < value.length; i++) {
                         let task_dict = value[i]
@@ -230,10 +247,8 @@ class Calendar extends Component {
     }
 
     saveTasks() {
-        console.log(this.state.UserScheduleOptions)
         axios
-            .post('http://localhost:8000/schedule/save_task_scheduling',
-                this.state.events,
+            .post('http://localhost:8000/schedule/save_task_scheduling', this.state.events,
                 {
                     withCredentials: true
                 })
@@ -252,6 +267,21 @@ class Calendar extends Component {
             .catch(err => console.warn(err));
     }
 
+    getTasks() {
+        this.state.loading = true
+        axios
+            .get('http://localhost:8000/schedule/get_task_scheduling', {
+                withCredentials: true
+            })
+            .then(res => {
+                this.state.loading = false
+                this.setState({
+                    events: res.data
+                })
+            })
+            .catch(err => console.warn(err));
+    }
+
     TasksHandleChange(selectedOption) {
         console.log(`Option selected:`, selectedOption);
         let counter = selectedOption.value[0]['counter']
@@ -263,11 +293,11 @@ class Calendar extends Component {
         // insert the new scheduling option to the event list.
         let buffer1 = this.state.UserScheduleOptions[parseInt(label)]
         let buffer2 = this.state.events
-        for(let j = 0; j < buffer1.length; j++) {
+        for (let j = 0; j < buffer1.length; j++) {
             buffer2.push(buffer1[j])
         }
         this.setState({
-            events : buffer2
+            events: buffer2
         })
 
         console.log(this.state.events)
@@ -284,10 +314,10 @@ class Calendar extends Component {
 
     resetForm() {
         this.setState({
-            RatingValue : {
-                value : [0]
+            RatingValue: {
+                value: [0]
             },
-            TaskNames : {
+            TaskNames: {
                 names: [""]
             },
             TasksTime: [
@@ -300,10 +330,13 @@ class Calendar extends Component {
         })
     }
 
+    componentDidMount() {
+        this.getTasks()
+    }
 
 
     render() {
-        const {...config} = this.state;
+        const { ...config } = this.state;
         return (
             <>
                 <Navbar bg="dark" variant="dark">
@@ -316,7 +349,7 @@ class Calendar extends Component {
                                 <Button variant="outline-light" onClick={this.resetCalendar}>Reset Calendar</Button>
                             </ButtonGroup>
 
-                            <div className="select_style" style={{width: '210px'}}>
+                            <div className="select_style" style={{ width: '210px' }}>
                                 <Select onChange={this.TasksHandleChange} options={this.state.schedulingOptions}
                                         defaultValue={{ label: "Scheduling Options", value: 0 }}/>
                             </div>
@@ -350,11 +383,10 @@ class Calendar extends Component {
                     <Modal.Body>
                         <strong>{this.state.AlertMessageModal.message}</strong>
                     </Modal.Body>
-                    <Modal.Footer style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+                    <Modal.Footer style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <Button variant="secondary" onClick={this.AlertMessageHandleClose}>Close</Button>
                     </Modal.Footer>
                 </Modal>
-
 
 
                 <Modal
@@ -369,12 +401,15 @@ class Calendar extends Component {
                     </Modal.Header>
                     <Modal.Body>
 
-                            {
-                                this.state.customDiv.map((cdiv, i) => (<div className="expense-block" key={cdiv} id="expense-block-`${i}`" data-block={i}>
+                        {
+                            this.state.customDiv.map((cdiv, i) => (
+                                <div className="expense-block" key={cdiv} id="expense-block-`${i}`" data-block={i}>
                                     <br/>
 
-                                    <div style={{display: 'flex',
-                                        flexDirection: 'row'}}>
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'row'
+                                    }}>
                                         <TextField
                                             id="outlined-name"
                                             label="Task Name"
@@ -382,7 +417,7 @@ class Calendar extends Component {
                                             onChange={(event) => {
                                                 let newList = this.state.TaskNames.names
                                                 newList[i] = event.target.value
-                                                this.setState({TaskNames:{names: newList}})
+                                                this.setState({ TaskNames: { names: newList } })
                                             }}
                                         />
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -396,7 +431,7 @@ class Calendar extends Component {
                                                 onChange={(event) => {
                                                     let newList = this.state.TasksTime
                                                     newList[i].start = event
-                                                    this.setState({TasksTime: newList})
+                                                    this.setState({ TasksTime: newList })
                                                 }}
                                                 renderInput={(params) => <TextField {...params} />}/>
                                         </LocalizationProvider>
@@ -411,7 +446,7 @@ class Calendar extends Component {
                                                 onChange={(event) => {
                                                     let newList = this.state.TasksTime
                                                     newList[i].end = event
-                                                    this.setState({TasksTime: newList})
+                                                    this.setState({ TasksTime: newList })
                                                 }}
                                                 renderInput={(params) => <TextField {...params} />}/>
                                         </LocalizationProvider>
@@ -424,26 +459,26 @@ class Calendar extends Component {
                                             onChange={(event, newValue) => {
                                                 let newList = this.state.RatingValue.value
                                                 newList[i] = newValue
-                                                this.setState({RatingValue:{value: newList}})
+                                                this.setState({ RatingValue: { value: newList } })
                                             }}
                                         />
                                     </div>
 
                                 </div>))
-                            }
+                        }
                         <br/>
 
-                        <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <Button variant="secondary" onClick={this.addNewRow}>Add Task</Button>
                         </div>
                         <br/>
-                        <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <Button variant="secondary" onClick={this.resetForm}>Reset</Button>
                         </div>
 
                     </Modal.Body>
-                    <Modal.Footer style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
-                            <Button variant="success" onClick={this.sendTaskData}>Approve</Button>
+                    <Modal.Footer style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <Button variant="success" onClick={this.sendTaskData}>Approve</Button>
                     </Modal.Footer>
                 </Modal>
 
@@ -455,7 +490,7 @@ class Calendar extends Component {
                             skipMonths={2}
                             startDate={this.state.startDate}
                             selectionDay={this.state.startDate}
-                            onTimeRangeSelected={ args => {
+                            onTimeRangeSelected={args => {
                                 this.setState({
                                     startDate: args.day
                                 });
@@ -472,6 +507,11 @@ class Calendar extends Component {
                     </div>
                 </div>
 
+                {
+                    this.state.loading && <Container className={'d-flex justify-content-center align-items-center'}>
+                        <Spinner className={'m-3'} animation="border"/>
+                    </Container>
+                }
 
             </>
         );

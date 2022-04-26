@@ -31,9 +31,6 @@ export default function SignIn(props) {
                                           onChange={(e) => setPassword(e.target.value)}
                                           required/>
                         </Form.Group>
-                        <div key={'box'}>
-                            <Form.Check id={"box"} className={"mb-3"} type={"checkbox"} label={"Remember Me"}/>
-                        </div>
                         <div className={'d-flex'}>
                             <Button className={"d-flex align-self-md-center"} type={"submit"} onClick={handleClick}>Submit</Button>
                             <NavLink className={'ms-auto pe-0'} href={"/sign-up"}>Register Here</NavLink>

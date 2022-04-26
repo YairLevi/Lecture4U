@@ -24,11 +24,12 @@ import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognitio
 import MicIcon from '@mui/icons-material/Mic';
 import axios from "axios";
 import {Alert, AlertTitle} from "@mui/lab";
+
 // https://blog.logrocket.com/using-the-react-speech-recognition-hook-for-voice-assistance/
 // https://github.com/JamesBrill/react-speech-recognition#readme
 // https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
 // https://github.com/devias-io/material-kit-react
-
+import useInterval from '../../hooks/useInterval'
 
 // for Course recommendation system:
 // https://mui.com/components/bottom-navigation/
@@ -74,13 +75,15 @@ function SpeechToTest() {
     const [isUpload, setIsUpload] = useState(false);
     const ModalHandleClose = () => ModalSetShow(false);
     const ModalHandleShow = () => ModalSetShow(true);
+    const [downloadReady, setDownloadReady] = useState(true)
+
     let alert_message = ""
 
 
     // for display transcribe score:
     const displayTranscribeScore = () => {
         axios
-            .get('http://localhost:5000/transcribe_score')
+            .get('http://localhost:5001/transcribe_score')
             .then(res => {
                 setTranscribe_score(parseFloat(res.data['transcribe_score']).toFixed(3))
             })
@@ -94,6 +97,7 @@ function SpeechToTest() {
     const [progress, setProgress] = React.useState(0);
     const [isTranscribe, setTranscribe] = React.useState(false);
     const [transcribe_score, setTranscribe_score] = React.useState(0);
+
 
     React.useEffect(() => {
         if (!isTranscribe) { return }
@@ -111,7 +115,6 @@ function SpeechToTest() {
             clearInterval(timer);
         };
     }, [isTranscribe]);
-
 
     // React Mic:
     const { transcript, resetTranscript } = useSpeechRecognition();
@@ -183,7 +186,7 @@ function SpeechToTest() {
         form.append('file', fileUploaded)
 
         axios
-            .post('http://localhost:5000/upload', form)
+            .post('http://localhost:5001/upload', form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
                     file_duration = (res.data['duration'] * 100)
@@ -226,9 +229,10 @@ function SpeechToTest() {
             return
         }
 
-        let url = 'http://localhost:5000/transcribe?language=' + speech_language
+        let url = 'http://localhost:5001/transcribe?language=' + speech_language
         setTranscribe_score(0)
         setTranscribe(true)
+        setDownloadReady(false)
         axios
             .get(url,{
                 responseType: 'arraybuffer',
@@ -237,6 +241,7 @@ function SpeechToTest() {
                 }
             })
             .then(res => {
+                setDownloadReady(true)
                 const url = window.URL.createObjectURL(new Blob([res.data]));
                 const link = document.createElement('a');
                 link.href = url;
@@ -248,17 +253,9 @@ function SpeechToTest() {
             .catch(err => console.warn(err));
     };
 
-    // Download Button func
-    const DownloadHandleChange = () => {
-        axios
-            .get('http://localhost:5000/download')
-            .then(res => console.log(res))
-            .catch(err => console.warn(err));
-    };
-
 
     return (
-        <div>
+        <div className={'App'}>
 
             {/* alert modal */}
             <Modal
@@ -305,8 +302,7 @@ function SpeechToTest() {
                                    style={{display:'none'}}
                             />
 
-                            <Button variant="outline-light" onClick={DownloadHandleChange}>Download</Button>
-                            <Button variant="outline-light" onClick={TranscribeHandleChange}>Transcribe</Button>
+                            <Button variant="outline-light" onClick={TranscribeHandleChange}>Transcribe & Download</Button>
                             {/*<FileUploader button_name ={"Upload"} button_func={UploadHandleChange}/>*/}
                             {/*<FileUploader button_name ={"Transcribe"} button_func={TranscribeHandleChange}/>*/}
                             {/*<Button variant="outline-light">Transcribe</Button>*/}
