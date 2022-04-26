@@ -43,7 +43,7 @@ class Calendar extends Component {
         this.AlertMessageHandleClose = this.AlertMessageHandleClose.bind(this);
 
         this.state = {
-            startDate : "2022-04-10",
+            startDate : "2022-04-26",
             viewType: "Week",
             durationBarVisible: false,
             timeRangeSelectedHandling: "Enabled",
@@ -230,8 +230,13 @@ class Calendar extends Component {
     }
 
     saveTasks() {
+        console.log(this.state.UserScheduleOptions)
         axios
-            .post('http://localhost:5000/save_task_scheduling', this.state.UserScheduleOptions)
+            .post('http://localhost:8000/schedule/save_task_scheduling',
+                this.state.events,
+                {
+                    withCredentials: true
+                })
             .then(res => {
                 this.setState(({
                     AlertMessageModal: {
