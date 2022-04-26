@@ -41,9 +41,10 @@ class Calendar extends Component {
         this.resetForm = this.resetForm.bind(this);
         this.AlertMessageHandleShow = this.AlertMessageHandleShow.bind(this);
         this.AlertMessageHandleClose = this.AlertMessageHandleClose.bind(this);
+        this.getTasks = this.getTasks.bind(this);
 
         this.state = {
-            startDate : "2022-04-10",
+            startDate : "2022-04-26",
             viewType: "Week",
             durationBarVisible: false,
             timeRangeSelectedHandling: "Enabled",
@@ -101,6 +102,7 @@ class Calendar extends Component {
                 isSuccess: false
             }
         };
+        this.getTasks()
     }
 
     AlertMessageHandleShow() {
@@ -231,7 +233,10 @@ class Calendar extends Component {
 
     saveTasks() {
         axios
-            .post('http://localhost:5000/save_task_scheduling', this.state.UserScheduleOptions)
+            .post('http://localhost:8000/schedule/save_task_scheduling', this.state.events,
+                {
+                    withCredentials: true
+                })
             .then(res => {
                 this.setState(({
                     AlertMessageModal: {
@@ -243,6 +248,17 @@ class Calendar extends Component {
                         isSuccess: true
                     }
                 }))
+            })
+            .catch(err => console.warn(err));
+    }
+
+    getTasks() {
+        axios
+            .get('http://localhost:8000/schedule/get_task_scheduling')
+            .then(res => {
+                this.setState({
+                    events: res
+                })
             })
             .catch(err => console.warn(err));
     }
