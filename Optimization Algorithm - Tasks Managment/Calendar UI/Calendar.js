@@ -65,6 +65,12 @@ class Calendar extends Component {
                 const dp = this.calendar;
                 const modal = await DayPilot.Modal.prompt("Create a new task:", "Task 1");
                 const modal2 = await DayPilot.Modal.prompt("Your Task Priority (Lowest to highest: 1 - 5)", "1");
+                let model_priority = Number(modal2.result)
+
+                while (model_priority < 1 || model_priority > 5) {
+                    const modal2 = await DayPilot.Modal.prompt("Your Task Priority (Lowest to highest: 1 - 5)", "1");
+                    model_priority = Number(modal2.result)
+                }
 
                 dp.clearSelection();
                 if (!modal.result) {
@@ -75,7 +81,7 @@ class Calendar extends Component {
                     end: args.end,
                     id: DayPilot.guid(),
                     text: modal.result,
-                    priority: Number(modal2.result),
+                    priority: model_priority,
                 });
             },
             eventDeleteHandling: "Update",
@@ -351,7 +357,7 @@ class Calendar extends Component {
     }
 
     componentDidMount() {
-        this.getTasks()
+        //this.getTasks()
     }
 
 
