@@ -13,6 +13,7 @@ import TeacherCourses from "../courses/TeacherCourses";
 import StudentCoursePage from "../courses/StudentCoursePage";
 import TeacherCoursePage from "../courses/TeacherCoursePage";
 import SpeechToTest from "../speechToText/SpeechToText";
+import Ocr from "../ImageRecognition/ocr";
 import Course from "../Course";
 import { useRefresh } from "../../hooks/useRefresh";
 
@@ -68,6 +69,7 @@ export default function Main() {
                         <Route path={'/courses/teacher/*'} element={<TeacherCoursePage/>}/>
                         <Route path={'/speech'} element={<SpeechToTest/>}/>
                         <Route path={'/calendar'} element={<Calendar/>}/>
+                        <Route path={'/ocr'} element={<Ocr />} />
                         {/*<Player/>*/}
                     </Routes>
                 </Container>

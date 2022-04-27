@@ -1,3 +1,5 @@
+import io
+
 from flask import Flask, request, send_file, jsonify, make_response
 from flask_cors import CORS, cross_origin
 import transcription_model
@@ -48,7 +50,20 @@ def transcript():
     txt = "text.txt"
     transcription_model.transcript(False, txt, words_split_const, False)
     os.remove(txt)
-    return send_file('text.docx', as_attachment=True)
+    file_path = 'text.docx'
+
+    return_data = io.BytesIO()
+    with open(file_path, 'rb') as fo:
+        return_data.write(fo.read())
+    # (after writing, cursor will be at last byte, so move it to start)
+    return_data.seek(0)
+
+    os.remove(file_path)
+
+    return send_file(return_data,
+                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                     as_attachment=True,
+                     attachment_filename=file_path)
 
 
 @app.route("/change_focus", methods=["POST"])

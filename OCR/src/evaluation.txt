@@ -1,0 +1,8 @@
+evaluate results
+
+
+*****************************************************************************
+evaluation of words in order (compared to original text) = 1.0
+evaluation of words (compared to the words in the original text) = 1.0
+evaluation of chars' stream in order (compared to original text) = 1.0
+total evaluation = 1.0

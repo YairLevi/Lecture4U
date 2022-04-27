@@ -61,6 +61,7 @@ export default function Sidebar({ closeSidebar, open }) {
                     </Menu>
                     <Menu title={"Tools"}>
                         <Item icon={'bi-mic'} onClick={() => navigate('/main/speech')}>Speech To Text</Item>
+                        <Item icon={'bi-type'} onClick={() => navigate('/main/ocr')}>Image To Text</Item>
                         <Item icon={'bi-calendar-range'} onClick={() => navigate('/main/calendar')}>Calender</Item>
                     </Menu>
                 </SidebarContent>
