@@ -11,7 +11,7 @@ export default function ForumTab({ value, setCurrentDiscussion }) {
     return (
         <Container fluid className={'border-bottom d-flex flex-row tab'} role={'button'} onClick={() => {
             setCurrentDiscussion(value)
-            addParam('forumId', _id)
+            addParam({'fid': _id})
         }}>
             <Container className={'pt-2 col-9'}>
                 <h6 className={'title'}>{title}</h6>

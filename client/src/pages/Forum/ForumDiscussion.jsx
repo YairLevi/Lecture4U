@@ -5,11 +5,13 @@ import ForumComment from "./Forum.discussion/ForumComment";
 import ForumTextbox from "./Forum.discussion/ForumTextbox";
 import requests from "../../helpers/requests";
 import { useRefresh } from "../../hooks/useRefresh";
+import { useSearchParams } from "react-router-dom";
 
 
 export default function ForumDiscussion({ currentDiscussion }) {
     const [comments, setComments] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [searchParams, setSearchParams] = useSearchParams()
 
     async function fetchData() {
         if (!currentDiscussion) return
@@ -21,7 +23,7 @@ export default function ForumDiscussion({ currentDiscussion }) {
         setLoading(false)
     }
 
-    useEffect(() => fetchData(), [currentDiscussion])
+    useEffect(() => fetchData(), [currentDiscussion, searchParams])
 
     return (
         <Container fluid className={'w-100 h-100 overflow-auto border-start'}>

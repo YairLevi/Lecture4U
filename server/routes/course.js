@@ -18,6 +18,7 @@ const Course = require('../models/Course')
 const Unit = require('../models/Unit')
 const Subject = require('../models/Subject')
 const User = require('../models/User')
+const constants = require("constants");
 
 
 
@@ -92,7 +93,20 @@ router.get('/data', async (req, res) => {
     }
 })
 
-
+router.get('/members', async (req, res) => {
+    try {
+        const courseId = req.query.courseId
+        const course = await Course.findById(courseId)
+        const members = await Promise.all(course.students.map(async userId => {
+            const user = await User.findById(userId)
+            return user.firstName + ' ' + user.lastName
+        }))
+        res.status(200).json(members)
+    } catch (e) {
+        console.log('at /members\n' + e.message)
+        res.sendStatus(400)
+    }
+})
 
 
 

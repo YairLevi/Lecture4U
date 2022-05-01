@@ -22,7 +22,8 @@ const courseSchema = new mongoose.Schema({
     image: {
         type: Image.schema,
         immutable: true
-    }
+    },
+    students: [mongoose.SchemaTypes.ObjectId]
 })
 
 courseSchema.methods.getCourseData = async function () {

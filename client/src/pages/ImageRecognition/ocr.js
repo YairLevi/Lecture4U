@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button, ButtonGroup, Container, Card, Nav, Navbar, Modal, Image} from "react-bootstrap"
-import './App.css';
+import './ocr.css';
 import React, {useState} from 'react';
 import {Alert, AlertTitle} from "@mui/material";
 import CardHeader from "@mui/material/CardHeader";

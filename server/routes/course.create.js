@@ -1,15 +1,12 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
-const { Storage } = require('@google-cloud/storage')
 const path = require("path");
 const fs = require('fs')
 const { getQueryParams, getRandomImage, getUserID } = require('../httpUtil')
+const storage = require('../cloud/storage')
 
 const router = express.Router()
-const bucket = 'lecture4u-1'
-const storage = new Storage({
-    keyFilename: path.join(__dirname, '..', 'avid-battery-339118-75042e644d3f.json')
-})
+const bucket = 'lecture4u-3'
 
 const Image = require('../models/Image')
 const Course = require('../models/Course')

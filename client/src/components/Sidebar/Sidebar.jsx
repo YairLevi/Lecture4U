@@ -14,6 +14,8 @@ import AddCourse from "../../modals/AddCourse";
 import NewCourse from "../../modals/NewCourse";
 
 import { useCourse } from "../CourseContext";
+import { useSearchParams } from 'react-router-dom'
+import { useNav } from "../../hooks/NavContext";
 
 
 export default function Sidebar({ closeSidebar, open }) {
@@ -22,6 +24,8 @@ export default function Sidebar({ closeSidebar, open }) {
     const [modalShow, setModalShow] = useState(false)
     const [addCourseShow, setAddCourseShow] = useState(false)
     const { course } = useCourse()
+    const [searchParams, setSearchParams] = useSearchParams()
+    const { nav } = useNav()
 
     return (
         <>
@@ -41,12 +45,8 @@ export default function Sidebar({ closeSidebar, open }) {
                     </Menu>
                     <Menu title={"Student View"}>
                         <InnerMenu title={"Courses"} icon={'bi-book'}>
-                            <InnerMenu title={'Recently Visited'} icon={'bi-clock-history'}>
-                                <Item>Course 1</Item>
-                                <Item>Course 2</Item>
-                            </InnerMenu>
                             <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>
-                            <Item icon={'bi-collection'} onClick={() => navigate('/main/courses/student')}>
+                            <Item icon={'bi-collection'} onClick={() => nav('/main/Courses', { state: 'student'}, false)}>
                                 Show all courses
                             </Item>
                         </InnerMenu>
@@ -54,7 +54,7 @@ export default function Sidebar({ closeSidebar, open }) {
                     <Menu title={"Teacher View"}>
                         <InnerMenu title={"My Courses"}>
                             <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>
-                            <Item icon={'bi-collection'} onClick={() => navigate('/main/courses/teacher')}>
+                            <Item icon={'bi-collection'} onClick={() => nav('/main/Courses', { state: 'teacher'}, false)}>
                                 Show all courses
                             </Item>
                         </InnerMenu>
