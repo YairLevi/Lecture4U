@@ -3,4 +3,5 @@ This is HTR project
 with transcription, downloading 
 and uploading 
 use txt file for checking 
-the system and how it suits your handwriting 
+the system and how it suits 
+your handwriting
