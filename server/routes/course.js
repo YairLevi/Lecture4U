@@ -19,7 +19,10 @@ const Unit = require('../models/Unit')
 const Subject = require('../models/Subject')
 const User = require('../models/User')
 const constants = require("constants");
+const Assignment = require('../models/assignments/Assignment')
+const Submission = require('../models/assignments/Submission')
 
+const { getFileData } = require("../cloud/files");
 
 
 
@@ -108,6 +111,45 @@ router.get('/members', async (req, res) => {
     }
 })
 
+router.get('/assignments', async (req, res) => {
+    try {
+        const userId = getUserID(req)
+        const courseId = req.query.courseId
+
+        const course = await Course.findById(courseId)
+        const assignments = await course.getAssignmentsOfUser(userId)
+
+        res.status(200).json(assignments)
+
+    } catch (e) {
+        console.log('at /assignments\n' + e.message)
+        res.sendStatus(400)
+    }
+})
+
+router.get('/teacher/assignments', async (req, res) => {
+    try {
+        const userId = getUserID(req)
+        const course = await Course.findById(req.query.courseId)
+        const assignments = await course.getAssignments()
+        res.status(200).json(assignments)
+    } catch (e) {
+        console.log('at /teacher/assignments\n' + e.message)
+        res.sendStatus(400)
+    }
+})
+
+router.get('/teacher/submissions', async (req, res) => {
+    try {
+        const assignmentId = req.query.assignmentId
+        const assignment = await Assignment.findById(assignmentId)
+        const submissions = await assignment.getSubmissions()
+        res.status(200).json(submissions)
+    } catch (e) {
+        console.log('at /teacher/assignments\n' + e.message)
+        res.sendStatus(400)
+    }
+})
 
 
 module.exports = router

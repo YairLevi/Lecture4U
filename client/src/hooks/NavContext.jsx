@@ -45,9 +45,19 @@ export default function NavProvider({ children }) {
         })
     }
 
-    function rnav(path, params, keepParams = true) {
+    function siblingNav(path, params, keepParams = true) {
         const currentParams = getCurrentParams()
         const newPath = location.pathname.split('/').slice(0, -1).join('/') + path
+        let newSearchParams = keepParams ? currentParams : { state: searchParams.get('state') }
+        navigate({
+            pathname: newPath,
+            search: `?${createSearchParams({ ...newSearchParams, ...params })}`
+        })
+    }
+
+    function relativeNav(path, params, keepParams=true) {
+        const currentParams = getCurrentParams()
+        const newPath = location.pathname + path
         let newSearchParams = keepParams ? currentParams : { state: searchParams.get('state') }
         navigate({
             pathname: newPath,
@@ -64,7 +74,8 @@ export default function NavProvider({ children }) {
         pathFull,
         pathRelative,
         nav,
-        rnav
+        rnav: siblingNav,
+        relativeNav
     }
 
     return (

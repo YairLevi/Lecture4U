@@ -1,19 +1,11 @@
-import { Container } from 'react-bootstrap'
-import AssignmentTab from "./AssignmentTab";
+import { useSearchParams } from "react-router-dom";
+import TeacherAssignmentView from "./TeacherAssignmentView";
+import StudentAssignmentView from './StudentAssignmentView'
 
 
 export default function Assignments() {
-    return (
-        <>
-            <Container>
-                <h3>Active:</h3>
-                <AssignmentTab/>
-                <AssignmentTab/>
-                <AssignmentTab/>
-            </Container>
-            <Container className={'mt-5'}>
-                <h3>Submitted:</h3>
-            </Container>
-        </>
-    )
+    const [searchParams] = useSearchParams()
+    const isTeacher = searchParams.get('state') === 'teacher'
+
+    return isTeacher ? <TeacherAssignmentView/> : <StudentAssignmentView/>
 }

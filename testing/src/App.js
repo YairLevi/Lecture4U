@@ -1,33 +1,52 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import img1 from './images/default-course-img-1.PNG'
-import { Card, Container, Row, Col, CardGroup, Image } from 'react-bootstrap'
-import './course-card.css'
-import ResponsiveDrawer from "./components/ResponsiveDrawer";
-import { CourseCard } from "./components/Course";
+import { Container, Card } from 'react-bootstrap'
+import {
+    useSearchParams,
+    useParams,
+    useNavigate,
+    Route,
+    Routes
+} from 'react-router-dom'
 
 
-export default function App() {
-    const title = 'Loading...'
-    const author = ""
-    const text = ''
-    const [image, setImage] = useState(null)
-
-    useEffect(async () => {
-        const res = await fetch('http://localhost:8000/courses')
-        const data = await res.json()
-        console.log(data)
-        setImage(data.image)
-    }, [])
+export function Page() {
+    let { id } = useParams()
 
     return (
-        <Container fluid className={'vh-100 p-5'}
-                   style={{ backgroundColor: '#4c8fb4' }}>
-            <Row>
-                <Col className={'col-12 col-md-6 col-lg-4 col-xl-3'}>
-                    <CourseCard image={image} title={title} subtitle={author} description={text}/>
-                </Col>
-            </Row>
+        <Container>
+            the id is {id}
+            {/*<button onClick={() => id=3}>click</button>*/}
+        </Container>
+    )
+}
+
+export default function App() {
+    const [searchParams, setSearchParams] = useSearchParams()
+    const navigate = useNavigate()
+
+    return (
+        <Container>
+            <p>Click on one of the buttons to change page</p>
+            <button onClick={() => {
+                navigate('/page')
+            }}>go to /page</button>
+            <button onClick={() => {
+                navigate({
+                    pathname: '/home',
+                    search: '?'
+                })
+            }}>go to /home</button>
+            <button onClick={() => {
+                setSearchParams({ p : 1, p2: 2 })
+            }}>add param p</button>
+            <Routes>
+                <Route path={'/page'} element={
+                    <p>this is the page</p>
+                }/>
+                <Route path={'/home'} element={
+                    <p>this is the home</p>
+                }/>
+            </Routes>
         </Container>
     );
 }

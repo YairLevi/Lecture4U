@@ -6,21 +6,20 @@ import { useLocation } from "react-router-dom";
 import { useParams } from 'react-router-dom'
 
 
-async function createAssignment(courseId, name, text, files, dueDate) {
+async function createSubmission(courseId, assignmentId, text, files) {
     const formData = new FormData()
     formData.append('courseId', courseId)
-    formData.append('dueDate', dueDate)
-    formData.append('name', name)
+    formData.append('assignmentId', assignmentId)
     formData.append('text', text)
     for (const file of files) {
         formData.append('files', file)
     }
-    const res = await requests.postMultipart('/course/create/assignment', formData)
+    const res = await requests.postMultipart('/course/create/submit', formData)
     return res.status
 }
 
 
-export default function AddAssignment(props) {
+export default function SubmitAssignment(props) {
     const [files, setFiles] = useState([])
     const [name, setName] = useState('')
     const [text, setText] = useState('')
@@ -44,12 +43,12 @@ export default function AddAssignment(props) {
     }
 
     function makeChanges() {
-        createAssignment(id, name, text, files, date)
+        createSubmission(id, props.assignmentId, text, files)
     }
 
 
     return (
-        <Modal {...props}>
+        <Modal show={props.show} onHide={props.onHide}>
             <Modal.Header closeButton>
                 <Modal.Title>
                     Add a New Subject
@@ -59,19 +58,7 @@ export default function AddAssignment(props) {
                 <Form>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Enter Subject Name:
-                        </Form.Label>
-                        <Form.Control onChange={e => setName(e.target.value)}/>
-                    </Form.Group>
-                    <Form.Group className={'mb-3'}>
-                        <Form.Label className={'me-3'}>
-                            Choose Due Date:
-                        </Form.Label>
-                        <input type={"date"} onChange={e => setDate(e.target.value)}/>
-                    </Form.Group>
-                    <Form.Group className={'mb-3'}>
-                        <Form.Label>
-                            Enter Some Free Text:
+                            Comments:
                         </Form.Label>
                         <Form.Control as={'textarea'} rows={4} onChange={e => setText(e.target.value)}/>
                     </Form.Group>

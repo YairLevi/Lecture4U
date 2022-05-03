@@ -41,7 +41,7 @@ export default function Main() {
                 </MainNavbar>
                 <Container fluid className={'h-100 overflow-auto'}>
                     <Routes>
-                        <Route path={'/Courses'} element={<Courses/>}/>
+                        <Route path={'/courses'} element={<Courses/>}/>
                         <Route path={'/course/:id/*'} element={<Course/>}/>
                         <Route path={'/speech'} element={<SpeechToTest/>}/>
                         <Route path={'/calendar'} element={<Calendar/>}/>

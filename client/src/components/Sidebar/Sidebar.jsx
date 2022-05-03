@@ -46,7 +46,7 @@ export default function Sidebar({ closeSidebar, open }) {
                     <Menu title={"Student View"}>
                         <InnerMenu title={"Courses"} icon={'bi-book'}>
                             <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>
-                            <Item icon={'bi-collection'} onClick={() => nav('/main/Courses', { state: 'student'}, false)}>
+                            <Item icon={'bi-collection'} onClick={() => nav('/main/courses', { state: 'student'}, false)}>
                                 Show all courses
                             </Item>
                         </InnerMenu>
@@ -54,7 +54,7 @@ export default function Sidebar({ closeSidebar, open }) {
                     <Menu title={"Teacher View"}>
                         <InnerMenu title={"My Courses"}>
                             <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>
-                            <Item icon={'bi-collection'} onClick={() => nav('/main/Courses', { state: 'teacher'}, false)}>
+                            <Item icon={'bi-collection'} onClick={() => nav('/main/courses', { state: 'teacher'}, false)}>
                                 Show all courses
                             </Item>
                         </InnerMenu>
