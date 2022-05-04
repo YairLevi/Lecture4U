@@ -15,6 +15,7 @@ export default function NavProvider({ children }) {
     const [searchParams,] = useSearchParams()
 
     function getCurrentParams() {
+        if (location.search === '') return {}
         const pairs = location.search.replace('?', '').split('&')
         const params = {}
         for (const pair of pairs) {

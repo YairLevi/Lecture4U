@@ -8,12 +8,14 @@ import { Route, Routes, useParams, useSearchParams } from 'react-router-dom'
 import SpeechToTest from "../speechToText/SpeechToText";
 import Ocr from "../ImageRecognition/ocr";
 import Course from "../Courses/Course";
+import GroupsPage from "../Groups/GroupsPage";
 
 import { useCourse } from "../../components/CourseContext";
 import { courseTabs } from "../Courses/Course";
 import Calendar from "../Calendar/Calendar";
 import Courses from "../Courses/Courses";
 import { useNav } from "../../hooks/NavContext";
+import Group from "../Groups/Group";
 
 export default function Main() {
     const [open, setOpen] = useState(false)
@@ -41,6 +43,8 @@ export default function Main() {
                 </MainNavbar>
                 <Container fluid className={'h-100 overflow-auto'}>
                     <Routes>
+                        <Route path={'/groups'} element={<GroupsPage />} />
+                        <Route path={'/groups/:id'} element={<Group />} />
                         <Route path={'/courses'} element={<Courses/>}/>
                         <Route path={'/course/:id/*'} element={<Course/>}/>
                         <Route path={'/speech'} element={<SpeechToTest/>}/>

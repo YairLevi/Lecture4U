@@ -10,7 +10,7 @@ import Material from "../Material/Material";
 import TeacherAssignmentView from "../Assignments/TeacherAssignmentView";
 import SubmissionView from "../Assignments/SubmissionView";
 
-export const courseTabs = ['Material', 'Forum', 'Assignments', 'Groups', 'Members']
+export const courseTabs = ['Material', 'Forum', 'Assignments', 'Members']
 
 export default function Course() {
     const {updateCourse} = useCourse()

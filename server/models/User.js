@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    groups: [mongoose.SchemaTypes.ObjectId]
 })
 
 userSchema.pre('save', async function (next) {

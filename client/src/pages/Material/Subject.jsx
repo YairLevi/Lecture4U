@@ -25,7 +25,7 @@ export default function Subject({ subjectId, name, text, files }) {
                 <Card.Text>{text}</Card.Text>
                 {
                     files && files.map((value, index) => (
-                         <div key={index} >
+                         <div key={index}>
                             <a href={value.url}>{value.name}</a>
                         </div>
                     ))

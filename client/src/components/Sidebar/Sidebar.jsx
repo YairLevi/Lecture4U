@@ -42,6 +42,7 @@ export default function Sidebar({ closeSidebar, open }) {
                     <Menu title={"General"}>
                         <Item>Profile</Item>
                         <Item>Settings</Item>
+                        <Item icon={'bi-people'} onClick={() => nav('/main/groups', {}, false)}>Groups</Item>
                     </Menu>
                     <Menu title={"Student View"}>
                         <InnerMenu title={"Courses"} icon={'bi-book'}>
