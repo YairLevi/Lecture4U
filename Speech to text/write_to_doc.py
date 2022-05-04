@@ -1,6 +1,8 @@
 from docx import Document
 from datetime import date
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from time import gmtime
+from time import strftime
 
 
 def write(document_name, university_name, course_name, language, topics_names, topics_content, topics_timestamps,
@@ -39,10 +41,13 @@ def write(document_name, university_name, course_name, language, topics_names, t
         for word in content:
             topic_content += (word + " ")
 
+        start_time = strftime("%H:%M:%S", gmtime(timestamp[0]))
+        end_time = strftime("%H:%M:%S", gmtime(timestamp[1]))
+
         if is_hebrew:
-            heading += " נקודת הזמן בהקלטה: {} - {}".format(timestamp[0], timestamp[1])
+            heading += " נקודת הזמן בהקלטה: {} - {}".format(start_time, end_time)
         else:
-            heading += " (Timestamp In Lecture: {} - {})".format(timestamp[0], timestamp[1])
+            heading += " (Timestamp In Lecture: {} - {})".format(start_time, end_time)
 
         h = document.add_heading(heading, 1)
         p = document.add_paragraph(topic_content)
