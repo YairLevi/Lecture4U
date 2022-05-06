@@ -1,4 +1,5 @@
-Hello World try to recognize 
-and get good probability using ML for HTR 
+Hello World try to recognize
+and get good probability using ML for
+HTR
 need to recognize images from CSV files 
 in the united OCR HTR project
