@@ -20,7 +20,6 @@ def ignore_warnings():
     if not sys.warnoptions:
         warnings.simplefilter("ignore")
     old_stdout = sys.stdout  # backup current stdout
-    sys.stdout = open("errors.txt", "w")
     return old_stdout
 
 
@@ -82,26 +81,14 @@ def temp_folders():
 
 
 # initializes the input files
-def init_htr(to_eval, text):
+def init_htr(to_eval):
     evaluation = "evaluation.txt"
-    open(text, "w+").close()
     init_eval(evaluation, to_eval)
     temp_folders()
     fn = open("filename.txt", "r+")
     filename = fn.read()
     fn.close()
     return evaluation, filename
-
-
-# writes into a Word file the text
-def write_to_word(text):
-    t = open(text, "r+")
-    text_data = t.read()
-    t.close()
-    doc = docx.Document()
-    doc.add_paragraph(text_data)
-    doc.save('text.docx')
-    return text_data
 
 
 # removes the temporary images
@@ -111,32 +98,38 @@ def remove_irrelevant_images(p):
 
 
 # for each line, it parses the image into words and transcripts it into words and writes to the file
-def handle_htr(text, words_split_const):
+def handle_htr(words_split_const):
     lines, l_idx = glob.glob(LINES_ROI_PNG), 0
+    new_text = ""
     for img in lines:
         split_image_text(img, WORDS_ROI, words_split_const, False)
         current_line = glob.glob(WORDS_ROI_PNG)
         for img in current_line:
-            htr(img, text)
+            ret_val = htr(img)
+            new_text = (new_text + ret_val) if ret_val is not None else new_text
         if len(lines) > 1:
-            out_text = open(text, "a+")  # adds new line (\n) to the end of the line
-            out_text.write("\n")
-            out_text.close()
+            new_text = new_text[:-1] + "\n"
         l_idx += 1
         remove_irrelevant_images(WORDS_ROI_PNG)
     remove_irrelevant_images(LINES_ROI_PNG)
+    if len(lines) == 1:
+        new_text = new_text[:-1]
+    return new_text
 
 
 # main transcription function
-def transcript(to_eval, text, words_split, to_detect):
+def transcript(to_eval, words_split, to_detect):
     old_std = ignore_warnings()
-    evaluation, filename = init_htr(to_eval, text)
+    evaluation, filename = init_htr(to_eval)
     if to_detect:
         cv2.imwrite('init_image.png', split_image_text("..\\image examples\\" + filename, LINES_ROI, words_split, True))
         temp_folders()
     else:
         split_image_text("..\\image examples\\" + filename, LINES_ROI, 150, True)
-        handle_htr(text, words_split)
+        new_text = handle_htr(words_split)
         sys.stdout = old_std
-        data = write_to_word(text)
-        return evaluate(text, evaluation, "..\\evaluation input\\input.txt") if to_eval else data
+        if not to_eval:  # writes into a Word file the text
+            doc = docx.Document()
+            doc.add_paragraph(new_text)
+            doc.save('text.docx')
+        return evaluate(new_text, evaluation, "..\\evaluation input\\input.txt") if to_eval else new_text

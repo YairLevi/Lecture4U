@@ -1,12 +1,10 @@
-import io
-
 from flask import Flask, request, send_file, jsonify, make_response
 from flask_cors import CORS, cross_origin
 import transcription_model
 import os
 from pathlib import Path
+import io
 
-import cv2
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
@@ -18,9 +16,7 @@ course_name = ''
 group_name = ''
 message_for_course = ''
 message_for_group = ''
-
 CONST_SPLIT = 45  # default value
-
 words_split_const = CONST_SPLIT
 
 
@@ -47,23 +43,18 @@ def upload():
 @cross_origin()
 def transcript():
     global words_split_const
-    txt = "text.txt"
-    transcription_model.transcript(False, txt, words_split_const, False)
-    os.remove(txt)
+    transcription_model.transcript(False, words_split_const, False)
     file_path = 'text.docx'
-
     return_data = io.BytesIO()
     with open(file_path, 'rb') as fo:
         return_data.write(fo.read())
-    # (after writing, cursor will be at last byte, so move it to start)
+    # after writing, cursor will be at last byte, so move it to start
     return_data.seek(0)
-
     os.remove(file_path)
-
     return send_file(return_data,
                      mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                     as_attachment=True,
-                     attachment_filename=file_path)
+                     as_attachment=True, attachment_filename=file_path)
+    # return send_file('text.docx', as_attachment=True)
 
 
 @app.route("/change_focus", methods=["POST"])
@@ -92,28 +83,23 @@ def upload_txt():
 @cross_origin()
 def check_detection():
     global words_split_const
-    txt = "text.txt"
-    transcription_model.transcript(False, txt, words_split_const, True)
-    os.remove(txt)
-    return send_file('init_image.png', as_attachment=True)
-
-
-def get_content(txt):
-    f = open(txt, "r+")
-    content = f.read()
-    f.close()
-    return content
+    transcription_model.transcript(False, words_split_const, True)
+    file_path = 'init_image.png'
+    return_data = io.BytesIO()
+    with open(file_path, 'rb') as fo:
+        return_data.write(fo.read())
+    # after writing, cursor will be at last byte, so move it to start
+    return_data.seek(0)
+    os.remove(file_path)
+    return send_file(return_data, mimetype='image/x-png', as_attachment=True, attachment_filename=file_path)
 
 
 @app.route("/init_transcript", methods=["GET"])
 @cross_origin()
 def init_transcript():
     global language, transcript_confidence, file_name, words_split_const
-    transcript_confidence = 0
-    txt = "text.txt"
-    transcript_confidence = transcription_model.transcript(True, txt, words_split_const, False)
-    content = get_content(txt)
-    os.remove(txt)
+    transcript_confidence, content = 0, ""
+    transcript_confidence, content = transcription_model.transcript(True, words_split_const, False)
     return {'transcript_score': transcript_confidence, 'content': content}
 
 

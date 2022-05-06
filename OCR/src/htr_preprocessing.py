@@ -14,7 +14,7 @@ class DataLoaderIAM:
     def __init__(self, data_dir, batch_size, split=0.95, fast=True):
         # loads data which corresponds to the IAM format
         self.f = fast
-        self.env = lmdb.open(str(data_dir / 'lmdb'), readonly=True) if f else None
+        self.env = lmdb.open(str(data_dir / 'lmdb'), readonly=True) if self.f else None
         self.augmentation = False
         self.current_index = 0
         self.batch_size = batch_size

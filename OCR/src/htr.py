@@ -55,14 +55,13 @@ def validate_mode(model, loader, img_size, l_mode):
 
 
 # infer of the trained model on the user's handwriting
-def infer_mode(model, img, text):
+def infer_mode(model, img):
     if img is not None:
         preprocessor = Preprocessor((128, 32), width=True, padding_size=16)
         recognized, probability = model.infer_batch(Batch([preprocessor.process_image(img)], None, 1), True)
         if recognized[0] not in ['"', ' ', '.', ':', ',', ';', '']:
-            f = open(text, "a+")
-            f.write(recognized[0] + " ")
-            f.close()
+            return recognized[0] + " "
+    return None
 
 
 # definition of HTR model arguments
@@ -96,14 +95,15 @@ def get_char_list(args):
 
 
 # main HTR function
-def htr(image_name, t):
-    args, dcd_t = def_args(image_name)
+def htr(image_name):
+    args, d_t = def_args(image_name)
     if args.mode in ['train', 'validate']:
         ch_ls, loader, i_size = get_char_list(args)
         if args.mode == 'train':
-            train_mode(Model(ch_ls, dcd_t), loader, i_size, l_mode=args.l_mode, early_stop=args.early_stop)
+            train_mode(Model(ch_ls, d_t), loader, i_size, l_mode=args.l_mode, early_stop=args.early_stop)
         elif args.mode == 'validate':
-            e, a = validate_mode(Model(ch_ls, dcd_t, restore=True), loader.set_validation(), i_size, args.l_mode)
+            e, a = validate_mode(Model(ch_ls, d_t, restore=True), loader.set_validation(), i_size, args.l_mode)
     elif args.mode == 'infer':
         lst = list(open('../model/charList.txt').read())
-        infer_mode(Model(lst, dcd_t, restore=True, dmp=args.dmp), cv2.imread(args.image, cv2.IMREAD_GRAYSCALE), t)
+        return infer_mode(Model(lst, d_t, restore=True, dmp=args.dmp), cv2.imread(args.image, cv2.IMREAD_GRAYSCALE))
+    return None

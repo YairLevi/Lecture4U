@@ -1,6 +1,3 @@
-import os
-
-
 # deletes empty strings from line
 def del_empties(text_d):
     lst = []
@@ -49,7 +46,7 @@ def write_evaluation(text_data, evaluation, lines_eval, streams_eval, values, le
     total_eval = str(round(sum(values) / sum(lens), 8))
     eval_file.write("total evaluation = " + total_eval)
     eval_file.close()
-    return total_eval
+    return total_eval, text_data
 
 
 # returns line's length and parses its words
@@ -62,18 +59,22 @@ def process_data(user_data, text_data):
 
 
 # main evaluation function
-def evaluate(text, evaluation, input_file):
-    user, data = read_data(input_file), read_data(text)
+def evaluate(new_text, evaluation, input_file):
+    user, data = read_data(input_file), new_text.split('\n')
+    for i in range(len(data)):
+        data[i] = str(data[i]) + '\n'
     values, lines_eval, streams_eval, lens = [], [], [], []
     idx = 0
-    for line in data:
-        line = line.rstrip() if line == data[-1] else line
-        user_data, text_data = user[idx].lower().replace('\n', ''), line.lower().replace('\n', '')
-        max_len = max(len(user_data), len(text_data))
-        lens.append(max_len)
-        u_len, t_len, u_data, t_data = process_data(user_data, text_data)
-        lines_eval.append(evaluate_line(u_data, t_data, u_len, t_len))
-        streams_eval.append(evaluate_stream(user_data, text_data))
-        values.append(max_len * (3 * lines_eval[-1] + 5 * streams_eval[-1]) / 8)
-        idx += 1
+    for i in range(len(data)):
+        if idx < len(user):
+            line = data[i].rstrip() if data[i] == data[-1] else data[i]
+            user_data, text_data = user[idx].lower().replace('\n', ''), line.lower().replace('\n', '')
+            if len(text_data) > 0.25 * len(user_data):
+                max_len = max(len(user_data), len(text_data))
+                lens.append(max_len)
+                u_len, t_len, u_data, t_data = process_data(user_data, text_data)
+                lines_eval.append(evaluate_line(u_data, t_data, u_len, t_len))
+                streams_eval.append(evaluate_stream(user_data, text_data))
+                values.append(max_len * (3 * lines_eval[-1] + 5 * streams_eval[-1]) / 8)
+                idx += 1
     return write_evaluation(''.join(data).rstrip(), evaluation, lines_eval, streams_eval, values, lens)
