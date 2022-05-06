@@ -5,7 +5,6 @@ import NewDiscussion from "../../modals/NewDiscussion";
 import React, { useEffect, useState } from "react";
 import requests from "../../helpers/requests";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { useCourse } from "../../components/CourseContext";
 import { useParams } from "react-router";
 import { replace } from "formik";
 
@@ -14,7 +13,6 @@ export default function ForumPage(props) {
     const [currentDiscussion, setCurrentDiscussion] = useState(null)
     const [discussions, setDiscussions] = useState(null)
     const [loading, setLoading] = useState(false)
-    const { course } = useCourse()
     const location = useLocation()
     const { id } = useParams()
     const [params, setParams] = useSearchParams()
@@ -41,7 +39,7 @@ export default function ForumPage(props) {
 
     async function addDiscussion(title, question) {
         const res = await requests.post('/forum/create/discussion', { title, question },
-            { courseId: course })
+            { courseId: id })
         const discussion = await res.json()
         setDiscussions(prevDis => [...prevDis, discussion])
     }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Container, FormControl, InputGroup, Row, Spinner } from 'react-bootstrap'
-import CourseList, { CardSlot } from "../../components/CourseList";
+import CardSlot from "../../components/CourseCard/CardSlot";
 import { useSearchParams } from "react-router-dom";
 import requests from "../../helpers/requests";
 

@@ -7,9 +7,9 @@ import Home from "./pages/home/Home";
 import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignUp/SignUp";
 import Main from "./pages/main/Main";
-import AuthProvider from "./components/AuthContext";
+import AuthProvider from "./contexts/AuthContext";
 import { PublicRoute, PrivateRoute } from "./components/Routes";
-import { useAuth } from "./components/AuthContext";
+import { useAuth } from "./contexts/AuthContext";
 import { Spinner, Container } from "react-bootstrap";
 
 function App() {

@@ -5,7 +5,6 @@ import { Icon } from "../../components/Sidebar/Item";
 import { useLocation, useSearchParams } from "react-router-dom";
 import requests from "../../helpers/requests";
 import AddUnit from "../../modals/AddUnit";
-import { useCourse } from "../../components/CourseContext";
 import { useParams } from "react-router";
 
 
@@ -18,7 +17,6 @@ export default function Material(props) {
     const [showAddUnit, setShowAddUnit] = useState(false)
     const [data, setData] = useState(null)
     const location = useLocation()
-    const { updateCourse } = useCourse()
     const { id } = useParams()
     const [searchParams] = useSearchParams()
     const isTeacher = searchParams.get('state') === 'teacher'
@@ -26,7 +24,6 @@ export default function Material(props) {
 
     useEffect(async () => {
         // const id = getCourseID(location)
-        updateCourse(id)
         const res = await requests.get('/course/data', { code: id })
         if (res.status !== 200) {
             // error. put some error screen here.

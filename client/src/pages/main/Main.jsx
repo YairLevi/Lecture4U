@@ -3,26 +3,29 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import { Button, Container, Row, Col, Nav } from 'react-bootstrap'
 import '../../components/CourseCard/CourseCard'
 import CourseCard from "../../components/CourseCard/CourseCard";
-import MainNavbar from "../../components/MainNavbar"
+import MainNavbar from "../../components/Navbars/MainNavbar"
 import { Route, Routes, useParams, useSearchParams } from 'react-router-dom'
 import SpeechToTest from "../speechToText/SpeechToText";
 import Ocr from "../ImageRecognition/ocr";
 import Course from "../Courses/Course";
 import GroupsPage from "../Groups/GroupsPage";
 
-import { useCourse } from "../../components/CourseContext";
 import { courseTabs } from "../Courses/Course";
 import Calendar from "../Calendar/Calendar";
 import Courses from "../Courses/Courses";
 import { useNav } from "../../hooks/NavContext";
 import Group from "../Groups/Group";
+import ProfilePage from "../Profile/ProfilePage";
 
 export default function Main() {
     const [open, setOpen] = useState(false)
-    const { course } = useCourse()
     const { rnav } = useNav()
-    const { id } = useParams()
-    const [params, setParams] = useSearchParams()
+    const params = useParams()
+    const [inCourse, setInCourse] = useState(false)
+
+    useEffect(() => {
+        setInCourse(params['*'].split('/')[0] === 'course')
+    }, [params])
 
     return (
         <div className={'d-flex vh-100'}>
@@ -30,7 +33,7 @@ export default function Main() {
             <Container fluid className={'d-flex fluid flex-column p-0 vh-100'}>
                 <MainNavbar openSidebar={() => setOpen(true)}>
                     {
-                        course && courseTabs.map((value, index) => {
+                        inCourse && courseTabs.map((value, index) => {
                             return (
                                 <Nav.Item key={index}>
                                     <Nav.Link onClick={async () => rnav(`/${value.toLowerCase()}`, {}, false)}>
@@ -43,6 +46,7 @@ export default function Main() {
                 </MainNavbar>
                 <Container fluid className={'h-100 overflow-auto'}>
                     <Routes>
+                        <Route path={'/profile'} element={<ProfilePage />} />
                         <Route path={'/groups'} element={<GroupsPage />} />
                         <Route path={'/groups/:id'} element={<Group />} />
                         <Route path={'/courses'} element={<Courses/>}/>

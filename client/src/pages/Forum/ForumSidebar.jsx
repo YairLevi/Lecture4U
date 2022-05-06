@@ -5,7 +5,6 @@ import ForumTopBar from "./ForumTopBar";
 import NewDiscussion from "../../modals/NewDiscussion";
 import { useState } from "react";
 import requests from "../../helpers/requests";
-import { useCourse } from "../../components/CourseContext";
 import { useLocation } from "react-router-dom";
 
 

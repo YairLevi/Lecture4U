@@ -4,7 +4,6 @@ import ForumSubject from "./Forum.discussion/ForumSubject";
 import ForumComment from "./Forum.discussion/ForumComment";
 import ForumTextbox from "./Forum.discussion/ForumTextbox";
 import requests from "../../helpers/requests";
-import { useRefresh } from "../../hooks/useRefresh";
 import { useSearchParams } from "react-router-dom";
 
 

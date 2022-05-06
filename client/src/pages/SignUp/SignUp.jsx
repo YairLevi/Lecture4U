@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Card, Container, Form, NavLink } from "react-bootstrap";
-import { useAuth } from "../../components/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 
 export default function SignIn(props) {

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ProSidebar, MenuItem, SubMenu, SidebarFooter, SidebarHeader, SidebarContent } from 'react-pro-sidebar';
 import { Users } from "../../icons/users";
 import UserAvatar from '../Avatar'
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import './Sidebar.scss'
 
 import Menu from './Menu'
@@ -12,8 +12,6 @@ import { useNavigate } from "react-router";
 import { Button, FormControl, InputGroup, Nav } from "react-bootstrap";
 import AddCourse from "../../modals/AddCourse";
 import NewCourse from "../../modals/NewCourse";
-
-import { useCourse } from "../CourseContext";
 import { useSearchParams } from 'react-router-dom'
 import { useNav } from "../../hooks/NavContext";
 
@@ -23,7 +21,6 @@ export default function Sidebar({ closeSidebar, open }) {
     const { logout } = useAuth()
     const [modalShow, setModalShow] = useState(false)
     const [addCourseShow, setAddCourseShow] = useState(false)
-    const { course } = useCourse()
     const [searchParams, setSearchParams] = useSearchParams()
     const { nav } = useNav()
 
@@ -40,7 +37,7 @@ export default function Sidebar({ closeSidebar, open }) {
                 <SidebarContent>
 
                     <Menu title={"General"}>
-                        <Item>Profile</Item>
+                        <Item icon={'bi-person'} onClick={() => nav('/main/profile', {}, false)}>Profile</Item>
                         <Item>Settings</Item>
                         <Item icon={'bi-people'} onClick={() => nav('/main/groups', {}, false)}>Groups</Item>
                     </Menu>

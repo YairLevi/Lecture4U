@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import AuthProvider from "./components/AuthContext";
-import CourseProvider from "./components/CourseContext";
+import AuthProvider from "./contexts/AuthContext";
 import { BrowserRouter } from 'react-router-dom'
 import NavProvider from "./hooks/NavContext";
 
@@ -11,9 +10,7 @@ ReactDOM.render(
     <BrowserRouter>
         <NavProvider>
             <AuthProvider>
-                <CourseProvider>
-                    <App/>
-                </CourseProvider>
+                <App/>
             </AuthProvider>
         </NavProvider>
     </BrowserRouter>,

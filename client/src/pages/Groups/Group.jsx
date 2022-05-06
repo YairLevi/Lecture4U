@@ -7,23 +7,30 @@ import GroupDescription from "./GroupDescription";
 import GroupFiles from "./GroupFiles";
 import ForumComment from "../Forum/Forum.discussion/ForumComment";
 import GroupChat from "./GroupChat";
+import useLoader from "./useLoader";
 
 
 export default function Group(props) {
     const { id } = useParams()
     const [data, setData] = useState()
-    const [loading, setLoading] = useState(false)
-
-    async function getGroupData() {
-        setLoading(true)
+    // const [loading, setLoading] = useState(false)
+    //
+    // async function getGroupData() {
+    //     setLoading(true)
+    //     const res = await requests.get('/groups/group-data', { groupId: id })
+    //     const data = await res.json()
+    //     console.log(data)
+    //     setData(data)
+    //     setLoading(false)
+    // }
+    const loading = useLoader(async function () {
         const res = await requests.get('/groups/group-data', { groupId: id })
         const data = await res.json()
         console.log(data)
         setData(data)
-        setLoading(false)
-    }
+    })
 
-    useEffect(() => getGroupData(), [])
+    // useEffect(() => getGroupData(), [])
 
     return loading || data === undefined ?
         <Container className={'d-flex justify-content-center align-items-center'}>
