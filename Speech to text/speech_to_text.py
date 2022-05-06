@@ -13,7 +13,7 @@ from gcloud.aio.storage import Storage
 import wave
 import write_to_doc
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '../steam-treat-347709-462a24be0c62.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'steam-treat-347709-a75748e8fbdc.json'
 name_bucket = 'lecture4u-3'
 
 
@@ -55,7 +55,7 @@ async def async_upload_to_bucket(bucket_name, destination_blob_name, file_object
 async def main(file_name):
     with io.open(file_name, 'rb') as audio_file:
         content = audio_file.read()
-        url = await async_upload_to_bucket(name_bucket, 'speech to text files/transcribed_speech.wav', content)
+        url = await async_upload_to_bucket(name_bucket, 'speech to text files/{}'.format(file_name), content)
         print(url)
 
 
@@ -64,6 +64,13 @@ def check_for_keyword_variations(target_word, word_variations):
         if target_word == word_variation:
             return True
     return False
+
+
+def remove_punctuation(word):
+    punctuation_list = ['.', ',', ' ']
+    for punctuation in punctuation_list:
+        word = word.replace(punctuation, '')
+    return word
 
 
 # key_words for english: ['new', 'topic', 'end', 'topic']
@@ -82,19 +89,24 @@ def search_word(key_words, my_word_list, my_timestamps, language):
         keyword_variations = ['end', 'and']
 
     while word_index < (len(my_word_list) - 1):
-        if (is_hebrew and check_for_keyword_variations(my_word_list[word_index], keyword_variations)
-            and my_word_list[word_index + 1] == key_words[1]) or \
-                (is_english and my_word_list[word_index] == key_words[0]
-                 and my_word_list[word_index + 1] == key_words[1]):
+        word = remove_punctuation(my_word_list[word_index])
+        next_word = remove_punctuation(my_word_list[word_index + 1])
+
+        if (is_hebrew and check_for_keyword_variations(word, keyword_variations)
+            and next_word == key_words[1]) or \
+                (is_english and word == key_words[0]
+                 and next_word == key_words[1]):
 
             start_index = word_index + 1  # start of the topic.
 
             for i in range(word_index + 2, len(my_word_list) - 1):
-                if (is_hebrew and my_word_list[i] == key_words[2] and
-                    check_for_keyword_variations(my_word_list[i + 1], keyword_variations)) or \
-                        (is_english and check_for_keyword_variations(my_word_list[i], keyword_variations)
-                         and my_word_list[i + 1] == key_words[3]):
+                word = remove_punctuation(my_word_list[i])
+                next_word = remove_punctuation(my_word_list[i + 1])
 
+                if (is_hebrew and word == key_words[2] and
+                    check_for_keyword_variations(next_word, keyword_variations)) or \
+                        (is_english and check_for_keyword_variations(word, keyword_variations)
+                         and next_word == key_words[3]):
                     end_index = i + 1  # end of the topic.
                     topic_indexes.append((start_index, end_index))
                     topic_name.append(my_word_list[start_index + 1: end_index - 1])
@@ -131,7 +143,8 @@ def transcribe_gcs_with_word_time_offsets(gcs_uri, number_of_channels, sample_ra
         sample_rate_hertz=sample_rate_hertz,
         language_code=my_language_code,
         enable_word_time_offsets=True,
-        audio_channel_count=number_of_channels
+        audio_channel_count=number_of_channels,
+        enable_automatic_punctuation=True
     )
 
     operation = client.long_running_recognize(config=config, audio=audio)
@@ -178,7 +191,7 @@ def run(source_name, destination_name, my_language):
     # upload async to google cloud storage :
     # print('Start Async Uploading.')
     # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    # asyncio.run(main('transcribed_speech.wav'))
+    # asyncio.run(main(transcribed_audio_file_name))
     # print("Finish Uploading.")
 
     # settings:
