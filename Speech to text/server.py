@@ -53,7 +53,7 @@ def transcribe():
     target_name = file_name.split('.')[0] + '.wav'
     transcribe_confidence = round(speech_to_text.run(file_name, target_name, language), 3)
     print("transcribe_confidence = {}".format(transcribe_confidence))
-    docx_file_name = 'Lecture 1.docx'
+    docx_file_name = '{}.docx'.format(file_name.split('.')[0])
 
     resp = send_file(docx_file_name, as_attachment=True)
     resp.headers['transcribe-file-name'] = file_name
@@ -61,13 +61,6 @@ def transcribe():
     resp.headers['transcribe-score'] = transcribe_confidence
 
     return resp
-
-
-@app.route("/transcribe_score", methods=["GET"])
-@cross_origin()
-def transcribe_score():
-    print("Get request in order get transcribe_score")
-    return {'transcribe_score': transcribe_confidence}
 
 
 @app.route("/update_repository", methods=["POST"])

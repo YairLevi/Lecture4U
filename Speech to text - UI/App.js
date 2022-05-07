@@ -26,7 +26,7 @@ import { useRef } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import MicIcon from '@mui/icons-material/Mic';
 import axios from "axios";
-import {Alert, AlertTitle} from "@mui/lab";
+import {Alert, AlertTitle} from '@mui/material';
 // https://blog.logrocket.com/using-the-react-speech-recognition-hook-for-voice-assistance/
 // https://github.com/JamesBrill/react-speech-recognition#readme
 // https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
@@ -37,11 +37,9 @@ import {Alert, AlertTitle} from "@mui/lab";
 // https://mui.com/components/bottom-navigation/
 
 let speech_language = "";
-let isDisplayAccuracy = false
 let file_duration = 0
 
 function LinearProgressWithLabel(props) {
-    isDisplayAccuracy = props.value === 100
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Box sx={{ width: '100%', mr: 1 }}>
@@ -79,16 +77,14 @@ function App() {
     const ModalHandleShow = () => ModalSetShow(true);
     let alert_message = ""
 
+    // timeline speech to text:
+    const [TimeLineData, setTimeLineData] = useState([]);
+    const [displayTimeLineInfo, setDisplayTimeLineInfo] = useState(false);
+    const TimeLineModalHandleClose = () => setDisplayTimeLineInfo(false);
+    const TimeLineModalHandleShow = () => setDisplayTimeLineInfo(true);
+    const [TimeLineIndex, setTimeLineIndex] = useState(-1);
+    let TimeLineInfo = []
 
-    // for display transcribe score:
-    const displayTranscribeScore = () => {
-        axios
-            .get('http://localhost:5000/transcribe_score')
-            .then(res => {
-                setTranscribe_score(parseFloat(res.data['transcribe_score']).toFixed(3))
-            })
-            .catch(err => console.warn(err));
-    }
 
     // for upload button:
     const hiddenFileInput = React.useRef(null);
@@ -100,19 +96,21 @@ function App() {
 
     React.useEffect(() => {
         if (!isTranscribe) { return }
+
         const timer = setInterval(() => {
             setProgress((prevProgress) => {
                 if (prevProgress === 100) {
-                    setTranscribe(false)
-                    return 0
+                    return 100
                 } else {
                     return prevProgress + 10
                 }
             });
         }, file_duration);
+
         return () => {
             clearInterval(timer);
         };
+
     }, [isTranscribe]);
 
 
@@ -189,7 +187,7 @@ function App() {
             .post('http://localhost:5000/upload', form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
-                    file_duration = (res.data['duration'] * 100)
+                    file_duration = (res.data['duration'] * 100) / 2
                     console.log(file_duration)
                     alert_message = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
                     SetModalAlertMessage(alert_message)
@@ -239,24 +237,48 @@ function App() {
                 }
             })
             .then(res => {
+                let temp_list = TimeLineData
+                let keys = []
+                let dictionary = {}
+
+                /// get list of the keys:
+                temp_list.forEach(function (dict) {
+                    Object.keys(dict).forEach(function (key) {
+                        keys.push(key)
+                    })
+                })
+
+                /// check if the key exist:
+                let key = res.headers['transcribe-date']
+                if (!keys.includes(key)) {
+                    dictionary[key] = [[res.headers['transcribe-file-name'],key,res.headers['transcribe-score']]]
+                    temp_list.push(dictionary)
+                } else {
+                    let index = keys.indexOf(key)
+                    temp_list[index][key].push([res.headers['transcribe-file-name'],key,res.headers['transcribe-score']])
+                }
+
+                setTimeLineData(temp_list)
+                setTranscribe_score(res.headers['transcribe-score'])
+                setTranscribe(false)
+                setProgress(0);
+
+                let file_name = res.headers['transcribe-file-name'].split(".")[0] + ".docx"
                 const url = window.URL.createObjectURL(new Blob([res.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'Lecture 1.docx'); //or any other extension
+                link.setAttribute('download', file_name); //or any other extension
                 document.body.appendChild(link);
                 link.click();
-                displayTranscribeScore()
             })
             .catch(err => console.warn(err));
     };
 
-    // Download Button func
-    const DownloadHandleChange = () => {
-        axios
-            .get('http://localhost:5000/download')
-            .then(res => console.log(res))
-            .catch(err => console.warn(err));
-    };
+    const displayInfo = (i) => {
+        setTimeLineIndex(i)
+        TimeLineModalHandleShow()
+        console.log(TimeLineData[i])
+    }
 
 
     return (
@@ -307,12 +329,7 @@ function App() {
                                    style={{display:'none'}}
                             />
 
-                            <Button variant="outline-light" onClick={DownloadHandleChange}>Download</Button>
-                            <Button variant="outline-light" onClick={TranscribeHandleChange}>Transcribe</Button>
-                            {/*<FileUploader button_name ={"Upload"} button_func={UploadHandleChange}/>*/}
-                            {/*<FileUploader button_name ={"Transcribe"} button_func={TranscribeHandleChange}/>*/}
-                            {/*<Button variant="outline-light">Transcribe</Button>*/}
-
+                            <Button variant="outline-light" onClick={TranscribeHandleChange}>Transcribe & Download</Button>
 
                             <CustomizedDialogs>
                                 <RegistrationForm/>
@@ -398,7 +415,7 @@ function App() {
                     <Box sx={{ width: '100%' }}>
                         {isTranscribe && (<LinearProgressWithLabel value={progress} />)}
 
-                        {isDisplayAccuracy && transcribe_score > 0 && (
+                        {transcribe_score > 0 && (
                             <Typography variant="body1" color="text.secondary">
                                 Accuracy = {transcribe_score}
                             </Typography>
@@ -415,47 +432,69 @@ function App() {
                         Your recent actions with Speech to text module.
                     </Typography>
 
-
                     <Timeline position="alternate">
-                        <TimelineItem>
-                            <TimelineSeparator>
-                                <TimelineDot />
-                                <TimelineConnector />
-                            </TimelineSeparator>
-                            <TimelineContent>11.3.2021</TimelineContent>
-                        </TimelineItem>
-                        <TimelineItem>
-                            <TimelineSeparator>
-                                <TimelineDot />
-                                <TimelineConnector />
-                            </TimelineSeparator>
-                            <TimelineContent>14.3.2021</TimelineContent>
-                        </TimelineItem>
-                        <TimelineItem>
-                            <TimelineSeparator>
-                                <TimelineDot />
-                                <TimelineConnector />
-                            </TimelineSeparator>
-                            <TimelineContent>11.6.2022</TimelineContent>
-                        </TimelineItem>
-                        <TimelineItem>
-                            <TimelineSeparator>
-                                <TimelineDot />
-                            </TimelineSeparator>
-                            <TimelineContent>21.9.2022</TimelineContent>
-                        </TimelineItem>
+                        {
+                            Object.entries(TimeLineData).map((cdiv,i) => (
+                                <TimelineItem className="expense-block" key={cdiv} id="expense-block-`${i}`" data-block={i}>
+                                    <TimelineSeparator>
+                                        <TimelineDot />
+                                        <TimelineConnector />
+                                    </TimelineSeparator>
+                                    <TimelineContent><Button variant="text" onClick={()=>{displayInfo(i)}}>{Object.keys(TimeLineData[i])[0]}</Button></TimelineContent>
+                                </TimelineItem>
+                                ))
+                        }
                     </Timeline>
 
                 </CardContent>
             </Card>
 
+            {/* TimeLine Display Info */}
+            {TimeLineIndex >= 0 &&
+                <Modal
+                    show={displayTimeLineInfo}
+                    onHide={TimeLineModalHandleClose}
+                    backdrop="static"
+                    keyboard={false}
+                >
+                    <Modal.Header closeButton>
+                        <Alert severity="info">
+                            <AlertTitle>Information about your actions with the speech to text module at: <strong>{Object.keys(TimeLineData[TimeLineIndex])[0]}</strong></AlertTitle>
+                        </Alert>
+                    </Modal.Header>
+                    <Modal.Body>
+
+                        {
+                            Object.entries(TimeLineData[TimeLineIndex]).map((cdiv) => (
+                                cdiv[1].forEach(function (list,index) {
+                                    TimeLineInfo.push(
+                                        <div key={index}>
+                                            <strong>File Name: </strong> {list[0]}
+                                            <br/>
+                                            <strong>Accuracy: </strong>{list[2]}
+                                            <br/><br/>
+                                        </div>
+                                    )
+                                })
+                            ))
+
+                        }
+
+                        <>{TimeLineInfo}</>
+
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={TimeLineModalHandleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            }
+
             {/*<FixedBottomNavigation/>*/}
 
 
         </div>
-
-
-
 
     );
 }

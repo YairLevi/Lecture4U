@@ -231,7 +231,8 @@ def run(source_name, destination_name, my_language):
 
     my_university_name = "Bar Ilan University"
     my_course_name = "My Course"
-    write_to_doc.write("Lecture 1", my_university_name, my_course_name, language, topics_names,
+    lecture_name = source_file_name.split('.')[0]
+    write_to_doc.write(lecture_name, my_university_name, my_course_name, language, topics_names,
                        topics_content,
                        topics_timestamps, word_list)
 
