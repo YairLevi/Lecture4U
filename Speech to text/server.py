@@ -1,7 +1,8 @@
-from flask import Flask, request, send_file, jsonify, make_response
+from flask import Flask, request, send_file
 from flask_cors import CORS, cross_origin
 import speech_to_text
 from tinytag import TinyTag
+from datetime import date
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
@@ -13,6 +14,7 @@ course_name = ''
 group_name = ''
 message_for_course = ''
 message_for_group = ''
+current_date = ''
 
 
 @app.route("/upload", methods=["POST"])
@@ -36,17 +38,29 @@ def upload():
 @app.route("/transcribe", methods=["GET"])
 @cross_origin()
 def transcribe():
-    global language, transcribe_confidence
+    global language, transcribe_confidence, current_date
     transcribe_confidence = 0
+
+    # Textual month, day and year
+    current_date = date.today()
+    current_date = current_date.strftime("%B %d, %Y")
+
     language = request.args.get('language')
+
     print("Transcribe language is: {}".format(language))
     print("-----Run speech to text-----\n")
 
     target_name = file_name.split('.')[0] + '.wav'
-    transcribe_confidence = speech_to_text.run(file_name, target_name, language)
+    transcribe_confidence = round(speech_to_text.run(file_name, target_name, language), 3)
     print("transcribe_confidence = {}".format(transcribe_confidence))
     docx_file_name = 'Lecture 1.docx'
-    return send_file(docx_file_name, as_attachment=True)
+
+    resp = send_file(docx_file_name, as_attachment=True)
+    resp.headers['transcribe-file-name'] = file_name
+    resp.headers['transcribe-date'] = current_date
+    resp.headers['transcribe-score'] = transcribe_confidence
+
+    return resp
 
 
 @app.route("/transcribe_score", methods=["GET"])
@@ -70,13 +84,14 @@ def update_repository():
           .format(message_for_course, message_for_group, course_name, group_name))
     return "****** update_repository Successfully ******"
 
-# @app.after_request
-# def after_request(response):
-#     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-#     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-#     response.headers.add('Access-Control-Allow-Credentials', 'true')
-#     return response
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Expose-Headers', '*,Authorization,X-custom-header')
+    # response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    # response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 
 if __name__ == "__main__":
-    app.run(host='localhost', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
