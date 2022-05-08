@@ -61,7 +61,7 @@ def infer_mode(model, img):
         recognized, probability = model.infer_batch(Batch([preprocessor.process_image(img)], None, 1), True)
         if recognized[0] not in ['"', ' ', '.', ':', ',', ';', '']:
             return recognized[0] + " "
-    return None
+    return ""
 
 
 # definition of HTR model arguments
@@ -106,4 +106,4 @@ def htr(image_name):
     elif args.mode == 'infer':
         lst = list(open('../model/charList.txt').read())
         return infer_mode(Model(lst, d_t, restore=True, dmp=args.dmp), cv2.imread(args.image, cv2.IMREAD_GRAYSCALE))
-    return None
+    return ""
