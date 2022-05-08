@@ -12,13 +12,11 @@ import time
 import shutil
 
 THREADS_COUNTER = 4
-
 LINES_ROI = "..\\ROIS"
 WORDS_ROI = "..\\ROI"
 LINES_ROI_PNG = LINES_ROI + "\\*.png"
 PNG_SUFFIX = "\\*.png"
 INPUT_IMAGE_PATH = "..\\image examples\\"
-
 dir_lst = []
 png_lst = []
 
@@ -99,21 +97,18 @@ def thread_parse_line(lines_dict, i, current_line, sem, ll, t_count):
         is_changed = True
         sem.release()
         time.sleep(0.05)
-    r = i % t_count
-    remove_irrelevant_images(png_lst[r])
+    remove_irrelevant_images(png_lst[i % t_count])
 
 
 # for each line, it parses the image into words and transcripts it into words and writes to the file
 def handle_htr(words_split_const, t_count, ll):
     lines = glob.glob(LINES_ROI_PNG)
-    new_text = ""
-    lines_dict = {}
+    new_text, lines_dict = "", {}
     threads = [None] * t_count
     sem = Semaphore()
     for i in range(ll):
-        img = lines[i]
         r = i % t_count
-        split_image_text(img, dir_lst[r], words_split_const, False)
+        split_image_text(lines[i], dir_lst[r], words_split_const, False)
         current_line = glob.glob(png_lst[r])
         threads[r] = Thread(target=thread_parse_line, args=(lines_dict, i, current_line, sem, ll, t_count))
         threads[r].start()
