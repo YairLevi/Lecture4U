@@ -17,17 +17,10 @@ LINES_ROI = "..\\ROIS"
 WORDS_ROI = "..\\ROI"
 LINES_ROI_PNG = LINES_ROI + "\\*.png"
 PNG_SUFFIX = "\\*.png"
+INPUT_IMAGE_PATH = "..\\image examples\\"
 
 dir_lst = []
 png_lst = []
-
-
-# filters the warnings
-def ignore_warnings():
-    if not sys.warnoptions:
-        warnings.simplefilter("ignore")
-    old_stdout = sys.stdout  # backup current stdout
-    return old_stdout
 
 
 def get_image_param(contours, height_threshold, width_threshold, img):
@@ -74,18 +67,13 @@ def split_image_text(image_name, target_dir, kernel_size, is_line):
     return cv2.cvtColor(copied, cv2.COLOR_BGR2RGB)
 
 
-# creates an empty evaluation file or deletes the existing evaluation file
-def init_eval(evaluation, to_eval):
+# initializes the input files (creates an empty evaluation file or deletes the existing evaluation file)
+def init_htr(to_eval):
+    evaluation = "evaluation.txt"
     if to_eval:
         open(evaluation, "w").close()
     elif Path(evaluation).is_file():
         os.remove(evaluation)
-
-
-# initializes the input files
-def init_htr(to_eval):
-    evaluation = "evaluation.txt"
-    init_eval(evaluation, to_eval)
     fn = open("filename.txt", "r+")
     filename = fn.read()
     fn.close()
@@ -110,17 +98,16 @@ def thread_parse_line(lines_dict, i, current_line, sem, ll, t_count):
         lines_dict[i] = line_text
         is_changed = True
         sem.release()
-        time.sleep(0.1)
+        time.sleep(0.05)
     r = i % t_count
     remove_irrelevant_images(png_lst[r])
 
 
 # for each line, it parses the image into words and transcripts it into words and writes to the file
-def handle_htr(words_split_const, t_count):
+def handle_htr(words_split_const, t_count, ll):
     lines = glob.glob(LINES_ROI_PNG)
     new_text = ""
     lines_dict = {}
-    ll = len(lines)
     threads = [None] * t_count
     sem = Semaphore()
     for i in range(ll):
@@ -131,13 +118,13 @@ def handle_htr(words_split_const, t_count):
         threads[r] = Thread(target=thread_parse_line, args=(lines_dict, i, current_line, sem, ll, t_count))
         threads[r].start()
         if r == 0:
-            threads[0].join()
+            threads[r].join()
         elif r == 1:
-            threads[1].join()
+            threads[r].join()
         elif r == 2:
-            threads[2].join()
+            threads[r].join()
         else:
-            threads[3].join()
+            threads[r].join()
     remove_irrelevant_images(LINES_ROI_PNG)
     keys = list(lines_dict.keys())
     keys.sort()
@@ -158,28 +145,31 @@ def delete_temp_dirs(t_count):
 def create_temp_dirs(t_count):
     for i in range(t_count):
         c = WORDS_ROI + str(i + 1)
-        if Path(c).is_dir():
-            remove_irrelevant_images(c + PNG_SUFFIX)
-        else:
-            os.mkdir(c)
+        remove_irrelevant_images(c + PNG_SUFFIX) if Path(c).is_dir() else os.mkdir(c)
         dir_lst.append(c)
         png_lst.append(c + PNG_SUFFIX)
 
 
+def process_data(words_split):
+    glob_len = len(glob.glob(LINES_ROI_PNG))
+    t_count = THREADS_COUNTER if glob_len < THREADS_COUNTER else THREADS_COUNTER
+    create_temp_dirs(t_count)
+    return handle_htr(words_split, t_count, glob_len), t_count
+
+
 # main transcription function
 def transcript(to_eval, words_split, to_detect):
-    old_std = ignore_warnings()
+    if not sys.warnoptions:
+        warnings.simplefilter("ignore")  # filters the warnings
+    old_std = sys.stdout  # backup current stdout
     evaluation, filename = init_htr(to_eval)
+    main_image_path = INPUT_IMAGE_PATH + filename
     if to_detect:
-        cv2.imwrite('init_image.png', split_image_text("..\\image examples\\" + filename, LINES_ROI, words_split, True))
+        cv2.imwrite('init_image.png', split_image_text(main_image_path, LINES_ROI, words_split, True))
         remove_irrelevant_images(LINES_ROI_PNG) if Path(LINES_ROI).is_dir() else os.mkdir(LINES_ROI)
     else:
-        split_image_text("..\\image examples\\" + filename, LINES_ROI, 150, True)
-        t_count = THREADS_COUNTER
-        glob_len = len(glob.glob(LINES_ROI_PNG))
-        t_count = THREADS_COUNTER if glob_len < THREADS_COUNTER else THREADS_COUNTER
-        create_temp_dirs(t_count)
-        new_text = handle_htr(words_split, t_count)
+        split_image_text(main_image_path, LINES_ROI, 150, True)
+        new_text, t_count = process_data(words_split)
         delete_temp_dirs(t_count)
         sys.stdout = old_std
         if not to_eval:  # writes into a Word file the text
