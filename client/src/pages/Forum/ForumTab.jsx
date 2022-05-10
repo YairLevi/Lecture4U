@@ -1,7 +1,7 @@
 import { Container } from 'react-bootstrap'
 import './Forum.scss'
 import { useNavigate } from "react-router";
-import { useNav } from "../../hooks/NavContext";
+import { useNav } from "../../contexts/NavContext";
 
 
 export default function ForumTab({ value, setCurrentDiscussion }) {

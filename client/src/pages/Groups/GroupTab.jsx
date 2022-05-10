@@ -1,6 +1,6 @@
 import { Button, Card } from "react-bootstrap";
 import React from "react";
-import { useNav } from "../../hooks/NavContext";
+import { useNav } from "../../contexts/NavContext";
 
 
 export default function GroupTab({ value }) {
@@ -13,7 +13,6 @@ export default function GroupTab({ value }) {
                 <Card.Text>{value.createdAt}</Card.Text>
             </Card.Header>
             <Card.Body>
-                <Card.Text>{value.course.name}</Card.Text>
                 <Card.Text>users:</Card.Text>
                 {
                     value.userIds.map((value, index) => {

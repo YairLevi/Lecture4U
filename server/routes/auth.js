@@ -1,9 +1,12 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const { getFileData } = require("../cloud/files");
 const router = express.Router()
 const timeLimit = 60 * 60 * 24 * 100
 const jwtName = 'jwt'
+const bcryptjs = require('bcryptjs')
+
 
 router.get('/login', async (req, res) => {
     const token = req.cookies.jwt
@@ -12,7 +15,9 @@ router.get('/login', async (req, res) => {
         if (err) return console.error(err.message)
         const user = await User.findById(decodedToken._id)
         if (!user) return res.sendStatus(400)
-        res.sendStatus(200)
+        const userCopy = user._doc
+        userCopy.profileImage = await getFileData(userCopy.profileImage)
+        res.status(200).json(userCopy)
     })
 })
 
@@ -23,7 +28,9 @@ router.post('/login', async (req, res) => {
     if (!user) return res.sendStatus(400)
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: timeLimit })
     res.cookie(jwtName, token, { maxAge: timeLimit * 1000 })
-    res.sendStatus(200)
+    const userCopy = user._doc
+    userCopy.profileImage = await getFileData(userCopy.profileImage)
+    res.status(200).json(userCopy)
 })
 
 router.post('/register', async (req, res) => {

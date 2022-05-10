@@ -1,12 +1,17 @@
-import { Card, Modal, Form, Button } from 'react-bootstrap'
-import { useCallback, useState } from "react";
+import { Card, Modal, Form, Button, Spinner } from 'react-bootstrap'
+import React, { useCallback, useState } from "react";
 import FileTab from "./FileTab";
 import requests from "../helpers/requests";
 import { useParams } from 'react-router-dom'
+import { useRefresh } from "../hooks/useRefresh";
+import { useLoading } from "../hooks/useLoading";
+import { ERRORS } from "../helpers/errors";
 
 
 export default function UploadFiles(props) {
     const [files, setFiles] = useState([])
+    const [error, setError] = useState()
+    const refresh = useRefresh()
     const { id } = useParams()
 
     function addFiles(e) {
@@ -25,14 +30,21 @@ export default function UploadFiles(props) {
         })
     }
 
-    async function uploadFiles() {
+    const [loading, action] = useLoading(async () => {
         const formData = new FormData()
         formData.append('groupId', id)
         for (const file of files) {
             formData.append('files', file)
         }
         const res = await requests.postMultipart('/groups/upload', formData)
-        return res.status
+        return res.status === 200
+    })
+
+    async function handleClick() {
+        setError(null)
+        const result = await action()
+        if (!result) return setError(ERRORS.GENERAL_ERROR)
+        refresh()
     }
 
 
@@ -56,9 +68,13 @@ export default function UploadFiles(props) {
                             {files && displayFiles(files)}
                         </Card.Body>
                     </Card>
-                    <Button variant={'primary'} onClick={uploadFiles}>Upload Files</Button>
                 </Form>
             </Modal.Body>
+            <Modal.Footer className={'d-flex'}>
+                {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
+                {loading && <Spinner animation={"border"}/>}
+                <Button onClick={handleClick} disabled={loading}>Apply Changes</Button>
+            </Modal.Footer>
         </Modal>
     )
 }

@@ -1,18 +1,25 @@
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Container, Form, Spinner } from "react-bootstrap";
 import ForumComment from "../Forum/Forum.discussion/ForumComment";
 import { useParams } from 'react-router-dom'
-import { useState } from "react";
+import React, { useState } from "react";
 import requests from "../../helpers/requests";
+import { useLoading } from "../../hooks/useLoading";
+import { useRefresh } from "../../hooks/useRefresh";
 
 
 export default function GroupChat(props) {
     const [content, setContent] = useState()
     const { id } = useParams()
+    const refresh = useRefresh()
+    const [loading, action] = useLoading(async () => {
+        const res = await requests.post('/groups/message', { content, groupId: id})
+        return res.status !== 200
+    })
 
     async function sendMessage() {
         if (content === '') return
-        const res = await requests.post('/groups/message', { content, groupId: id})
-        return res.status !== 200
+        await action()
+        refresh()
     }
 
     return (
@@ -31,7 +38,12 @@ export default function GroupChat(props) {
                     <Form.Control as={'textarea'} style={{ resize: 'none' }} className={'h-100'}
                                   onChange={e => setContent(e.target.value)} placeholder={'Type a message...'}/>
                 </Form>
-                <Button className={'ms-2 col-2'} style={{ height: "fit-content" }} onClick={sendMessage}>
+                <Button className={'ms-2 col-2'}
+                        style={{ height: "fit-content" }}
+                        onClick={sendMessage}
+                        disabled={loading}
+                >
+                    {loading && <Spinner animation={"border"}/>}
                     Send
                 </Button>
             </Container>

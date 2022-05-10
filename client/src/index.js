@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import AuthProvider from "./contexts/AuthContext";
 import { BrowserRouter } from 'react-router-dom'
-import NavProvider from "./hooks/NavContext";
+import NavProvider from "./contexts/NavContext";
 
 
 ReactDOM.render(

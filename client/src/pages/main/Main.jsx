@@ -5,7 +5,6 @@ import '../../components/CourseCard/CourseCard'
 import CourseCard from "../../components/CourseCard/CourseCard";
 import MainNavbar from "../../components/Navbars/MainNavbar"
 import { Route, Routes, useParams, useSearchParams } from 'react-router-dom'
-import SpeechToTest from "../speechToText/SpeechToText";
 import Ocr from "../ImageRecognition/ocr";
 import Course from "../Courses/Course";
 import GroupsPage from "../Groups/GroupsPage";
@@ -13,9 +12,10 @@ import GroupsPage from "../Groups/GroupsPage";
 import { courseTabs } from "../Courses/Course";
 import Calendar from "../Calendar/Calendar";
 import Courses from "../Courses/Courses";
-import { useNav } from "../../hooks/NavContext";
+import { useNav } from "../../contexts/NavContext";
 import Group from "../Groups/Group";
 import ProfilePage from "../Profile/ProfilePage";
+import SpeechToText from "../speechToText/SpeechToText";
 
 export default function Main() {
     const [open, setOpen] = useState(false)
@@ -44,14 +44,14 @@ export default function Main() {
                         })
                     }
                 </MainNavbar>
-                <Container fluid className={'h-100 overflow-auto'}>
+                <Container fluid className={'h-100 overflow-auto'} /*style={{ backgroundColor: '#e0e4ec' }}*/>
                     <Routes>
                         <Route path={'/profile'} element={<ProfilePage />} />
                         <Route path={'/groups'} element={<GroupsPage />} />
                         <Route path={'/groups/:id'} element={<Group />} />
                         <Route path={'/courses'} element={<Courses/>}/>
                         <Route path={'/course/:id/*'} element={<Course/>}/>
-                        <Route path={'/speech'} element={<SpeechToTest/>}/>
+                        <Route path={'/speech'} element={<SpeechToText/>}/>
                         <Route path={'/calendar'} element={<Calendar/>}/>
                         <Route path={'/ocr'} element={<Ocr/>}/>
                     </Routes>

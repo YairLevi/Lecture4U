@@ -63,7 +63,7 @@ router.get('/group-data', async (req, res) => {
 router.post('/create-group', async (req, res) => {
     try {
         const user = await User.findById(getUserID(req))
-        const group = await Group.create({ name: req.body.name, course: req.body.courseId })
+        const group = await Group.create({ name: req.body.name })
         group.userIds.push(user._id)
         user.groups.push(group._id)
         await user.save()
@@ -125,19 +125,21 @@ router.post('/message', async (req, res) => {
     }
 })
 
-router.post('/add-member', async (req, res) => {
+router.post('/add-members', async (req, res) => {
     try {
-        const group = await Group.findById(req.body.groupId)
-        const user = await User.findOne({ email: req.body.email })
-        user.groups.push(group)
-        group.userIds.push(user._id)
+        for (const email of req.body.emails) {
+            const group = await Group.findById(req.body.groupId)
+            const user = await User.findOne({ email: email })
+            user.groups.push(group)
+            group.userIds.push(user._id)
 
-        await user.save()
-        await group.save()
+            await user.save()
+            await group.save()
+        }
         res.sendStatus(200)
 
     } catch (e) {
-        console.log(`at /add-member:\n${e.message}`)
+        console.log(`at /add-members:\n${e.message}`)
         res.sendStatus(400)
     }
 })

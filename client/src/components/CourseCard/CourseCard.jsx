@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, Container } from 'react-bootstrap'
 import './CourseCard.scss'
 import { useLocation, useNavigate, useParams } from "react-router"
-import { useNav } from "../../hooks/NavContext";
+import { useNav } from "../../contexts/NavContext";
 
 
 export default function CourseCard(props) {

@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useContext, useState } from "react"
+import useLoadingEffect from "../hooks/useLoadingEffect";
 
 const AuthContext = React.createContext(null)
 
@@ -7,14 +8,14 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }) {
-    const [isLoggedIn, setIsLoggedIn] = useState(null)
+    const [currentUser, setCurrentUser] = useState(null)
 
-    useEffect(() => {
-        (async function () {
-            const options = { credentials: 'include' }
-            const result = await fetch('http://localhost:8000/login', options)
-            setIsLoggedIn(result.status === 200)
-        })()
+    const loading = useLoadingEffect(async () => {
+        const options = { credentials: 'include' }
+        const result = await fetch('http://localhost:8000/login', options)
+        if (result.status !== 200) return
+        const user = await result.json()
+        setCurrentUser(user)
     }, [])
 
     async function login(email, password) {
@@ -26,14 +27,15 @@ export default function AuthProvider({ children }) {
             credentials: 'include'
         }
         const result = await fetch('http://localhost:8000/login', options)
-        setIsLoggedIn(result.status === 200)
-        return result.status === 200
+        if (result.status !== 200) return
+        const user = await result.json()
+        setCurrentUser(user)
     }
 
     async function register(data) {
         const options = {
             method: 'POST',
-            headers: {'Content-type': 'application/json'},
+            headers: { 'Content-type': 'application/json' },
             body: JSON.stringify(data),
             credentials: 'include',
         }
@@ -43,11 +45,13 @@ export default function AuthProvider({ children }) {
 
     async function logout() {
         const result = await fetch('http://localhost:8000/logout', { credentials: 'include' })
-        setIsLoggedIn(result.status !== 200)
+        if (result.status === 200)
+            setCurrentUser(null)
     }
 
     const value = {
-        isLoggedIn,
+        currentUser,
+        loading,
         login,
         logout,
         register,

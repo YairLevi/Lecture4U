@@ -1,29 +1,29 @@
-import { useState, useEffect } from 'react'
-import { Form, Modal, Button, Container } from 'react-bootstrap'
+import React, { useState } from 'react'
+import { Form, Modal, Button } from 'react-bootstrap'
 import { Spinner } from "react-bootstrap";
 import requests from "../helpers/requests";
+import { useLoading } from "../hooks/useLoading";
+import { ERRORS } from "../helpers/errors";
+import { useRefresh } from "../hooks/useRefresh";
 
 
 export default function AddGroup(props) {
     const [error, setError] = useState(null)
-    const [loading, setLoading] = useState(false)
-    const [courseList, setCourseList] = useState()
-    const [name, setName] = useState()
-    const [courseId, setCourseId] = useState()
+    const [name, setName] = useState('')
+    const refresh = useRefresh()
 
-    async function loadModal() {
-        setLoading(true)
-        const courses = await requests.get('/course/student')
-        const data = await courses.json()
-        setCourseList(data)
-        setLoading(false)
+    const [loading, addGroup] = useLoading(async () => {
+        const res = await requests.post('/groups/create-group', { name })
+        return res.status === 200
+    })
+
+    async function handleClick() {
+        setError(null)
+        if (name === '') return setError(ERRORS.EMPTY_NAME)
+        const result = await addGroup()
+        if (!result) return setError(ERRORS.GENERAL_ERROR)
+        refresh()
     }
-
-    async function handleSubmit() {
-        const res = await requests.post('/groups/create-group', { name, courseId })
-    }
-
-    useEffect(() => loadModal(), [])
 
     return (
         <Modal {...props}>
@@ -39,38 +39,12 @@ export default function AddGroup(props) {
                             onChange={e => setName(e.target.value)}
                         />
                     </Form.Group>
-                    <Form.Group className={'mb-3'}>
-                        <Form.Label>Related Course</Form.Label>
-                        <Container style={{ maxHeight: 200, overflow: "auto" }}>
-                            <div className="form-check">
-                                <input value={'no-course'} onClick={e => setCourseId(e.target.value)}
-                                    className="form-check-input" name="courseCheck" type="radio" id={`course0`}/>
-                                <label className="form-check-label" htmlFor={`course0`}>
-                                    No Course
-                                </label>
-                            </div>
-                            {
-                                courseList && courseList.map((value, index) => {
-                                    const id = `course${index + 1}`
-                                    return (
-                                        <div className="form-check" key={index}>
-                                            <input className="form-check-input" name="courseCheck" type="radio"
-                                                   value={value.id} id={id} onClick={e => setCourseId(e.target.value)}/>
-                                            <label className="form-check-label" htmlFor={id}>
-                                                <strong>{value.name}</strong> by {value.teacher}
-                                            </label>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </Container>
-                    </Form.Group>
                 </Form>
-                {/*{loading && <Spinner className={'m-3 align-self-center'} animation="border"/>}*/}
-                {/*{error && <span className={'alert-danger p-2'}>{error}</span>}*/}
             </Modal.Body>
-            <Modal.Footer>
-                <Button onClick={handleSubmit}>Add Group</Button>
+            <Modal.Footer className={'d-flex'}>
+                {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
+                {loading && <Spinner animation={"border"}/>}
+                <Button onClick={handleClick} disabled={loading}>Add Group</Button>
             </Modal.Footer>
         </Modal>
     )

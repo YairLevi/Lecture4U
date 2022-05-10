@@ -1,38 +1,25 @@
-import { Container, Card, Spinner } from 'react-bootstrap'
+import { Container, Spinner } from 'react-bootstrap'
 import { useParams } from "react-router-dom";
 import requests from "../../helpers/requests";
 import React, { useEffect, useState } from "react";
 import GroupMembers from "./GroupMembers";
 import GroupDescription from "./GroupDescription";
 import GroupFiles from "./GroupFiles";
-import ForumComment from "../Forum/Forum.discussion/ForumComment";
 import GroupChat from "./GroupChat";
-import useLoader from "./useLoader";
+import useLoadingEffect from "../../hooks/useLoadingEffect";
 
 
 export default function Group(props) {
     const { id } = useParams()
     const [data, setData] = useState()
-    // const [loading, setLoading] = useState(false)
-    //
-    // async function getGroupData() {
-    //     setLoading(true)
-    //     const res = await requests.get('/groups/group-data', { groupId: id })
-    //     const data = await res.json()
-    //     console.log(data)
-    //     setData(data)
-    //     setLoading(false)
-    // }
-    const loading = useLoader(async function () {
+
+    const loading = useLoadingEffect(async () => {
         const res = await requests.get('/groups/group-data', { groupId: id })
         const data = await res.json()
-        console.log(data)
         setData(data)
-    })
+    }, [])
 
-    // useEffect(() => getGroupData(), [])
-
-    return loading || data === undefined ?
+    return loading ?
         <Container className={'d-flex justify-content-center align-items-center'}>
             <Spinner className={'m-3'} animation="border"/>
         </Container>

@@ -13,9 +13,9 @@ import { useAuth } from "./contexts/AuthContext";
 import { Spinner, Container } from "react-bootstrap";
 
 function App() {
-    const { isLoggedIn } = useAuth()
+    const { loading } = useAuth()
 
-    return isLoggedIn === null ? (
+    return loading ? (
         <Container className={'d-flex vh-100 justify-content-center align-items-center'}>
             <Spinner animation='grow'/>
         </Container>

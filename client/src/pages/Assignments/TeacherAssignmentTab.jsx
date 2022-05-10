@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, NavLink, Button } from "react-bootstrap";
 import { Icon } from "../../components/Sidebar/Item";
 import SubmitAssignment from "../../modals/SubmitAssignment";
-import { useNav } from "../../hooks/NavContext";
+import { useNav } from "../../contexts/NavContext";
 
 const toggleStyle = {
     cursor: 'pointer',

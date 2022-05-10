@@ -5,15 +5,17 @@ import UserAvatar from '../Avatar'
 import { useAuth } from "../../contexts/AuthContext";
 import './Sidebar.scss'
 
+import { Container } from 'react-bootstrap'
 import Menu from './Menu'
 import InnerMenu from "./InnerMenu";
 import Item, { Icon } from './Item'
 import { useNavigate } from "react-router";
-import { Button, FormControl, InputGroup, Nav } from "react-bootstrap";
+import { Button, FormControl, InputGroup, Nav, Navbar as Bar } from "react-bootstrap";
 import AddCourse from "../../modals/AddCourse";
 import NewCourse from "../../modals/NewCourse";
 import { useSearchParams } from 'react-router-dom'
-import { useNav } from "../../hooks/NavContext";
+import { useNav } from "../../contexts/NavContext";
+import { NavLink } from 'react-bootstrap'
 
 
 export default function Sidebar({ closeSidebar, open }) {
@@ -31,20 +33,29 @@ export default function Sidebar({ closeSidebar, open }) {
                         toggled={open}
                         onToggle={closeSidebar}
             >
-                <SidebarHeader className={'d-flex justify-content-center align-items-center'}>
-                    <UserAvatar name={'John Doe'} email={'johndoe@gmail.com'}/>
-                </SidebarHeader>
+                {/*<SidebarHeader className={'d-flex justify-content-center align-items-center'}>*/}
+                {/*    */}
+                {/*</SidebarHeader>*/}
+                <Container className={'d-flex justify-content-center align-items-center'}>
+                    <NavLink href="/" style={{
+                        color: "black",
+                        fontSize: '2rem',
+                        fontWeight: 'normal',
+                    }} className={'p-4'}>
+                        Lecture4U
+                    </NavLink>
+                </Container>
                 <SidebarContent>
 
                     <Menu title={"General"}>
                         <Item icon={'bi-person'} onClick={() => nav('/main/profile', {}, false)}>Profile</Item>
-                        <Item>Settings</Item>
                         <Item icon={'bi-people'} onClick={() => nav('/main/groups', {}, false)}>Groups</Item>
                     </Menu>
                     <Menu title={"Student View"}>
                         <InnerMenu title={"Courses"} icon={'bi-book'}>
                             <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>
-                            <Item icon={'bi-collection'} onClick={() => nav('/main/courses', { state: 'student'}, false)}>
+                            <Item icon={'bi-collection'}
+                                  onClick={() => nav('/main/courses', { state: 'student' }, false)}>
                                 Show all courses
                             </Item>
                         </InnerMenu>
@@ -52,7 +63,8 @@ export default function Sidebar({ closeSidebar, open }) {
                     <Menu title={"Teacher View"}>
                         <InnerMenu title={"My Courses"}>
                             <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>
-                            <Item icon={'bi-collection'} onClick={() => nav('/main/courses', { state: 'teacher'}, false)}>
+                            <Item icon={'bi-collection'}
+                                  onClick={() => nav('/main/courses', { state: 'teacher' }, false)}>
                                 Show all courses
                             </Item>
                         </InnerMenu>

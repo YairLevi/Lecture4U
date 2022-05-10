@@ -16,6 +16,7 @@ const speechRouter = require('./routes/speech')
 const forumRouter = require('./routes/forum')
 const scheduleRouter = require('./routes/calendar')
 const groupsRouter = require('./routes/groups')
+const profileRouter = require('./routes/profile')
 
 const PORT = 8000
 const HOST = 'localhost'
@@ -32,6 +33,7 @@ app.use('/course', courseRouter)
 app.use('/forum', forumRouter)
 app.use('/schedule', scheduleRouter)
 app.use('/groups', groupsRouter)
+app.use('/profile', profileRouter)
 
 app.use(express.static(__dirname + '/static'));
 

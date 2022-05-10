@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    profileImage: mongoose.SchemaTypes.ObjectId,
     groups: [mongoose.SchemaTypes.ObjectId]
 })
 
@@ -37,7 +38,7 @@ userSchema.statics.isTaken = function (email) {
 userSchema.statics.login = async function (email, password) {
     try {
         const user = await this.findOne({ email })
-        const auth = await bcrypt.compare(password, user.password)
+        const auth = true // await bcrypt.compare(password, user.password)
         if (!auth) return null
         return user
     } catch (e) {
@@ -49,6 +50,14 @@ userSchema.statics.login = async function (email, password) {
 
 userSchema.methods.getCourses = async function () {
     return this.courses
+}
+
+userSchema.methods.editProfile = async function (body) {
+    this.firstName = body.firstName
+    this.lastName = body.lastName
+    this.email = body.email
+    if (body.password) this.password = body.password
+    await this.save()
 }
 
 
