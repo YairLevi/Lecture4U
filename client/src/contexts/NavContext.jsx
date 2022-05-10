@@ -75,7 +75,7 @@ export default function NavProvider({ children }) {
         pathFull,
         pathRelative,
         nav,
-        rnav: siblingNav,
+        siblingNav,
         relativeNav
     }
 

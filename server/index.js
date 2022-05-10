@@ -49,6 +49,54 @@ Date.prototype.addHours = function (h) {
     this.setTime(this.getTime() + (h * 60 * 60 * 1000));
     return this;
 }
+/////////////
+
+var nodemailer = require('nodemailer');
+const emailValidator = require('deep-email-validator')
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'lecture4u.contact@gmail.com',
+        pass: 'fzyszriionujquyz'
+    }
+});
+
+var mailOptions = {
+    to: 'yairlevi2001@gmail.com',
+    subject: 'Lecture4U Contact Reply',
+    html: `
+<table>
+<tr>
+<td align="center" style="padding:0;">
+        <div style="{height: 100%; width: 100%; display: flex; justify-content: center}">
+            <div style="{padding: 20px}">
+                <h2 dir="ltr">Your Code Is:</h2>
+                <h1 dir="ltr">!@#$%^</h1>
+            </div>
+        </div>
+        </td>
+        </tr>
+        </table>
+        
+    `
+};
+async function sendMail(mailOptions) {
+    const exists = await emailValidator.validate(mailOptions.to)
+    if (!exists.valid) console.log('Mail doesnt exist')
+
+    // transporter.sendMail(mailOptions, function (error, info) {
+    //     if (error) {
+    //         console.log(error);
+    //     } else {
+    //         console.log('Email sent: ' + info.response);
+    //     }
+    // });
+}
+sendMail(mailOptions)
+
+/////////////
+
 
 app.get('/video', async (req, res) => {
     const reqVideo = 'VID_20190724_211512.mp4'

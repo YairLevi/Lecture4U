@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react"
 import useLoadingEffect from "../hooks/useLoadingEffect";
+import requests from "../helpers/requests";
 
 const AuthContext = React.createContext(null)
 
@@ -27,9 +28,10 @@ export default function AuthProvider({ children }) {
             credentials: 'include'
         }
         const result = await fetch('http://localhost:8000/login', options)
-        if (result.status !== 200) return
+        if (result.status !== 200) return false
         const user = await result.json()
         setCurrentUser(user)
+        return true
     }
 
     async function register(data) {
@@ -49,12 +51,24 @@ export default function AuthProvider({ children }) {
             setCurrentUser(null)
     }
 
+    async function checkIfExists(email) {
+        const result = await requests.get('/exist', { email })
+        return result.status === 200
+    }
+
+    async function generateCode(email) {
+        const result = await requests.get('/generate-code', { email })
+        return result.status === 200
+    }
+
     const value = {
         currentUser,
         loading,
         login,
         logout,
         register,
+        checkIfExists,
+        generateCode,
     }
 
     return (

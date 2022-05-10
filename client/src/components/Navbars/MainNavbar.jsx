@@ -32,7 +32,12 @@ export default function MainNavbar({ openSidebar, isSticky, children }) {
                 </Nav>
                 <div className={'d-flex pe-3'}>
                     <NavLink style={{color: "grey"}}>{currentUser.email}</NavLink>
-                    <Avatar src={currentUser.profileImage.url[0]} sx={{ width: 40, height: 40 }}/>
+                    {
+                        currentUser.profileImage == null ?
+                            <Avatar sx={{ width: 40, height: 40 }}/>
+                            :
+                            <Avatar src={currentUser.profileImage.url[0]} alt={'image'} sx={{ width: 40, height: 40 }}/>
+                    }
                 </div>
             </Bar.Collapse>
         </Bar>
