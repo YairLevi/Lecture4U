@@ -144,4 +144,23 @@ router.post('/add-members', async (req, res) => {
     }
 })
 
+router.delete('/leave-group', async (req, res) => {
+    const userId = getUserID(req)
+    const groupId = req.body.groupId
+
+    const user = await User.findById(userId)
+    const group = await Group.findById(groupId)
+
+    const indexOfUser = group.userIds.indexOf(user._id)
+    group.userIds.splice(indexOfUser, 1)
+
+    const indexOfGroup = user.groups.indexOf(group._id)
+    user.groups.splice(indexOfGroup, 1)
+
+    await user.save()
+    await group.save()
+
+    res.sendStatus(200)
+})
+
 module.exports = router

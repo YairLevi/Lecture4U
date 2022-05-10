@@ -54,4 +54,15 @@ export default class requests {
         })
         return search
     }
+
+    static async delete(path, body) {
+        const url = this.prototype.makeUrl(path, {})
+        const options = {
+            credentials: 'include',
+            method: 'DELETE',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify(body)
+        }
+        return await fetch(url, options)
+    }
 }
