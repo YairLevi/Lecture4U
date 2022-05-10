@@ -1,10 +1,25 @@
 import { Card, Button } from "react-bootstrap";
 import { useState } from "react";
 import UploadFiles from "../../modals/UploadFiles";
+import FileTab from "../../modals/FileTab";
+import FileLinkTab from "../../modals/FileLinkTab";
+import ConfirmationModal from "../../modals/ConfirmationModal";
+import { useParams } from "react-router";
+import requests from "../../helpers/requests";
 
 
 export default function GroupFiles(props) {
     const [open, setOpen] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
+    const [fileToDelete, setFileToDelete] = useState()
+    const { id } = useParams()
+
+    async function deleteFile() {
+        const groupId = id
+        const fileId = fileToDelete._id
+        const res = await requests.delete('/groups/delete-file', { groupId, fileId })
+        return res.status === 200
+    }
 
     return (
         <>
@@ -20,9 +35,13 @@ export default function GroupFiles(props) {
                     }
                     {
                         props.files.map((value, index) => {
-                            return <div key={index}>
-                                <a href={value.url}>{value.name}</a>
-                            </div>
+                            return <FileLinkTab key={index}
+                                                onClick={() => {
+                                                    setFileToDelete({ ...value })
+                                                    setOpenConfirm(true)
+                                                }}
+                                                name={value.name}
+                                                link={value.url}/>
                         })
                     }
                 </Card.Body>
@@ -34,6 +53,11 @@ export default function GroupFiles(props) {
             </Card>
 
             <UploadFiles show={open} onHide={() => setOpen(false)}/>
+            <ConfirmationModal show={openConfirm}
+                               onHide={() => setOpenConfirm(false)}
+                               text={`delete file: ${fileToDelete && fileToDelete.name}`}
+                               func={deleteFile}
+            />
         </>
     )
 }

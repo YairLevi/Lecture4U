@@ -163,4 +163,13 @@ router.delete('/leave-group', async (req, res) => {
     res.sendStatus(200)
 })
 
+router.delete('/delete-file', async (req, res) => {
+    const groupId = req.body.groupId
+    const group = await Group.findById(groupId)
+    const indexOfFile = group.files.indexOf(req.body.fileId)
+    group.files.splice(indexOfFile, 1)
+    await group.save()
+    res.sendStatus(200)
+})
+
 module.exports = router

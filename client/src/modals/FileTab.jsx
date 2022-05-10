@@ -13,7 +13,7 @@ export default function FileTab({ name, onClick }) {
                    style={{ cursor: 'pointer' }}
                    onClick={onClick}
         >
-            <p style={{textOverflow: 'ellipsis'}}>{name}</p>
+            <p style={{textOverflow: 'ellipsis', width: '90%'}}>{name}</p>
             <div style={{
                 visibility: hover ? 'visible' : 'hidden',
             }}>
