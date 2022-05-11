@@ -5,5 +5,7 @@ export const ERRORS = {
     INVALID_MAIL: 'Invalid email',
     EMAIL_DONT_EXIST: 'Account not found',
     EMAIL_TAKEN: 'That email is taken. Try another',
-    INCORRECT_CREDENTIALS: 'Incorrect email or password'
+    INCORRECT_CREDENTIALS: 'Incorrect email or password',
+    WRONG_CODE: 'Wrong code',
+    DONT_MATCH: 'Values don\'t match'
 }

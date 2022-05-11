@@ -1,28 +1,32 @@
 import React, { useState } from 'react';
 import { Button, Card, Container, Form, NavLink, Spinner } from 'react-bootstrap';
-import { useAuth } from "../../contexts/AuthContext";
 import { useLoading } from "../../hooks/useLoading";
 import { ERRORS } from "../../helpers/errors";
 import { useNav } from "../../contexts/NavContext";
 import { useSearchParams } from "react-router-dom";
+import requests from "../../helpers/requests";
 
 export default function ResetPassword(props) {
-    const { checkIfExists } = useAuth()
     const [error, setError] = useState()
-    const [code, setCode] = useState()
-    const { relativeNav } = useNav()
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const { fullNav } = useNav()
     const [searchParams] = useSearchParams()
     const email = searchParams.get('email')
+
     const [loading, action] = useLoading(async () => {
-        return await checkIfExists(email)
+        setError(null)
+        if (password !== confirmPassword) return setError(ERRORS.DONT_MATCH)
+        if (password === '') return setError(ERRORS.EMPTY_NAME)
+        const result = await requests.post('/reset-password', { password, email })
+        if (result.status !== 200) return setError(ERRORS.GENERAL_ERROR)
+        return true
     })
 
     async function handleClick(e) {
         e.preventDefault()
-        setError(null)
-        const doesExist = await action(email)
-        if (!doesExist) return setError(ERRORS.EMAIL_DONT_EXIST)
-        relativeNav('/code')
+        const res = await action()
+        if (res) fullNav('/sign-in', {}, false)
     }
 
     return (
@@ -31,13 +35,23 @@ export default function ResetPassword(props) {
                 <Card.Body className={"p-5"}>
                     <h1 className={"mb-3 text-center"}>Reset Password</h1>
                     <Form>
-                        <Form.Group className={"mb-3"}>
-                            <Form.Label className={'mb-3'}>
-                                We sent a security code to the address:<br/>
-                                {email}<br/>
-                                Check your inbox and insert it here.
-                            </Form.Label>
-                            <Form.Control placeholder={'XXXXXXXX'} onChange={(e) => setCode(e.target.value)} required/>
+                        <Form.Group>
+                            <Form.Label>New Password</Form.Label>
+                            <Form.Control type={"password"}
+                                          onChange={(e) => {
+                                              setError(null)
+                                              setPassword(e.target.value)
+                                          }}
+                                          required/>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Confirm Password</Form.Label>
+                            <Form.Control type={"password"}
+                                          onChange={(e) => {
+                                              setError(null)
+                                              setConfirmPassword(e.target.value)
+                                          }}
+                                          required/>
                         </Form.Group>
                         {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
                         <div className={'d-flex justify-content-center'}>

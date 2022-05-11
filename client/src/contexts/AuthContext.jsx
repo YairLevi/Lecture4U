@@ -52,7 +52,7 @@ export default function AuthProvider({ children }) {
     }
 
     async function checkIfExists(email) {
-        const result = await requests.get('/exist', { email })
+        const result = await requests.get('/exist-user', { email })
         return result.status === 200
     }
 

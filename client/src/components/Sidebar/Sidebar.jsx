@@ -24,7 +24,7 @@ export default function Sidebar({ closeSidebar, open }) {
     const [modalShow, setModalShow] = useState(false)
     const [addCourseShow, setAddCourseShow] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams()
-    const { nav } = useNav()
+    const { nav, fullNav } = useNav()
 
     return (
         <>
@@ -33,9 +33,6 @@ export default function Sidebar({ closeSidebar, open }) {
                         toggled={open}
                         onToggle={closeSidebar}
             >
-                {/*<SidebarHeader className={'d-flex justify-content-center align-items-center'}>*/}
-                {/*    */}
-                {/*</SidebarHeader>*/}
                 <Container className={'d-flex justify-content-center align-items-center'}>
                     <NavLink href="/" style={{
                         color: "black",
@@ -48,14 +45,14 @@ export default function Sidebar({ closeSidebar, open }) {
                 <SidebarContent>
 
                     <Menu title={"General"}>
-                        <Item icon={'bi-person'} onClick={() => nav('/main/profile', {}, false)}>Profile</Item>
-                        <Item icon={'bi-people'} onClick={() => nav('/main/groups', {}, false)}>Groups</Item>
+                        <Item icon={'bi-person'} onClick={() => fullNav('/main/profile')}>Profile</Item>
+                        <Item icon={'bi-people'} onClick={() => fullNav('/main/groups')}>Groups</Item>
                     </Menu>
                     <Menu title={"Student View"}>
                         <InnerMenu title={"Courses"} icon={'bi-book'}>
                             <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>
                             <Item icon={'bi-collection'}
-                                  onClick={() => nav('/main/courses', { state: 'student' }, false)}>
+                                  onClick={() => fullNav('/main/courses', { state: 'student' }, false)}>
                                 Show all courses
                             </Item>
                         </InnerMenu>
@@ -64,15 +61,15 @@ export default function Sidebar({ closeSidebar, open }) {
                         <InnerMenu title={"My Courses"}>
                             <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>
                             <Item icon={'bi-collection'}
-                                  onClick={() => nav('/main/courses', { state: 'teacher' }, false)}>
+                                  onClick={() => fullNav('/main/courses', { state: 'teacher' }, false)}>
                                 Show all courses
                             </Item>
                         </InnerMenu>
                     </Menu>
                     <Menu title={"Tools"}>
-                        <Item icon={'bi-mic'} onClick={() => navigate('/main/speech')}>Speech To Text</Item>
-                        <Item icon={'bi-type'} onClick={() => navigate('/main/ocr')}>Image To Text</Item>
-                        <Item icon={'bi-calendar-range'} onClick={() => navigate('/main/calendar')}>Calender</Item>
+                        <Item icon={'bi-mic'} onClick={() => fullNav('/main/speech', {}, false)}>Speech To Text</Item>
+                        <Item icon={'bi-type'} onClick={() => fullNav('/main/ocr', {}, false)}>Image To Text</Item>
+                        <Item icon={'bi-calendar-range'} onClick={() => fullNav('/main/calendar', {}, false)}>Calender</Item>
                     </Menu>
                 </SidebarContent>
                 <SidebarFooter>

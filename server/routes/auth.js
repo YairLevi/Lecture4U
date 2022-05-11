@@ -12,7 +12,7 @@ const jwtName = 'jwt'
 
 const SECURITY_CODE_SIZE = 10
 const TIME_LIMIT = 1000 * 60
-const DELETE_CODES_TIMEFRAME = 10 * 60 * 1000
+const DELETE_CODES_TIMEFRAME = 30 * 60 * 1000
 
 const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 const resetCodes = {}
@@ -33,7 +33,8 @@ const createMailOptions = (email, code) => {
 
 setInterval(() => {
     for (const key of Object.keys(resetCodes)) {
-
+        if (Date.now() - resetCodes[key].createdAt > TIME_LIMIT)
+            delete resetCodes[key]
     }
 }, DELETE_CODES_TIMEFRAME)
 
@@ -88,7 +89,7 @@ router.get('/logout', (req, res) => {
     }
 })
 
-router.get('/exist', async (req, res) => {
+router.get('/exist-user', async (req, res) => {
     const email = req.query.email
     const user = await User.findOne({ email })
     if (user) res.sendStatus(200)
@@ -115,15 +116,18 @@ router.get('/generate-code', async (req, res) => {
 router.get('/check-code', async (req, res) => {
     const email = req.query.email
     const code = req.query.code
-    if (Date.now() - resetCodes[email].createdAt < TIME_LIMIT && code === resetCodes[email].code) {
-        return res.sendStatus(200)
+    if (Date.now() - resetCodes[email].createdAt > TIME_LIMIT) {
+        return res.sendStatus(405)
+    } else if (code !== resetCodes[email].code) {
+        return res.sendStatus(400)
     }
-    res.status(400)
+    res.sendStatus(200)
 })
 
 router.post('/reset-password', async (req, res) => {
     const newPassword = req.body.password
     const email = req.body.email
+    console.log(email)
     const user = await User.findOne({ email })
     user.password = newPassword
     await user.save()

@@ -10,18 +10,20 @@ export default function EnterMail(props) {
     const { checkIfExists, generateCode } = useAuth()
     const [error, setError] = useState()
     const { relativeNav } = useNav()
+
     const [loading, action] = useLoading(async () => {
         setError(null)
         const doesExist = await checkIfExists(email)
         if (!doesExist) return setError(ERRORS.EMAIL_DONT_EXIST)
         const result = await generateCode(email)
         if (!result) return setError(ERRORS.GENERAL_ERROR)
-        relativeNav('/code', { email })
+        return true
     })
 
     async function handleClick(e) {
         e.preventDefault()
-        await action()
+        const res = await action()
+        if (res) relativeNav('/code', { email })
     }
 
     return (

@@ -1,7 +1,6 @@
 import { createContext, useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
-import requests from "../helpers/requests";
-import { useSearchParams, createSearchParams, useParams } from "react-router-dom";
+import { useSearchParams, createSearchParams } from "react-router-dom";
 
 const NavContext = createContext(null)
 
@@ -15,68 +14,29 @@ export default function NavProvider({ children }) {
     const [searchParams,] = useSearchParams()
 
     function getCurrentParams() {
-        if (location.search === '') return {}
-        const pairs = location.search.replace('?', '').split('&')
         const params = {}
-        for (const pair of pairs) {
-            const keyValue = pair.split('=')
-            params[keyValue[0]] = keyValue[1]
-        }
+        searchParams.forEach((value, key) => params[key] = value)
         return params
     }
 
-    function pathFull(path, clearParams = false) {
-        const params = clearParams ? '' : location.search
-        navigate(path + params)
-    }
-
-    function pathRelative(path, clearParams = false) {
-        const currentPath = location.pathname;
-        const newPath = currentPath + path
-        const params = clearParams ? '' : location.search
-        navigate(newPath + params)
-    }
-
-    function nav(path, params, keepParams = true) {
-        const currentParams = getCurrentParams()
-        let searchParams = keepParams ? currentParams : {}
-        navigate({
-            pathname: path,
-            search: `?${createSearchParams({ ...searchParams, ...params })}`
-        })
-    }
-
-    function siblingNav(path, params, keepParams = true) {
-        const currentParams = getCurrentParams()
+    function siblingNav(path, params={}, keepParams = true) {
         const newPath = location.pathname.split('/').slice(0, -1).join('/') + path
-        let newSearchParams = keepParams ? currentParams : { state: searchParams.get('state') }
-        navigate({
-            pathname: newPath,
-            search: `?${createSearchParams({ ...newSearchParams, ...params })}`
-        })
+        fullNav(newPath, params, keepParams)
     }
 
-    function relativeNav(path, params, keepParams=true) {
-        const currentParams = getCurrentParams()
-        const newPath = location.pathname + path
-        let newSearchParams = keepParams ? currentParams : { state: searchParams.get('state') }
-        navigate({
-            pathname: newPath,
-            search: `?${createSearchParams({ ...newSearchParams, ...params })}`
-        })
+    function relativeNav(path, params={}, keepParams=true) {
+        fullNav(location.pathname + path, params, keepParams)
     }
 
-    function addParam(param) {
-        nav(location.pathname, param)
+    function fullNav(path, params={}, keepParams=true) {
+        const newSearchParams = keepParams ? {...getCurrentParams(), ...params} : params
+        navigate({ pathname: path, search: `?${createSearchParams(newSearchParams)}` })
     }
 
     const value = {
-        addParam,
-        pathFull,
-        pathRelative,
-        nav,
         siblingNav,
-        relativeNav
+        relativeNav,
+        fullNav
     }
 
     return (

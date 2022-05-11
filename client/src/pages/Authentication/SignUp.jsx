@@ -13,7 +13,7 @@ export default function SignIn() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const { register, checkIfExists } = useAuth()
-    const { pathFull } = useNav()
+    const { fullNav } = useNav()
     const [error, setError] = useState()
 
     const [loading, action] = useLoading(async () => {
@@ -25,7 +25,7 @@ export default function SignIn() {
         if (isTaken) return setError(ERRORS.EMAIL_TAKEN)
         const result = await register({ firstName, lastName, email, password })
         if (!result) return setError(ERRORS.GENERAL_ERROR)
-        pathFull('/sign-in')
+        fullNav('/sign-in', {}, false)
     })
 
     async function handleClick(e) {

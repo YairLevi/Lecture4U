@@ -30,7 +30,7 @@ function App() {
                 <Route path={"/sign-in"} element={<SignIn/>}/>
                 <Route path={'/reset-password'} element={<EnterMail/>} />
                 <Route path={'/reset-password/code'} element={<SecurityCode/>} />
-                <Route path={'/reset-password/reset'} element={<ResetPassword/>} />
+                <Route path={'/reset-password/new'} element={<ResetPassword/>} />
             </Route>
             <Route element={<PrivateRoute/>}>
                 <Route path={"/main/*"} element={<Main/>}/>

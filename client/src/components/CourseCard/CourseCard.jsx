@@ -1,23 +1,14 @@
 import React from 'react'
 import { Card, Container } from 'react-bootstrap'
 import './CourseCard.scss'
-import { useLocation, useNavigate, useParams } from "react-router"
 import { useNav } from "../../contexts/NavContext";
 
 
 export default function CourseCard(props) {
-    const navigate = useNavigate()
-    const location = useLocation()
-    const { nav } = useNav()
-    const params = useParams()
-
-    function isStudent() {
-        const arr = location.pathname.split('/')
-        return arr[arr.length - 1] === 'student'
-    }
+    const { relativeNav } = useNav()
 
     function handleClick() {
-        nav(`/main/course/${props.id}/material`)
+        relativeNav(`/${props.id}/material`)
     }
 
     return (

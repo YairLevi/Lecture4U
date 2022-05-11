@@ -19,8 +19,10 @@ import SpeechToText from "../speechToText/SpeechToText";
 
 export default function Main() {
     const [open, setOpen] = useState(false)
-    const { rnav } = useNav()
+    const { siblingNav } = useNav()
     const params = useParams()
+    const [searchParams, ] = useSearchParams()
+    const state = searchParams.get('state')
     const [inCourse, setInCourse] = useState(false)
 
     useEffect(() => {
@@ -36,7 +38,7 @@ export default function Main() {
                         inCourse && courseTabs.map((value, index) => {
                             return (
                                 <Nav.Item key={index}>
-                                    <Nav.Link onClick={async () => rnav(`/${value.toLowerCase()}`, {}, false)}>
+                                    <Nav.Link onClick={async () => siblingNav(`/${value.toLowerCase()}`, {state}, false)}>
                                         {value}
                                     </Nav.Link>
                                 </Nav.Item>
@@ -44,13 +46,13 @@ export default function Main() {
                         })
                     }
                 </MainNavbar>
-                <Container fluid className={'h-100 overflow-auto'} /*style={{ backgroundColor: '#e0e4ec' }}*/>
+                <Container fluid className={'h-100 overflow-auto'}>
                     <Routes>
                         <Route path={'/profile'} element={<ProfilePage />} />
                         <Route path={'/groups'} element={<GroupsPage />} />
                         <Route path={'/groups/:id'} element={<Group />} />
                         <Route path={'/courses'} element={<Courses/>}/>
-                        <Route path={'/course/:id/*'} element={<Course/>}/>
+                        <Route path={'/courses/:id/*'} element={<Course/>}/>
                         <Route path={'/speech'} element={<SpeechToText/>}/>
                         <Route path={'/calendar'} element={<Calendar/>}/>
                         <Route path={'/ocr'} element={<Ocr/>}/>
