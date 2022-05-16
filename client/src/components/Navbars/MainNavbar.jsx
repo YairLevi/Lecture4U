@@ -30,8 +30,8 @@ export default function MainNavbar({ openSidebar, isSticky, children }) {
                 <Nav variant={'pills'} className={'me-auto'}>
                     {children}
                 </Nav>
-                <div className={'d-flex pe-3'}>
-                    <NavLink style={{color: "grey"}}>{currentUser.email}</NavLink>
+                <div className={'d-flex pe-3 align-items-center'}>
+                    <NavLink style={{color: "grey", fontSize: '1.1rem'}}>{currentUser.email}</NavLink>
                     {
                         currentUser.profileImage == null ?
                             <Avatar sx={{ width: 40, height: 40 }}/>

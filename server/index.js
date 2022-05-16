@@ -9,6 +9,7 @@ const fs = require('fs')
 const path = require("path");
 const mongoose = require("mongoose");
 mongoose.connect(process.env.URL)
+// require('./routes/collab')
 
 const authRouter = require('./routes/auth')
 const courseRouter = require('./routes/course')
@@ -21,6 +22,7 @@ const profileRouter = require('./routes/profile')
 const PORT = 8000
 const HOST = 'localhost'
 const app = express()
+const server = require('http').Server(app)
 const threeDaysInSeconds = 60 * 60 * 24 * 3
 const jwtName = 'jwt'
 
@@ -34,6 +36,7 @@ app.use('/forum', forumRouter)
 app.use('/schedule', scheduleRouter)
 app.use('/groups', groupsRouter)
 app.use('/profile', profileRouter)
+
 
 app.use(express.static(__dirname + '/static'));
 
@@ -62,41 +65,6 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-var mailOptions = {
-    to: 'yairlevi2001@gmail.com',
-    subject: 'Lecture4U Contact Reply',
-    html: `
-<table>
-<tr>
-<td align="center" style="padding:0;">
-        <div style="{height: 100%; width: 100%; display: flex; justify-content: center}">
-            <div style="{padding: 20px}">
-                <h2 dir="ltr">Your Code Is:</h2>
-                <h1 dir="ltr">!@#$%^</h1>
-            </div>
-        </div>
-        </td>
-        </tr>
-        </table>
-        
-    `
-};
-async function sendMail(mailOptions) {
-    const exists = await emailValidator.validate(mailOptions.to)
-    if (!exists.valid) console.log('Mail doesnt exist')
-
-    // transporter.sendMail(mailOptions, function (error, info) {
-    //     if (error) {
-    //         console.log(error);
-    //     } else {
-    //         console.log('Email sent: ' + info.response);
-    //     }
-    // });
-}
-sendMail(mailOptions)
-
-/////////////
-
 
 app.get('/video', async (req, res) => {
     const reqVideo = 'VID_20190724_211512.mp4'
@@ -121,4 +89,48 @@ app.get('/test', async (req, res) => {
     res.json({ url: metadata })
 })
 
-app.listen(PORT, HOST, () => console.log(`server started on port ${PORT}`))
+server.listen(PORT, HOST, callback = () => console.log(`server started on port ${PORT}`))
+
+
+const Document = require("./models/Document")
+
+
+const io = require("socket.io")(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ['GET', 'POST']
+    }
+})
+
+const defaultValue = ""
+
+let doc_dict = {}
+
+io.on("connection", socket => {
+    console.log('here')
+    socket.on("get-document", async documentId => {
+
+        // needs to use DB for returning the same documentId when in same group (using groupId?)
+
+        const document = await findOrCreateDocument(documentId)
+        socket.join(documentId)
+        socket.emit("load-document", document.data)
+
+        doc_dict[documentId] = document.data
+        console.log(doc_dict)
+
+        socket.on("send-changes", delta => {
+            socket.broadcast.to(documentId).emit("receive-changes", delta)
+        })
+        socket.on("save-document", async data => {
+            await Document.findByIdAndUpdate(documentId, { data })
+        })
+    })
+})
+
+async function findOrCreateDocument(id) {
+    if (id == null) return
+    const document = await Document.findById(id)
+    if (document) return document
+    return await Document.create({ _id: id, data: defaultValue })
+}

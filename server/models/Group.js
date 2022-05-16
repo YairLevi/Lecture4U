@@ -17,7 +17,8 @@ const groupSchema = new mongoose.Schema({
     },
     userIds: [mongoose.SchemaTypes.ObjectId],
     files: [mongoose.SchemaTypes.ObjectId],
-    comments: [mongoose.SchemaTypes.ObjectId]
+    comments: [mongoose.SchemaTypes.ObjectId],
+    documents: [mongoose.SchemaTypes.ObjectId]
 })
 
 

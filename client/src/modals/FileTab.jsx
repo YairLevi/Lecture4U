@@ -11,12 +11,11 @@ export default function FileTab({ name, onClick }) {
                    onMouseEnter={() => setHover(true)}
                    onMouseLeave={() => setHover(false)}
                    style={{ cursor: 'pointer' }}
-                   onClick={onClick}
         >
             <p style={{textOverflow: 'ellipsis', width: '90%'}}>{name}</p>
             <div style={{
                 visibility: hover ? 'visible' : 'hidden',
-            }}>
+            }} onClick={onClick}>
                 <Icon iconClass={'bi-trash'}/>
             </div>
         </Container>

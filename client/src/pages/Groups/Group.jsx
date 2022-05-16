@@ -7,6 +7,7 @@ import GroupDescription from "./GroupDescription";
 import GroupFiles from "./GroupFiles";
 import GroupChat from "./GroupChat";
 import useLoadingEffect from "../../hooks/useLoadingEffect";
+import GroupEditors from "./GroupEditors";
 
 
 export default function Group(props) {
@@ -26,10 +27,11 @@ export default function Group(props) {
         :
         <Container className={'d-flex h-100 pb-3'}>
             <GroupChat comments={data.comments}/>
-            <Container className={'col-4 d-flex flex-column'}>
+            <Container className={'col-4 d-flex flex-column overflow-auto'}>
                 <GroupMembers users={data.userIds}/>
                 <GroupDescription description={data.description}/>
                 <GroupFiles files={data.files}/>
+                <GroupEditors documents={data.documents}/>
             </Container>
         </Container>
 

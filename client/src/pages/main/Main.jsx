@@ -16,6 +16,8 @@ import { useNav } from "../../contexts/NavContext";
 import Group from "../Groups/Group";
 import ProfilePage from "../Profile/ProfilePage";
 import SpeechToText from "../speechToText/SpeechToText";
+import Editor from "../Groups/Editor";
+import DashboardPage from "../Dashboard/DashboardPage";
 
 export default function Main() {
     const [open, setOpen] = useState(false)
@@ -48,9 +50,11 @@ export default function Main() {
                 </MainNavbar>
                 <Container fluid className={'h-100 overflow-auto'}>
                     <Routes>
+                        <Route exact path={'/'} element={<DashboardPage/>}/>
                         <Route path={'/profile'} element={<ProfilePage />} />
                         <Route path={'/groups'} element={<GroupsPage />} />
                         <Route path={'/groups/:id'} element={<Group />} />
+                        <Route path={'/groups/:id/document/:docId'} element={<Editor />} />
                         <Route path={'/courses'} element={<Courses/>}/>
                         <Route path={'/courses/:id/*'} element={<Course/>}/>
                         <Route path={'/speech'} element={<SpeechToText/>}/>

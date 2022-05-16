@@ -7,6 +7,7 @@ const Group = require('../models/Group')
 const File = require('../models/File')
 const Comment = require('../models/forum/Comment')
 const Course = require('../models/Course')
+const Document = require('../models/Document')
 const { getUserID } = require("../httpUtil");
 const { getFileData } = require("../cloud/files");
 
@@ -53,6 +54,7 @@ router.get('/group-data', async (req, res) => {
             comment.author = await User.findById(comment.author)
             return comment
         }))
+        group.documents = await Promise.all(group.documents.map(docId => Document.findById(docId)))
         res.status(200).json(group)
     } catch (e) {
         console.log(`at /group-data:\n${e.message}`)
@@ -153,6 +155,10 @@ router.delete('/leave-group', async (req, res) => {
 
     const indexOfUser = group.userIds.indexOf(user._id)
     group.userIds.splice(indexOfUser, 1)
+    if (group.userIds.length === 0) {
+        await Group.findByIdAndDelete(group._id)
+    }
+
 
     const indexOfGroup = user.groups.indexOf(group._id)
     user.groups.splice(indexOfGroup, 1)
@@ -167,7 +173,18 @@ router.delete('/delete-file', async (req, res) => {
     const groupId = req.body.groupId
     const group = await Group.findById(groupId)
     const indexOfFile = group.files.indexOf(req.body.fileId)
-    group.files.splice(indexOfFile, 1)
+    if (indexOfFile !== -1) {
+        group.files.splice(indexOfFile, 1)
+        await group.save()
+    }
+    res.sendStatus(200)
+})
+
+router.post('/create-document', async (req, res) => {
+    const { groupId, name } = {...req.body}
+    const group = await Group.findById(groupId)
+    const document = await Document.create({ name: name, data: {} })
+    group.documents.push(document._id)
     await group.save()
     res.sendStatus(200)
 })

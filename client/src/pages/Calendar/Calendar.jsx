@@ -10,6 +10,8 @@ import axios from "axios";
 import moment from "moment";
 import Select from "react-select";
 import { Alert, AlertTitle } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 /// https://code.daypilot.org/42221/react-weekly-calendar-tutorial
 /// https://stackoverflow.com/questions/43638938/updating-an-object-with-setstate-in-react
@@ -39,19 +41,20 @@ class Calendar extends Component {
         this.TasksHandleChange = this.TasksHandleChange.bind(this);
         this.resetCalendar = this.resetCalendar.bind(this);
         this.resetForm = this.resetForm.bind(this);
+        this.deleteGivenRow = this.deleteGivenRow.bind(this);
         this.AlertMessageHandleShow = this.AlertMessageHandleShow.bind(this);
         this.AlertMessageHandleClose = this.AlertMessageHandleClose.bind(this);
         this.getTasks = this.getTasks.bind(this);
 
         // get start of week
         let d = new Date(Date.now())
-        const diff = d.getDate() - d.getDay() + (d.getDay() == 0 ? -7 : 0)
+        const diff = d.getDate() - d.getDay() + (d.getDay() === 0 ? -7 : 0)
         d = new Date(d.setDate(diff));
         const year = d.getFullYear()
         let month = d.getMonth()+1
         if (month < 10) month = `0${month}`
-        const day = d.getDate()
-        //
+        let day = d.getDate()
+        if (day < 10) day = `0${day}`
 
         this.state = {
             loading: false,
@@ -63,6 +66,12 @@ class Calendar extends Component {
                 const dp = this.calendar;
                 const modal = await DayPilot.Modal.prompt("Create a new task:", "Task 1");
                 const modal2 = await DayPilot.Modal.prompt("Your Task Priority (Lowest to highest: 1 - 5)", "1");
+                let model_priority = Number(modal2.result)
+
+                while (model_priority < 1 || model_priority > 5) {
+                    const modal2 = await DayPilot.Modal.prompt("Your Task Priority (Lowest to highest: 1 - 5)", "1");
+                    model_priority = Number(modal2.result)
+                }
 
                 dp.clearSelection();
                 if (!modal.result) {
@@ -73,7 +82,7 @@ class Calendar extends Component {
                     end: args.end,
                     id: DayPilot.guid(),
                     text: modal.result,
-                    priority: Number(modal2.result),
+                    priority: model_priority,
                 });
             },
             eventDeleteHandling: "Update",
@@ -117,7 +126,6 @@ class Calendar extends Component {
                 isSuccess: false
             }
         };
-        // this.getTasks()
     }
 
     AlertMessageHandleShow() {
@@ -159,6 +167,8 @@ class Calendar extends Component {
     sendTaskData() {
         let data = []
         for (let i = 0; i < this.state.TasksTime.length; i++) {
+            if (this.state.TaskNames.names[i] === "") {continue}
+
             data.push({
                 start: this.getTime(this.state.TasksTime[i].start),
                 end: this.getTime(this.state.TasksTime[i].end),
@@ -185,7 +195,7 @@ class Calendar extends Component {
         console.log(data)
 
         axios
-            .post('http://localhost:5000/calendar_task_data', data)
+            .post('http://localhost:5002/calendar_task_data', data)
             .then(res => {
                 this.setState({
                     counter: (this.state.counter + 1)
@@ -330,6 +340,23 @@ class Calendar extends Component {
         })
     }
 
+    deleteGivenRow(i) {
+        let temp = this.state.customDiv.filter((data, idx) => idx !== i)
+        for (let j = 0; j < temp.length; j++) {
+            temp[j] = 'div' + (j + 1)
+        }
+        this.setState({
+            RatingValue: {
+                value: this.state.RatingValue.value.filter((data, idx) => idx !== i)
+            },
+            TaskNames: {
+                names: this.state.TaskNames.names.filter((data, idx) => idx !== i)
+            },
+            TasksTime: this.state.TasksTime.filter((data, idx) => idx !== i),
+            customDiv: temp
+        })
+    }
+
     componentDidMount() {
         this.getTasks()
     }
@@ -410,6 +437,12 @@ class Calendar extends Component {
                                         display: 'flex',
                                         flexDirection: 'row'
                                     }}>
+                                        <IconButton aria-label="delete" size="small" onClick={() => this.deleteGivenRow(i)}>
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                        &nbsp;&nbsp;&nbsp;
+
+
                                         <TextField
                                             id="outlined-name"
                                             label="Task Name"
@@ -420,11 +453,12 @@ class Calendar extends Component {
                                                 this.setState({ TaskNames: { names: newList } })
                                             }}
                                         />
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
 
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <DateTimePicker
+                                                minutesStep ={30}
                                                 ampm={false}
                                                 label="Start Date & Time"
                                                 value={this.state.TasksTime[i].start.toString()}
@@ -436,10 +470,11 @@ class Calendar extends Component {
                                                 renderInput={(params) => <TextField {...params} />}/>
                                         </LocalizationProvider>
 
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
 
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <DateTimePicker
+                                                minutesStep ={30}
                                                 ampm={false}
                                                 label="End Time"
                                                 value={this.state.TasksTime[i].end.toString()}
@@ -452,7 +487,7 @@ class Calendar extends Component {
                                         </LocalizationProvider>
 
 
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
                                         <Rating
                                             name="simple-controlled"
                                             value={this.state.RatingValue.value[i]}
