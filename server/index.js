@@ -18,6 +18,7 @@ const forumRouter = require('./routes/forum')
 const scheduleRouter = require('./routes/calendar')
 const groupsRouter = require('./routes/groups')
 const profileRouter = require('./routes/profile')
+const dashboardRouter = require('./routes/dashboard')
 
 const PORT = 8000
 const HOST = 'localhost'
@@ -30,6 +31,7 @@ app.use(cors({ origin: process.env.CLIENT, credentials: true, }))
 app.use(cookieParser())
 app.use(express.json())
 app.use('/', authRouter)
+app.use('/dashboard', dashboardRouter)
 app.use('/speech', speechRouter)
 app.use('/course', courseRouter)
 app.use('/forum', forumRouter)

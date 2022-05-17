@@ -6,6 +6,7 @@ const subjectSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    courseId: mongoose.SchemaTypes.ObjectId,
     createdAt: {
         type: Date,
         immutable: true,

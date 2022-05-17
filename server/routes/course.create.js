@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const path = require("path");
 const fs = require('fs')
-const { getQueryParams, getRandomImage, getUserID } = require('../httpUtil')
+const { getQueryParams, getRandomImage, getUserID, updateAllStudentDashboards } = require('../httpUtil')
 const storage = require('../cloud/storage')
 
 const router = express.Router()
@@ -61,7 +61,7 @@ router.post('/subject', upload.array("files"), async (req, res) => {
         const { courseId, unitId, name, text } = { ...req.body }
 
         const unit = await Unit.findById(unitId)
-        const subject = await Subject.create({ name, text })
+        const subject = await Subject.create({ courseId, name, text })
         const Bucket = storage.bucket(bucket)
         const files = []
 
@@ -72,6 +72,8 @@ router.post('/subject', upload.array("files"), async (req, res) => {
             const fileObject = await File.create({ bucket: bucket, file: filePath })
             files.push(fileObject._id)
         }
+
+        await updateAllStudentDashboards(courseId, 'subjects', subject._id)
 
         subject.files = files
         await subject.save()
@@ -96,10 +98,9 @@ router.post('/assignment', upload.array('files'), async (req, res) => {
 
     try {
         const { courseId, name, text, dueDate } = { ...req.body }
-        console.log(req.body)
         const course = await Course.findById(courseId)
 
-        const assignment = await Assignment.create({ name, text, dueDate })
+        const assignment = await Assignment.create({ name, text, courseId, dueDate })
         const Bucket = storage.bucket(bucket)
         const files = []
 
@@ -113,6 +114,8 @@ router.post('/assignment', upload.array('files'), async (req, res) => {
 
         assignment.files = files
         await assignment.save()
+
+        await updateAllStudentDashboards(course._id, 'assignments', assignment._id)
 
         if (!course.assignments) course.assignments = []
         course.assignments.push(assignment._id)

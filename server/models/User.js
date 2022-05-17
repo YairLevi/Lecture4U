@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     profileImage: mongoose.SchemaTypes.ObjectId,
-    groups: [mongoose.SchemaTypes.ObjectId]
+    groups: [mongoose.SchemaTypes.ObjectId],
+    dashboard: mongoose.SchemaTypes.ObjectId,
 })
 
 userSchema.pre('save', async function (next) {

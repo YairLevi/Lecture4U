@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 
 
 const discussionSchema = new mongoose.Schema({
+    courseId: mongoose.SchemaTypes.ObjectId,
     createdAt: {
         type: Date,
         default: () => Date.now()

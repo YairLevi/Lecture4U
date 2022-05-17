@@ -1,6 +1,9 @@
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const storage = require('./cloud/storage')
+const User = require('./models/User')
+const Course = require('./models/Course')
+const Dashboard = require('./models/Dashboard')
 
 module.exports = {
     getQueryParams: function (req) {
@@ -45,4 +48,14 @@ module.exports = {
         }
         return id
     },
+    updateAllStudentDashboards: async function (courseId, list, objectId) {
+        const course = await Course.findById(courseId)
+        for (const userId of course.students) {
+            const user = await User.findById(userId)
+            if (!user.dashboard) continue
+            const dashboard = await Dashboard.findById(user.dashboard)
+            dashboard[list].push(objectId)
+            await dashboard.save()
+        }
+    }
 }

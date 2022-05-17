@@ -45,6 +45,7 @@ export default function Sidebar({ closeSidebar, open }) {
                 <SidebarContent>
 
                     <Menu title={"General"}>
+                        <Item icon={'bi-person'} onClick={() => fullNav('/main')}>Dashboard</Item>
                         <Item icon={'bi-person'} onClick={() => fullNav('/main/profile')}>Profile</Item>
                         <Item icon={'bi-people'} onClick={() => fullNav('/main/groups')}>Groups</Item>
                     </Menu>

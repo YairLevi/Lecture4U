@@ -8,8 +8,8 @@ const router = express.Router()
 const timeLimit = 60 * 60 * 24 * 100
 const jwtName = 'jwt'
 
-// Helper Objects
 
+// Helper Objects
 const SECURITY_CODE_SIZE = 10
 const TIME_LIMIT = 1000 * 60
 const DELETE_CODES_TIMEFRAME = 30 * 60 * 1000
