@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import FileTab from "./FileTab";
 import requests from "../helpers/requests";
 import { useLocation } from "react-router-dom";
+import { useParams } from "react-router";
 
 
 function getCourseID(location) {
@@ -29,6 +30,7 @@ export default function AddSubject(props) {
     const [files, setFiles] = useState([])
     const [name, setName] = useState('')
     const [text, setText] = useState('')
+    const { id: courseId } = useParams()
     const location = useLocation()
 
     function addFiles(e) {
@@ -48,7 +50,7 @@ export default function AddSubject(props) {
     }
 
     function makeChanges() {
-        createSubject(getCourseID(location), props.unitId, name, text, files)
+        createSubject(courseId, props.unitId, name, text, files)
     }
 
 

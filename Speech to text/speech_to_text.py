@@ -13,7 +13,7 @@ from gcloud.aio.storage import Storage
 import wave
 import write_to_doc
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'steam-treat-347709-a75748e8fbdc.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '../steam-treat-347709-a75748e8fbdc.json'
 name_bucket = 'lecture4u-3'
 
 

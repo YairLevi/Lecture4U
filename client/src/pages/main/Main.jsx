@@ -28,7 +28,7 @@ export default function Main() {
     const [inCourse, setInCourse] = useState(false)
 
     useEffect(() => {
-        setInCourse(params['*'].split('/')[0] === 'course')
+        setInCourse(params['*'].split('/')[0] === 'courses' && params['*'].split('/').length > 1)
     }, [params])
 
     return (

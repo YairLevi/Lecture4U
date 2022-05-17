@@ -6,7 +6,7 @@ const fs = require("fs");
 
 
 module.exports = {
-    getFileData: async function (id, expires=new Date().addHours(1)) {
+    getFileData: async function (id, expires=new Date().addHours(100)) {
         const details = {_id: id}
 
         const fileObject = await File.findById(id)

@@ -16,6 +16,7 @@ const bucketName = 'lecture4u-3'
 const multer = require('multer')
 const fs = require("fs");
 const upload = multer({ dest: 'temp/' })
+const { mapAsync, clone } = require('../mongooseUtil')
 
 function createFilePath(groupId, fileName) {
     return `groupId-${groupId}/${fileName}`
@@ -25,15 +26,15 @@ router.get('/get-groups', async (req, res) => {
     try {
         const userId = getUserID(req)
         const user = await User.findById(userId)
-        const groups = await Promise.all(user.groups.map(async groupId => {
-            const group = (await Group.findById(groupId))._doc
+        const groups = await mapAsync(user.groups, async groupId => {
+            const group = await clone(Group, groupId)
             if (group.course !== 'no-course')
                 group.course = await Course.findById(group.course)
             else
                 group.course = { name: 'No Course' }
-            group.userIds = await Promise.all(group.userIds.map(userId => User.findById(userId)))
+            group.userIds = await mapAsync(group.userIds, userId => User.findById(userId))
             return group
-        }))
+        })
 
         res.status(200).json(groups)
 
@@ -46,15 +47,15 @@ router.get('/get-groups', async (req, res) => {
 
 router.get('/group-data', async (req, res) => {
     try {
-        const group = (await Group.findById(req.query.groupId))._doc
-        group.userIds = await Promise.all(group.userIds.map(userId => User.findById(userId)))
-        group.files = await Promise.all(group.files.map(fileId => getFileData(fileId)))
-        group.comments = await Promise.all(group.comments.map(async commentId => {
-            const comment = (await Comment.findById(commentId))._doc
+        const group = await clone(Group, req.query.groupId)
+        group.userIds = await mapAsync(group.userIds, userId => User.findById(userId))
+        group.files = await mapAsync(group.files, fileId => getFileData(fileId))
+        group.comments = await mapAsync(group.comments, async commentId => {
+            const comment = await clone(Comment, commentId)
             comment.author = await User.findById(comment.author)
             return comment
-        }))
-        group.documents = await Promise.all(group.documents.map(docId => Document.findById(docId)))
+        })
+        group.documents = await mapAsync(group.documents, docId => Document.findById(docId))
         res.status(200).json(group)
     } catch (e) {
         console.log(`at /group-data:\n${e.message}`)
