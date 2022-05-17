@@ -11,8 +11,8 @@ import InnerMenu from "./InnerMenu";
 import Item, { Icon } from './Item'
 import { useNavigate } from "react-router";
 import { Button, FormControl, InputGroup, Nav, Navbar as Bar } from "react-bootstrap";
-import AddCourse from "../../modals/AddCourse";
-import NewCourse from "../../modals/NewCourse";
+import AddCourse from "../../pages/Courses/modals/AddCourse";
+import NewCourse from "../../pages/Courses/modals/NewCourse";
 import { useSearchParams } from 'react-router-dom'
 import { useNav } from "../../contexts/NavContext";
 import { NavLink } from 'react-bootstrap'

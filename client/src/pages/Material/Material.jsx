@@ -4,7 +4,7 @@ import Unit from './Unit'
 import { Icon } from "../../components/Sidebar/Item";
 import { useLocation, useSearchParams } from "react-router-dom";
 import requests from "../../helpers/requests";
-import AddUnit from "../../modals/AddUnit";
+import AddUnit from "./modals/AddUnit";
 import { useParams } from "react-router";
 
 

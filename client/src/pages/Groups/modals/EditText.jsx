@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import requests from "../helpers/requests";
+import requests from "../../../helpers/requests";
 import { Button, Card, Form, Modal, Spinner } from "react-bootstrap";
 import React, { useState } from "react";
-import { useLoading } from "../hooks/useLoading";
-import { ERRORS } from "../helpers/errors";
-import { useRefresh } from "../hooks/useRefresh";
+import { useLoading } from "../../../hooks/useLoading";
+import { ERRORS } from "../../../helpers/errors";
+import { useRefresh } from "../../../hooks/useRefresh";
 
 
 export default function EditText(props) {

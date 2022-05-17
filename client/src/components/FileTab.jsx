@@ -1,9 +1,9 @@
 import { Container, Button } from 'react-bootstrap'
-import { Icon } from "../components/Sidebar/Item";
+import { Icon } from "./Sidebar/Item";
 import { useState } from "react";
 
 
-export default function FileLinkTab({ name, link, onClick }) {
+export default function FileTab({ name, onClick }) {
     const [hover, setHover] = useState(false)
 
     return (
@@ -11,12 +11,11 @@ export default function FileLinkTab({ name, link, onClick }) {
                    onMouseEnter={() => setHover(true)}
                    onMouseLeave={() => setHover(false)}
                    style={{ cursor: 'pointer' }}
-                   onClick={onClick}
         >
-            <a style={{width: '90%'}} href={link}>{name}</a>
+            <p style={{textOverflow: 'ellipsis', width: '90%'}}>{name}</p>
             <div style={{
                 visibility: hover ? 'visible' : 'hidden',
-            }}>
+            }} onClick={onClick}>
                 <Icon iconClass={'bi-trash'}/>
             </div>
         </Container>

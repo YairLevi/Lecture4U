@@ -18,10 +18,20 @@ const Assignment = require('../models/assignments/Assignment')
 const Submission = require('../models/assignments/Submission')
 
 const multer = require('multer')
+const { uploadFile } = require("../cloud/files");
+const { mapAsync } = require("../mongooseUtil");
 const upload = multer({ dest: 'temp/' })
 
 function generateStoragePath(courseId, unitId, subjectId, fileName) {
     return `courseId-${courseId}/unitId-${unitId}/subjectId-${subjectId}/${fileName}`
+}
+
+function assignmentPath(courseId, assignmentId, fileName) {
+    return `courseId-${courseId}/assignmentId-${assignmentId}/${fileName}`
+}
+
+function submissionPath(courseId, assignmentId, submissionId, fileName) {
+    return `courseId-${courseId}/assignmentId-${assignmentId}/submissions/submissionId-${submissionId}/${fileName}`
 }
 
 
@@ -62,21 +72,12 @@ router.post('/subject', upload.array("files"), async (req, res) => {
 
         const unit = await Unit.findById(unitId)
         const subject = await Subject.create({ courseId, name, text })
-        const Bucket = storage.bucket(bucket)
-        const files = []
-
-        for (const file of req.files) {
+        subject.files = await mapAsync(req.files, async file => {
             const filePath = generateStoragePath(courseId, unitId, subject._id, file.originalname)
-            await Bucket.upload(file.path, { destination: filePath })
-            fs.unlinkSync(file.path)
-            const fileObject = await File.create({ bucket: bucket, file: filePath })
-            files.push(fileObject._id)
-        }
-
-        await updateAllStudentDashboards(courseId, 'subjects', subject._id)
-
-        subject.files = files
+            return await uploadFile(file, filePath)
+        })
         await subject.save()
+        await updateAllStudentDashboards(courseId, 'subjects', subject._id)
 
         unit.subjects.push(subject._id)
         await unit.save()
@@ -89,38 +90,21 @@ router.post('/subject', upload.array("files"), async (req, res) => {
 })
 
 router.post('/assignment', upload.array('files'), async (req, res) => {
-
-    function assignmentPath(courseId, assignmentId, fileName) {
-        return `courseId-${courseId}/` +
-            `assignmentId-${assignmentId}/` +
-            `${fileName}`
-    }
-
     try {
         const { courseId, name, text, dueDate } = { ...req.body }
         const course = await Course.findById(courseId)
 
         const assignment = await Assignment.create({ name, text, courseId, dueDate })
-        const Bucket = storage.bucket(bucket)
-        const files = []
-
-        for (const file of req.files) {
+        assignment.files = await mapAsync(req.files, async file => {
             const filePath = assignmentPath(courseId, assignment._id, file.originalname)
-            await Bucket.upload(file.path, { destination: filePath })
-            fs.unlinkSync(file.path)
-            const fileObject = await File.create({ bucket: bucket, file: filePath })
-            files.push(fileObject._id)
-        }
-
-        assignment.files = files
+            return await uploadFile(file, filePath)
+        })
         await assignment.save()
-
-        await updateAllStudentDashboards(course._id, 'assignments', assignment._id)
+        await updateAllStudentDashboards(courseId, 'assignments', assignment._id)
 
         if (!course.assignments) course.assignments = []
         course.assignments.push(assignment._id)
         await course.save()
-
         res.sendStatus(200)
     } catch (e) {
         console.log(e.message)
@@ -130,32 +114,16 @@ router.post('/assignment', upload.array('files'), async (req, res) => {
 
 router.post('/submit', upload.array('files'), async (req, res) => {
     try {
-        function submissionPath(courseId, assignmentId, submissionId, fileName) {
-            return `courseId-${courseId}/` +
-                `assignmentId-${assignmentId}/` +
-                `submissions/` +
-                `submissionId-${submissionId}/` +
-                `${fileName}`
-        }
-
         const Bucket = storage.bucket(bucket)
         const userId = getUserID(req)
         const courseId = req.body.courseId
         const assignment = await Assignment.findById(req.body.assignmentId)
-
         const submission = await Submission.create({ userIds: [userId] })
-        const files = []
-
-        for (const file of req.files) {
-            const filePath = submissionPath(courseId, assignment._id, submission._id, file.originalname)
-            await Bucket.upload(file.path, { destination: filePath })
-            fs.unlinkSync(file.path)
-            const fileObject = await File.create({ bucket: bucket, file: filePath })
-            files.push(fileObject._id)
-        }
-
         submission.text = req.body.text
-        submission.files = files
+        submission.files = await mapAsync(req.files, async file => {
+            const filePath = submissionPath(courseId, assignment._id, submission._id, file.originalname)
+            return await uploadFile(file, filePath)
+        })
         await submission.save()
 
         assignment.submissions.push(submission._id)

@@ -1,8 +1,8 @@
 import { Card, Button } from "react-bootstrap";
 import { useState } from "react";
-import UploadFiles from "../../modals/UploadFiles";
-import FileTab from "../../modals/FileTab";
-import FileLinkTab from "../../modals/FileLinkTab";
+import UploadFiles from "./modals/UploadFiles";
+import FileTab from "../../components/FileTab";
+import FileLinkTab from "../../components/FileLinkTab";
 import ConfirmationModal from "../../modals/ConfirmationModal";
 import { useParams } from "react-router";
 import requests from "../../helpers/requests";

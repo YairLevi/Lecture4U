@@ -1,7 +1,7 @@
 import { Button, Card, Navbar } from "react-bootstrap";
 import Subject from './Subject'
 import { useState } from "react";
-import AddSubject from "../../modals/AddSubject";
+import AddSubject from "./modals/AddSubject";
 import requests from "../../helpers/requests";
 
 

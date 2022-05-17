@@ -1,31 +1,37 @@
 import { Card, Modal, Form, Button } from 'react-bootstrap'
 import { useCallback, useState } from "react";
-import FileTab from "./FileTab";
-import requests from "../helpers/requests";
+import FileTab from "../../../components/FileTab";
+import requests from "../../../helpers/requests";
 import { useLocation } from "react-router-dom";
-import { useParams } from 'react-router-dom'
+import { useParams } from "react-router";
 
 
-async function createAssignment(courseId, name, text, files, dueDate) {
+function getCourseID(location) {
+    const path = location.pathname
+    const arr = path.split('/')
+    return arr[arr.length - 1]
+}
+
+async function createSubject(courseId, unitId, name, text, files) {
     const formData = new FormData()
     formData.append('courseId', courseId)
-    formData.append('dueDate', dueDate)
+    formData.append('unitId', unitId)
     formData.append('name', name)
     formData.append('text', text)
     for (const file of files) {
         formData.append('files', file)
     }
-    const res = await requests.postMultipart('/course/create/assignment', formData)
+    const res = await requests.postMultipart('/course/create/subject', formData)
     return res.status
 }
 
 
-export default function AddAssignment(props) {
+export default function AddSubject(props) {
     const [files, setFiles] = useState([])
     const [name, setName] = useState('')
     const [text, setText] = useState('')
-    const [date, setDate] = useState(null)
-    const { id } = useParams()
+    const { id: courseId } = useParams()
+    const location = useLocation()
 
     function addFiles(e) {
         for (const file of e.target.files) {
@@ -44,7 +50,7 @@ export default function AddAssignment(props) {
     }
 
     function makeChanges() {
-        createAssignment(id, name, text, files, date)
+        createSubject(courseId, props.unitId, name, text, files)
     }
 
 
@@ -62,12 +68,6 @@ export default function AddAssignment(props) {
                             Enter Subject Name:
                         </Form.Label>
                         <Form.Control onChange={e => setName(e.target.value)}/>
-                    </Form.Group>
-                    <Form.Group className={'mb-3'}>
-                        <Form.Label className={'me-3'}>
-                            Choose Due Date:
-                        </Form.Label>
-                        <input type={"date"} onChange={e => setDate(e.target.value)}/>
                     </Form.Group>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>

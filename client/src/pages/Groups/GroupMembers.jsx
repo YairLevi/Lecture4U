@@ -1,6 +1,6 @@
 import { Card, Button } from "react-bootstrap";
 import { useState } from "react";
-import AddMember from "../../modals/AddMember";
+import AddMember from "./modals/AddMember";
 
 
 export default function GroupMembers(props) {

@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Button, Modal, Form, Spinner } from 'react-bootstrap'
-import { useLoading } from "../hooks/useLoading";
-import requests from "../helpers/requests";
-import { ERRORS } from "../helpers/errors";
+import { useLoading } from "../../../hooks/useLoading";
+import requests from "../../../helpers/requests";
+import { ERRORS } from "../../../helpers/errors";
 import { useParams } from 'react-router-dom'
-import { useRefresh } from "../hooks/useRefresh";
+import { useRefresh } from "../../../hooks/useRefresh";
 
 
 export default function NewDocumentModal(props) {

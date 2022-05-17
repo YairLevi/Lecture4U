@@ -2,7 +2,7 @@ import { Container, Spinner } from 'react-bootstrap'
 import React, { useEffect } from 'react'
 import ForumTab from "./ForumTab";
 import ForumTopBar from "./ForumTopBar";
-import NewDiscussion from "../../modals/NewDiscussion";
+import NewDiscussion from "./modals/NewDiscussion";
 import { useState } from "react";
 import requests from "../../helpers/requests";
 import { useLocation } from "react-router-dom";

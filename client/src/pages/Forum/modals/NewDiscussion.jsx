@@ -1,6 +1,6 @@
 import { Form, Modal, Button } from "react-bootstrap";
 import { useState } from "react";
-import requests from "../helpers/requests";
+import requests from "../../../helpers/requests";
 
 
 async function addDiscussion(title, question, courseId) {

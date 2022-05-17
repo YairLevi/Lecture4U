@@ -1,6 +1,6 @@
 import { Container, Button, Spinner } from 'react-bootstrap'
 import AssignmentTab from "./AssignmentTab";
-import AddAssignment from "../../modals/AddAssignment";
+import AddAssignment from "./modals/AddAssignment";
 import React, { useEffect, useState } from "react";
 import requests from "../../helpers/requests";
 import { useParams } from "react-router";

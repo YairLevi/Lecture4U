@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
-import { useAuth } from "../contexts/AuthContext";
-import requests from "../helpers/requests";
-import { useLoading } from "../hooks/useLoading";
-import { useRefresh } from "../hooks/useRefresh";
+import { useAuth } from "../../../contexts/AuthContext";
+import requests from "../../../helpers/requests";
+import { useLoading } from "../../../hooks/useLoading";
+import { useRefresh } from "../../../hooks/useRefresh";
 
 
 export default function EditProfile(props) {

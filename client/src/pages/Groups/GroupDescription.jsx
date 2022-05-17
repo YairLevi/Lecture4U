@@ -1,5 +1,5 @@
 import { Card, Button } from "react-bootstrap";
-import EditText from "../../modals/EditText";
+import EditText from "./modals/EditText";
 import { useState } from "react";
 
 

@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Form, Modal, Button } from 'react-bootstrap'
 import { Spinner } from "react-bootstrap";
-import requests from "../helpers/requests";
-import { useLoading } from "../hooks/useLoading";
-import { ERRORS } from "../helpers/errors";
-import { useRefresh } from "../hooks/useRefresh";
+import requests from "../../../helpers/requests";
+import { useLoading } from "../../../hooks/useLoading";
+import { ERRORS } from "../../../helpers/errors";
+import { useRefresh } from "../../../hooks/useRefresh";
 
 
 export default function AddGroup(props) {

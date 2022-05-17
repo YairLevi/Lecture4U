@@ -1,8 +1,8 @@
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import React, { useState } from "react";
-import requests from "../helpers/requests";
-import { useLoading } from "../hooks/useLoading";
-import { useRefresh } from "../hooks/useRefresh";
+import requests from "../../../helpers/requests";
+import { useLoading } from "../../../hooks/useLoading";
+import { useRefresh } from "../../../hooks/useRefresh";
 
 
 export default function AddPhoto(props) {

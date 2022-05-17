@@ -22,7 +22,8 @@ module.exports = {
     uploadFile: async function (file, path) {
         const bucket = storage.bucket('lecture4u-3')
         await bucket.upload(file.path, { destination: path })
+        fs.unlinkSync(file.path)
         const fileObject = await File.create({ bucket: 'lecture4u-3', file: path })
         return fileObject._id
-    }
+    },
 }

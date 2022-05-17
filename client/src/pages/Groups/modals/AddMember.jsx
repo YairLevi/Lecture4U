@@ -1,11 +1,11 @@
 import { Button, Card, Container, Form, InputGroup, Modal, Spinner } from "react-bootstrap";
 import React, { useState } from "react";
-import requests from "../helpers/requests";
+import requests from "../../../helpers/requests";
 import { useParams } from "react-router";
-import { useLoading } from "../hooks/useLoading";
-import { ERRORS } from "../helpers/errors";
-import { useRefresh } from "../hooks/useRefresh";
-import FileTab from "./FileTab";
+import { useLoading } from "../../../hooks/useLoading";
+import { ERRORS } from "../../../helpers/errors";
+import { useRefresh } from "../../../hooks/useRefresh";
+import FileTab from "../../../components/FileTab";
 
 
 export default function AddMember(props) {

@@ -1,6 +1,6 @@
 import { Container, Button, Spinner, Card } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import AddGroup from "../../modals/AddGroup";
+import AddGroup from "./modals/AddGroup";
 import React, { useEffect, useState } from "react";
 import requests from "../../helpers/requests";
 import { useNav } from "../../contexts/NavContext";

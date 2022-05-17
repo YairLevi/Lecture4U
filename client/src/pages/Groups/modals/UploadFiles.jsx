@@ -1,29 +1,17 @@
-import { Card, Modal, Form, Button } from 'react-bootstrap'
-import { useCallback, useState } from "react";
-import FileTab from "./FileTab";
-import requests from "../helpers/requests";
-import { useLocation } from "react-router-dom";
+import { Card, Modal, Form, Button, Spinner } from 'react-bootstrap'
+import React, { useCallback, useState } from "react";
+import FileTab from "../../../components/FileTab";
+import requests from "../../../helpers/requests";
 import { useParams } from 'react-router-dom'
+import { useRefresh } from "../../../hooks/useRefresh";
+import { useLoading } from "../../../hooks/useLoading";
+import { ERRORS } from "../../../helpers/errors";
 
 
-async function createSubmission(courseId, assignmentId, text, files) {
-    const formData = new FormData()
-    formData.append('courseId', courseId)
-    formData.append('assignmentId', assignmentId)
-    formData.append('text', text)
-    for (const file of files) {
-        formData.append('files', file)
-    }
-    const res = await requests.postMultipart('/course/create/submit', formData)
-    return res.status
-}
-
-
-export default function SubmitAssignment(props) {
+export default function UploadFiles(props) {
     const [files, setFiles] = useState([])
-    const [name, setName] = useState('')
-    const [text, setText] = useState('')
-    const [date, setDate] = useState(null)
+    const [error, setError] = useState()
+    const refresh = useRefresh()
     const { id } = useParams()
 
     function addFiles(e) {
@@ -42,8 +30,21 @@ export default function SubmitAssignment(props) {
         })
     }
 
-    function makeChanges() {
-        createSubmission(id, props.assignmentId, text, files)
+    const [loading, action] = useLoading(async () => {
+        const formData = new FormData()
+        formData.append('groupId', id)
+        for (const file of files) {
+            formData.append('files', file)
+        }
+        const res = await requests.postMultipart('/groups/upload', formData)
+        return res.status === 200
+    })
+
+    async function handleClick() {
+        setError(null)
+        const result = await action()
+        if (!result) return setError(ERRORS.GENERAL_ERROR)
+        refresh()
     }
 
 
@@ -51,17 +52,11 @@ export default function SubmitAssignment(props) {
         <Modal show={props.show} onHide={props.onHide}>
             <Modal.Header closeButton>
                 <Modal.Title>
-                    Add a New Subject
+                    Upload Files
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group className={'mb-3'}>
-                        <Form.Label>
-                            Comments:
-                        </Form.Label>
-                        <Form.Control as={'textarea'} rows={4} onChange={e => setText(e.target.value)}/>
-                    </Form.Group>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
                             Files / Attachments:
@@ -73,9 +68,13 @@ export default function SubmitAssignment(props) {
                             {files && displayFiles(files)}
                         </Card.Body>
                     </Card>
-                    <Button variant={'primary'} onClick={makeChanges}>Make Changes</Button>
                 </Form>
             </Modal.Body>
+            <Modal.Footer className={'d-flex'}>
+                {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
+                {loading && <Spinner animation={"border"}/>}
+                <Button onClick={handleClick} disabled={loading}>Apply Changes</Button>
+            </Modal.Footer>
         </Modal>
     )
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Form, Button, InputGroup } from 'react-bootstrap'
-import AddPhoto from "../../modals/AddPhoto";
-import EditProfile from "../../modals/EditProfile";
+import AddPhoto from "./modals/AddPhoto";
+import EditProfile from "./modals/EditProfile";
 import requests from "../../helpers/requests";
 import Avatar from "@mui/material/Avatar";
 import { useAuth } from '../../contexts/AuthContext'
