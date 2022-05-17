@@ -35,7 +35,7 @@ export default function EditText(props) {
                 <Form>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Type here:
+                            Type here
                         </Form.Label>
                         <Form.Control as={'textarea'} value={description} rows={5}
                                       onChange={e => setDescription(e.target.value)}/>

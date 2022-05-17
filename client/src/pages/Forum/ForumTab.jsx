@@ -6,12 +6,12 @@ import { useNav } from "../../contexts/NavContext";
 
 export default function ForumTab({ value, setCurrentDiscussion }) {
     const { _id, title, author, question, createdAt, mostRecent } = { ...value }
-    const { addParam } = useNav()
+    const { addParams } = useNav()
 
     return (
         <Container fluid className={'border-bottom d-flex flex-row tab'} role={'button'} onClick={() => {
             setCurrentDiscussion(value)
-            addParam({'fid': _id})
+            addParams({'fid': _id})
         }}>
             <Container className={'pt-2 col-9'}>
                 <h6 className={'title'}>{title}</h6>

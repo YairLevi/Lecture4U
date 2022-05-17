@@ -51,7 +51,7 @@ export default function AddMember(props) {
     return (
         <Modal {...props}>
             <Modal.Header closeButton>
-                <Modal.Title>Enter User Mail</Modal.Title>
+                <Modal.Title>Add Members</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -79,7 +79,7 @@ export default function AddMember(props) {
             <Modal.Footer className={'d-flex'}>
                 {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
                 {loading && <Spinner animation={"border"}/>}
-                <Button disabled={loading} onClick={addMembers}>Apply</Button>
+                <Button disabled={loading} onClick={addMembers}>Apply Changes</Button>
             </Modal.Footer>
         </Modal>
     )

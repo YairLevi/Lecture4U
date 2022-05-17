@@ -1,22 +1,28 @@
-import { Form, Modal, Button } from "react-bootstrap";
-import { useState } from "react";
+import { Form, Modal, Button, Spinner } from "react-bootstrap";
+import React, { useState } from "react";
 import requests from "../../../helpers/requests";
+import { useLoading } from "../../../hooks/useLoading";
+import { useParams } from "react-router"
+import { ERRORS } from "../../../helpers/errors";
+import { useRefresh } from "../../../hooks/useRefresh";
 
-
-async function addDiscussion(title, question, courseId) {
-    const res = await requests.post('/forum/create/discussion',
-        { title, question },
-        { courseId })
-    return await res.json()
-}
 
 export default function NewDiscussion(props) {
     const [title, setTitle] = useState()
     const [question, setQuestion] = useState()
     const { centered, show, onHide, addDiscussion } = {...props}
+    const [error, setError] = useState('')
+    const { id: courseId }= useParams()
+    const refresh = useRefresh()
+    const [loading, handleClick] = useLoading(async () => {
+        setError(null)
+        const res = await requests.post('/forum/create/discussion', { courseId, title, question })
+        if (res.status !== 200) return setError(ERRORS.GENERAL_ERROR)
+        refresh()
+    })
 
     return (
-        <Modal centered={centered} show={show} onHide={onHide}>
+        <Modal show={show} onHide={onHide}>
             <Modal.Header>
                 <Modal.Title>
                     Create a New Discussion
@@ -26,24 +32,23 @@ export default function NewDiscussion(props) {
                 <Form>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Subject:
+                            Subject
                         </Form.Label>
                         <Form.Control onChange={e => setTitle(e.target.value)}/>
                     </Form.Group>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Enter your question:
+                            Your question
                         </Form.Label>
                         <Form.Control as={'textarea'} rows={4} onChange={e => setQuestion(e.target.value)}/>
                     </Form.Group>
                 </Form>
-                <Button onClick={() => {
-                    addDiscussion(title, question)
-                    onHide()
-                }}>
-                    Post
-                </Button>
             </Modal.Body>
+            <Modal.Footer className={'d-flex'}>
+                {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
+                {loading && <Spinner animation={"border"}/>}
+                <Button onClick={handleClick} disabled={loading}>Apply Changes</Button>
+            </Modal.Footer>
         </Modal>
     )
 }

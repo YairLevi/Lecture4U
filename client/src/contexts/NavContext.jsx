@@ -33,10 +33,15 @@ export default function NavProvider({ children }) {
         navigate({ pathname: path, search: `?${createSearchParams(newSearchParams)}` })
     }
 
+    function addParams(params) {
+        fullNav(location.pathname, params)
+    }
+
     const value = {
         siblingNav,
         relativeNav,
-        fullNav
+        fullNav,
+        addParams
     }
 
     return (

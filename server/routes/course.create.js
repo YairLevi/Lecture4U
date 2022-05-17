@@ -54,8 +54,8 @@ router.post('/', async (req, res) => {
 
 router.post('/unit', async (req, res) => {
     try {
-        const { code, name, text } = { ...req.body }
-        const course = await Course.findById(code)
+        const { courseId, name, text } = { ...req.body }
+        const course = await Course.findById(courseId)
         const unit = await Unit.create({ name, text })
         course.units.push(unit._id)
         await course.save()

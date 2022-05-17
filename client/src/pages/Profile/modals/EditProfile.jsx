@@ -4,6 +4,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import requests from "../../../helpers/requests";
 import { useLoading } from "../../../hooks/useLoading";
 import { useRefresh } from "../../../hooks/useRefresh";
+import { ERRORS } from "../../../helpers/errors";
 
 
 export default function EditProfile(props) {
@@ -24,6 +25,7 @@ export default function EditProfile(props) {
     })
 
     function isModified() {
+        if (password !== '') return true
         const values = { firstName, lastName, email }
         for (const key of Object.keys(values))
             if (currentUser[key] !== values[key])
@@ -33,10 +35,10 @@ export default function EditProfile(props) {
 
     async function handleClick() {
         setError(null)
-        if (password !== confirmPassword) return setError('Passwords do not match')
+        if (password !== confirmPassword) return setError(ERRORS.PASSWORDS_DONT_MATCH)
         if (!isModified()) return props.onHide()
         const result = await editProfile()
-        if (!result) return setError('Something went wrong. Please try again later')
+        if (!result) return setError(ERRORS.GENERAL_ERROR)
         refresh()
     }
 
@@ -76,7 +78,7 @@ export default function EditProfile(props) {
                 {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
                 {loading && <Spinner animation={"border"}/>}
                 <Button onClick={handleClick} disabled={loading}>
-                    Apply Change
+                    Apply Changes
                 </Button>
             </Modal.Footer>
         </Modal>

@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
 import { Modal, Button, Form, Spinner } from 'react-bootstrap'
+import { useLoading } from "../../../hooks/useLoading";
+import requests from "../../../helpers/requests";
+import { ERRORS } from "../../../helpers/errors";
+import { useRefresh } from "../../../hooks/useRefresh";
 
 
 async function createCourse(name, teacher, description) {
@@ -15,18 +19,17 @@ async function createCourse(name, teacher, description) {
 
 export default function NewCourse(props) {
     const [error, setError] = useState(null)
-    const [loading, setLoading] = useState(false)
     const [name, setName] = useState(null)
     const [staff, setStaff] = useState(null)
     const [description, setDescription] = useState(null)
-
-    async function handleClick() {
-        setLoading(true)
+    const refresh = useRefresh()
+    const [loading, createCourse] = useLoading(async () => {
         setError(null)
-        const success = await createCourse(name, staff, description)
-        if (!success) setError('An error occurred, try again')
-        setLoading(false)
-    }
+        const res = await requests.post('/course/create', { name, staff, description })
+        if (res.status !== 200)
+            return setError(ERRORS.GENERAL_ERROR)
+        refresh()
+    })
 
     return (
         <Modal {...props}>
@@ -53,13 +56,13 @@ export default function NewCourse(props) {
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder={'What is this course about?'}/>
                     </Form.Group>
-                    <Button variant={'primary'} disabled={loading} className={'mb-3'} onClick={handleClick}>
-                        Create Course
-                    </Button>
-                    { loading && <Spinner className={'m-3 align-self-center'} animation="border"/> }
-                    { error && <span className={'alert-danger p-2'}>{error}</span>}
                 </Form>
             </Modal.Body>
+            <Modal.Footer className={'d-flex'}>
+                {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
+                {loading && <Spinner animation={"border"}/>}
+                <Button onClick={createCourse} disabled={loading}>Create Course</Button>
+            </Modal.Footer>
         </Modal>
     )
 }

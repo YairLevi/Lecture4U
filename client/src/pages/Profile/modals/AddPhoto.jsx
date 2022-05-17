@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import requests from "../../../helpers/requests";
 import { useLoading } from "../../../hooks/useLoading";
 import { useRefresh } from "../../../hooks/useRefresh";
+import { ERRORS } from "../../../helpers/errors";
 
 
 export default function AddPhoto(props) {
@@ -19,9 +20,9 @@ export default function AddPhoto(props) {
 
     async function handleClick() {
         setError(null)
-        if (!image) return setError('Select an image')
+        if (!image) return setError(ERRORS.EMPTY_NAME)
         const result = await uploadImage()
-        if (result) return setError('Something went wrong. Please try again later')
+        if (!result) return setError(ERRORS.GENERAL_ERROR)
         refresh()
     }
 
@@ -42,9 +43,7 @@ export default function AddPhoto(props) {
             <Modal.Footer className={'d-flex'}>
                 {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
                 {loading && <Spinner animation={"border"}/>}
-                <Button onClick={handleClick} disabled={loading}>
-                    Apply Change
-                </Button>
+                <Button onClick={handleClick} disabled={loading}>Apply Changes</Button>
             </Modal.Footer>
         </Modal>
     )

@@ -59,7 +59,7 @@ export default function UploadFiles(props) {
                 <Form>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Files / Attachments:
+                            Files / Attachments
                         </Form.Label>
                         <Form.Control type={'file'} multiple onChange={e => addFiles(e)}/>
                     </Form.Group>

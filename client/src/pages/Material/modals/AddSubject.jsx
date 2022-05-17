@@ -1,37 +1,36 @@
-import { Card, Modal, Form, Button } from 'react-bootstrap'
-import { useCallback, useState } from "react";
+import { Card, Modal, Form, Button, Spinner } from 'react-bootstrap'
+import React, { useCallback, useState } from "react";
 import FileTab from "../../../components/FileTab";
 import requests from "../../../helpers/requests";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router";
+import { ERRORS } from "../../../helpers/errors";
+import { useRefresh } from "../../../hooks/useRefresh";
+import { useLoading } from "../../../hooks/useLoading";
 
 
-function getCourseID(location) {
-    const path = location.pathname
-    const arr = path.split('/')
-    return arr[arr.length - 1]
-}
-
-async function createSubject(courseId, unitId, name, text, files) {
-    const formData = new FormData()
-    formData.append('courseId', courseId)
-    formData.append('unitId', unitId)
-    formData.append('name', name)
-    formData.append('text', text)
-    for (const file of files) {
-        formData.append('files', file)
-    }
-    const res = await requests.postMultipart('/course/create/subject', formData)
-    return res.status
-}
-
-
-export default function AddSubject(props) {
+export default function AddSubject({ show, onHide, unitId}) {
     const [files, setFiles] = useState([])
     const [name, setName] = useState('')
     const [text, setText] = useState('')
     const { id: courseId } = useParams()
-    const location = useLocation()
+
+    const refresh = useRefresh()
+    const [error, setError] = useState('')
+    const [loading, handleClick] = useLoading(async () => {
+        setError(null)
+        const formData = new FormData()
+        formData.append('courseId', courseId)
+        formData.append('unitId', unitId)
+        formData.append('name', name)
+        formData.append('text', text)
+        for (const file of files) {
+            formData.append('files', file)
+        }
+        const res = await requests.postMultipart('/course/create/subject', formData)
+        if (res.status !== 200) return setError(ERRORS.GENERAL_ERROR)
+        refresh()
+    })
 
     function addFiles(e) {
         for (const file of e.target.files) {
@@ -49,13 +48,9 @@ export default function AddSubject(props) {
         })
     }
 
-    function makeChanges() {
-        createSubject(courseId, props.unitId, name, text, files)
-    }
-
 
     return (
-        <Modal {...props}>
+        <Modal {...{ onHide, show}}>
             <Modal.Header closeButton>
                 <Modal.Title>
                     Add a New Subject
@@ -65,19 +60,19 @@ export default function AddSubject(props) {
                 <Form>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Enter Subject Name:
+                            Subject Name
                         </Form.Label>
                         <Form.Control onChange={e => setName(e.target.value)}/>
                     </Form.Group>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Enter Some Free Text:
+                            Description
                         </Form.Label>
                         <Form.Control as={'textarea'} rows={4} onChange={e => setText(e.target.value)}/>
                     </Form.Group>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Files / Attachments:
+                            Files / Attachments
                         </Form.Label>
                         <Form.Control type={'file'} multiple onChange={e => addFiles(e)}/>
                     </Form.Group>
@@ -86,9 +81,13 @@ export default function AddSubject(props) {
                             {files && displayFiles(files)}
                         </Card.Body>
                     </Card>
-                    <Button variant={'primary'} onClick={makeChanges}>Make Changes</Button>
                 </Form>
             </Modal.Body>
+            <Modal.Footer className={'d-flex'}>
+                {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
+                {loading && <Spinner animation={"border"}/>}
+                <Button onClick={handleClick} disabled={loading}>Apply Changes</Button>
+            </Modal.Footer>
         </Modal>
     )
 }

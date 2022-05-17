@@ -1,23 +1,12 @@
-import { Card, Modal, Form, Button } from 'react-bootstrap'
-import { useCallback, useState } from "react";
+import { Card, Modal, Form, Button, Spinner } from 'react-bootstrap'
+import React, { useCallback, useState } from "react";
 import FileTab from "../../../components/FileTab";
 import requests from "../../../helpers/requests";
 import { useLocation } from "react-router-dom";
 import { useParams } from 'react-router-dom'
-
-
-async function createAssignment(courseId, name, text, files, dueDate) {
-    const formData = new FormData()
-    formData.append('courseId', courseId)
-    formData.append('dueDate', dueDate)
-    formData.append('name', name)
-    formData.append('text', text)
-    for (const file of files) {
-        formData.append('files', file)
-    }
-    const res = await requests.postMultipart('/course/create/assignment', formData)
-    return res.status
-}
+import { useLoading } from "../../../hooks/useLoading";
+import { ERRORS } from "../../../helpers/errors";
+import { useRefresh } from "../../../hooks/useRefresh";
 
 
 export default function AddAssignment(props) {
@@ -25,7 +14,23 @@ export default function AddAssignment(props) {
     const [name, setName] = useState('')
     const [text, setText] = useState('')
     const [date, setDate] = useState(null)
-    const { id } = useParams()
+    const { id: courseId } = useParams()
+    const [error, setError] = useState('')
+    const refresh = useRefresh()
+    const [loading, handleClick] = useLoading(async () => {
+        setError(null)
+        const formData = new FormData()
+        formData.append('courseId', courseId)
+        formData.append('dueDate', date)
+        formData.append('name', name)
+        formData.append('text', text)
+        for (const file of files) {
+            formData.append('files', file)
+        }
+        const res = await requests.postMultipart('/course/create/assignment', formData)
+        if (res.status !== 200) return setError(ERRORS.GENERAL_ERROR)
+        refresh()
+    })
 
     function addFiles(e) {
         for (const file of e.target.files) {
@@ -43,23 +48,19 @@ export default function AddAssignment(props) {
         })
     }
 
-    function makeChanges() {
-        createAssignment(id, name, text, files, date)
-    }
-
 
     return (
         <Modal {...props}>
             <Modal.Header closeButton>
                 <Modal.Title>
-                    Add a New Subject
+                    Add an Assignment
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Enter Subject Name:
+                            Enter Assignment Title:
                         </Form.Label>
                         <Form.Control onChange={e => setName(e.target.value)}/>
                     </Form.Group>
@@ -86,9 +87,13 @@ export default function AddAssignment(props) {
                             {files && displayFiles(files)}
                         </Card.Body>
                     </Card>
-                    <Button variant={'primary'} onClick={makeChanges}>Make Changes</Button>
                 </Form>
             </Modal.Body>
+            <Modal.Footer className={'d-flex'}>
+                {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
+                {loading && <Spinner animation={"border"}/>}
+                <Button onClick={handleClick} disabled={loading}>Apply Changes</Button>
+            </Modal.Footer>
         </Modal>
     )
 }

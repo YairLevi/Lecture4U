@@ -14,7 +14,7 @@ const { getUserID } = require('../httpUtil')
 
 router.post('/discussion', async (req, res) => {
     try {
-        const courseId = req.query.courseId
+        const courseId = req.body.courseId
         const course = await Course.findById(courseId)
         const discussionIDs = course.discussions
 

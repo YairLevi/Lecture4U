@@ -44,7 +44,7 @@ export default function AddGroup(props) {
             <Modal.Footer className={'d-flex'}>
                 {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
                 {loading && <Spinner animation={"border"}/>}
-                <Button onClick={handleClick} disabled={loading}>Add Group</Button>
+                <Button onClick={handleClick} disabled={loading}>Apply Changes</Button>
             </Modal.Footer>
         </Modal>
     )

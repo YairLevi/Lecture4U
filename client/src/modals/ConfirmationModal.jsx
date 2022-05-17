@@ -8,9 +8,7 @@ import { useRefresh } from "../hooks/useRefresh";
 export default function ConfirmationModal({ show, onHide, func, text}) {
     const [error, setError] = useState()
     const refresh = useRefresh()
-    const [loading, action] = useLoading(async () => {
-        return func()
-    })
+    const [loading, action] = useLoading(async () => func())
 
     async function handleClick() {
         setError(null)

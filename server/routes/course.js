@@ -71,10 +71,12 @@ router.get('/student', async (req, res) => {
 })
 
 router.post('/enroll', async (req, res) => {
-    const code = req.body.code
+    const courseId = req.body.courseId
     try {
-        const course = await Course.findById(code)
+        const course = await Course.findById(courseId)
         const user = await User.findById(getUserID(req))
+        if (user.myCourses.includes(courseId))
+            return res.sendStatus(403)
         user.courses.push(course._id)
         await user.save()
         res.sendStatus(200)
