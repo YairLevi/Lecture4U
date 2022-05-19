@@ -1,12 +1,15 @@
 import React from "react";
 import {Container, Navbar as Bar, Nav, NavDropdown, Form, Button} from "react-bootstrap";
+import './Logo.scss'
 
 
 export default function Navbar(props) {
     return (
         <Bar className={"p-3 border-bottom shadow-sm"} bg={"white"} expand="md" sticky={"top"}>
             <Container>
-                <Bar.Brand href="/">Lecture4U</Bar.Brand>
+                <Bar.Brand href="/">
+                    <div className={'logo'} />
+                </Bar.Brand>
                 <Bar.Toggle aria-controls="basic-Bar-nav" />
                 <Bar.Collapse id="basic-Bar-nav">
                     <Nav className="me-auto">

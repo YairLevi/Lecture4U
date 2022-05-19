@@ -38,8 +38,9 @@ export default function Sidebar({ closeSidebar, open }) {
                         color: "black",
                         fontSize: '2rem',
                         fontWeight: 'normal',
-                    }} className={'p-4'}>
-                        Lecture4U
+                    }} className={'p-4'}
+                    >
+                        <div className={'logo'} />
                     </NavLink>
                 </Container>
                 <SidebarContent>
