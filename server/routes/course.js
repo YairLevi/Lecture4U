@@ -3,10 +3,13 @@ const jwt = require('jsonwebtoken')
 const { Storage } = require('@google-cloud/storage')
 const path = require("path");
 const { getQueryParams, getUserID, getImageURL } = require('../httpUtil')
+
 const createRouter = require('./course.create')
+const updateRouter = require('./course.update')
 
 const router = express.Router()
 router.use('/create', createRouter)
+router.use('/update', updateRouter)
 
 const bucket = 'lecture4u-1'
 const storage = new Storage({

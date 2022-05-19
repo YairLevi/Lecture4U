@@ -27,9 +27,24 @@ module.exports = {
         return fileObject._id
     },
 
+    deleteListOfFilesById: async function (fileIds) {
+        for (const fileId of fileIds) {
+            const file = await File.findById(fileId)
+            const bucket = storage.bucket(file.bucket)
+            await bucket.deleteFiles({ prefix: file.file })
+
+        }
+    },
+
     deleteCourseFolder: async function (courseId) {
         const path = `courseId-${courseId}/`
         const bucket = storage.bucket(bucketName)
         await bucket.deleteFiles({ prefix: path })
+    },
+
+    deleteFile: async function (fileId) {
+        const file = await File.findById(fileId)
+        const bucket = storage.bucket(file.bucket)
+        await bucket.file(file.file).delete()
     },
 }
