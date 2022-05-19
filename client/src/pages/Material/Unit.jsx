@@ -1,4 +1,4 @@
-import { Button, Card, Navbar } from "react-bootstrap";
+import { Button, Card, Container, Navbar } from "react-bootstrap";
 import Subject from './Subject'
 import { useState } from "react";
 import AddSubject from "./modals/AddSubject";
@@ -12,8 +12,15 @@ export default function Unit({ unitId, courseId, name, text, subjects, isTeacher
         <>
             <Card className={'mt-5 mb-5'}>
                 <Card.Header className={'d-flex justify-content-between'}>
-                    <Card.Title>{name}</Card.Title>
-                    { isTeacher && <Button variant={'primary'} onClick={() => setShowAddSubject(true)}>Add Subject</Button> }
+                    <Card.Title className={'p-1'}>{name}</Card.Title>
+                    {
+                        isTeacher &&
+                        <div>
+                            <Button variant={'outline-danger'} className={'me-2'}>Delete</Button>
+                            <Button variant={"outline-dark"} className={'me-2'}>Edit</Button>
+                            <Button variant={'primary'} onClick={() => setShowAddSubject(true)}>Add Subject</Button>
+                        </div>
+                    }
                 </Card.Header>
                 <Card.Body>
                     <Card.Text>{text}</Card.Text>
@@ -29,7 +36,7 @@ export default function Unit({ unitId, courseId, name, text, subjects, isTeacher
                 </Card.Body>
             </Card>
 
-            <AddSubject centered show={showAddSubject} onHide={() => setShowAddSubject(false)} unitId={unitId} />
+            <AddSubject centered show={showAddSubject} onHide={() => setShowAddSubject(false)} unitId={unitId}/>
         </>
     )
 }

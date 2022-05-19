@@ -22,7 +22,7 @@ const constants = require("constants");
 const Assignment = require('../models/assignments/Assignment')
 const Submission = require('../models/assignments/Submission')
 
-const { getFileData } = require("../cloud/files");
+const { getFileData, deleteCourseFolder } = require("../cloud/files");
 
 
 
@@ -37,6 +37,10 @@ router.get('/teacher', async (req, res) => {
     for (const course of courses) {
         const obj = {}
         const courseObj = await Course.findById(course)
+        if (courseObj == null) {
+            console.log(course)
+            continue
+        }
         obj.id = courseObj._id
         obj.name = courseObj.name
         obj.teacher = courseObj.teacher
@@ -151,6 +155,50 @@ router.get('/teacher/submissions', async (req, res) => {
         console.log('at /teacher/assignments\n' + e.message)
         res.sendStatus(400)
     }
+})
+
+router.delete('/delete', async (req, res) => {
+    const courseId = req.body.courseId
+    const course = await Course.findById(courseId)
+    const owner = await User.findById(getUserID(req))
+
+    for (const userId of course.students) {
+        const user = await User.findById(userId)
+        const index = user.courses.indexOf(courseId);
+        if (index > -1) user.courses.splice(index, 1)
+        await user.save()
+    }
+
+    const index = owner.myCourses.indexOf(courseId);
+    if (index > -1) owner.myCourses.splice(index, 1)
+    await owner.save()
+
+    await Course.findOneAndDelete({ _id: courseId })
+    await deleteCourseFolder(courseId)
+    res.sendStatus(200)
+})
+
+router.delete('/leave', async (req, res) => {
+    const courseId = req.body.courseId
+    const course = await Course.findById(courseId)
+    const userId = getUserID(req)
+    const user = await User.findById(userId)
+
+    user.courses.splice(user.courses.indexOf(courseId), 1)
+    course.students.splice(course.students.indexOf(userId), 1)
+
+    await course.save()
+    await user.save()
+
+    res.sendStatus(200)
+})
+
+
+router.get('/exist', async (req, res) => {
+    const courseId = req.query.courseId
+    const course = await Course.findOne({ _id: courseId })
+    if (course) return res.status(200)
+    else return res.status(400)
 })
 
 

@@ -19,16 +19,16 @@ export default function NavProvider({ children }) {
         return params
     }
 
-    function siblingNav(path, params={}, keepParams = true) {
+    function siblingNav(path, params={}, keepParams = false) {
         const newPath = location.pathname.split('/').slice(0, -1).join('/') + path
         fullNav(newPath, params, keepParams)
     }
 
-    function relativeNav(path, params={}, keepParams=true) {
+    function relativeNav(path, params={}, keepParams=false) {
         fullNav(location.pathname + path, params, keepParams)
     }
 
-    function fullNav(path, params={}, keepParams=true) {
+    function fullNav(path, params={}, keepParams=false) {
         const newSearchParams = keepParams ? {...getCurrentParams(), ...params} : params
         navigate({ pathname: path, search: `?${createSearchParams(newSearchParams)}` })
     }

@@ -7,6 +7,7 @@ import { useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import TeacherAssignmentTab from "./TeacherAssignmentTab";
 import SubmissionTab from "./SubmissionTab";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 
 export default function SubmissionView() {
@@ -14,7 +15,8 @@ export default function SubmissionView() {
     const [loading, setLoading] = useState(false)
     const [searchParams] = useSearchParams()
     const [submissions, setSubmissions] = useState([])
-    const isTeacher = searchParams.get('state') === 'teacher'
+    const [state, ] = useLocalStorage('state')
+    const isTeacher = state === 'teacher'
 
     useEffect(() => {
         (async function () {

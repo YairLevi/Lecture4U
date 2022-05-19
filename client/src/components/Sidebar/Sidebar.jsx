@@ -48,25 +48,26 @@ export default function Sidebar({ closeSidebar, open }) {
                         <Item icon={'bi-person'} onClick={() => fullNav('/main')}>Dashboard</Item>
                         <Item icon={'bi-person'} onClick={() => fullNav('/main/profile')}>Profile</Item>
                         <Item icon={'bi-people'} onClick={() => fullNav('/main/groups')}>Groups</Item>
+                        <Item icon={'bi-book'} onClick={() => fullNav('/main/courses')}>Courses</Item>
                     </Menu>
-                    <Menu title={"Student View"}>
-                        <InnerMenu title={"Courses"} icon={'bi-book'}>
-                            <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>
-                            <Item icon={'bi-collection'}
-                                  onClick={() => fullNav('/main/courses', { state: 'student' }, false)}>
-                                Show all courses
-                            </Item>
-                        </InnerMenu>
-                    </Menu>
-                    <Menu title={"Teacher View"}>
-                        <InnerMenu title={"My Courses"}>
-                            <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>
-                            <Item icon={'bi-collection'}
-                                  onClick={() => fullNav('/main/courses', { state: 'teacher' }, false)}>
-                                Show all courses
-                            </Item>
-                        </InnerMenu>
-                    </Menu>
+                    {/*<Menu title={"Student View"}>*/}
+                    {/*    <InnerMenu title={"Courses"} icon={'bi-book'}>*/}
+                    {/*        <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>*/}
+                    {/*        <Item icon={'bi-collection'}*/}
+                    {/*              onClick={() => fullNav('/main/courses', {}, false)}>*/}
+                    {/*            Show all courses*/}
+                    {/*        </Item>*/}
+                    {/*    </InnerMenu>*/}
+                    {/*</Menu>*/}
+                    {/*<Menu title={"Teacher View"}>*/}
+                    {/*    <InnerMenu title={"My Courses"}>*/}
+                    {/*        <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>*/}
+                    {/*        <Item icon={'bi-collection'}*/}
+                    {/*              onClick={() => fullNav('/main/courses', {}, false)}>*/}
+                    {/*            Show all courses*/}
+                    {/*        </Item>*/}
+                    {/*    </InnerMenu>*/}
+                    {/*</Menu>*/}
                     <Menu title={"Tools"}>
                         <Item icon={'bi-mic'} onClick={() => fullNav('/main/speech', {}, false)}>Speech To Text</Item>
                         <Item icon={'bi-type'} onClick={() => fullNav('/main/ocr', {}, false)}>Image To Text</Item>
@@ -80,9 +81,6 @@ export default function Sidebar({ closeSidebar, open }) {
                     </Menu>
                 </SidebarFooter>
             </ProSidebar>
-
-            <NewCourse centered show={modalShow} onHide={() => setModalShow(false)}/>
-            <AddCourse centered show={addCourseShow} onHide={() => setAddCourseShow(false)}/>
         </>
     )
 }

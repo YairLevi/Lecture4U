@@ -6,8 +6,8 @@ const fs = require("fs");
 
 
 module.exports = {
-    getFileData: async function (id, expires=new Date().addHours(100)) {
-        const details = {_id: id}
+    getFileData: async function (id, expires = new Date().addHours(100)) {
+        const details = { _id: id }
 
         const fileObject = await File.findById(id)
         const bucket = storage.bucket(fileObject.bucket)
@@ -20,10 +20,16 @@ module.exports = {
     },
 
     uploadFile: async function (file, path) {
-        const bucket = storage.bucket('lecture4u-3')
+        const bucket = storage.bucket(bucketName)
         await bucket.upload(file.path, { destination: path })
         fs.unlinkSync(file.path)
-        const fileObject = await File.create({ bucket: 'lecture4u-3', file: path })
+        const fileObject = await File.create({ bucket: bucketName, file: path })
         return fileObject._id
+    },
+
+    deleteCourseFolder: async function (courseId) {
+        const path = `courseId-${courseId}/`
+        const bucket = storage.bucket(bucketName)
+        await bucket.deleteFiles({ prefix: path })
     },
 }

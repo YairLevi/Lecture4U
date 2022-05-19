@@ -18,13 +18,14 @@ import ProfilePage from "../Profile/ProfilePage";
 import SpeechToText from "../speechToText/SpeechToText";
 import Editor from "../Groups/Editor";
 import DashboardPage from "../Dashboard/DashboardPage";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 export default function Main() {
     const [open, setOpen] = useState(false)
     const { siblingNav } = useNav()
     const params = useParams()
-    const [searchParams, ] = useSearchParams()
-    const state = searchParams.get('state')
+    const [searchParams,] = useSearchParams()
+    const state = useLocalStorage('state')
     const [inCourse, setInCourse] = useState(false)
 
     useEffect(() => {
@@ -40,7 +41,7 @@ export default function Main() {
                         inCourse && courseTabs.map((value, index) => {
                             return (
                                 <Nav.Item key={index}>
-                                    <Nav.Link onClick={async () => siblingNav(`/${value.toLowerCase()}`, {state}, false)}>
+                                    <Nav.Link onClick={async () => siblingNav(`/${value.toLowerCase()}`, {}, false)}>
                                         {value}
                                     </Nav.Link>
                                 </Nav.Item>
@@ -51,10 +52,10 @@ export default function Main() {
                 <Container fluid className={'h-100 overflow-auto'}>
                     <Routes>
                         <Route exact path={'/'} element={<DashboardPage/>}/>
-                        <Route path={'/profile'} element={<ProfilePage />} />
-                        <Route path={'/groups'} element={<GroupsPage />} />
-                        <Route path={'/groups/:id'} element={<Group />} />
-                        <Route path={'/groups/:id/document/:docId'} element={<Editor />} />
+                        <Route path={'/profile'} element={<ProfilePage/>}/>
+                        <Route path={'/groups'} element={<GroupsPage/>}/>
+                        <Route path={'/groups/:id'} element={<Group/>}/>
+                        <Route path={'/groups/:id/document/:docId'} element={<Editor/>}/>
                         <Route path={'/courses'} element={<Courses/>}/>
                         <Route path={'/courses/:id/*'} element={<Course/>}/>
                         <Route path={'/speech'} element={<SpeechToText/>}/>

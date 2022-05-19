@@ -4,28 +4,19 @@ import { useLoading } from "../../../hooks/useLoading";
 import requests from "../../../helpers/requests";
 import { ERRORS } from "../../../helpers/errors";
 import { useRefresh } from "../../../hooks/useRefresh";
+import { useAuth } from "../../../contexts/AuthContext";
 
-
-async function createCourse(name, teacher, description) {
-    const options = {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-type': 'application/json' },
-        body: JSON.stringify({ name, teacher, description })
-    }
-    const result = await fetch('http://localhost:8000/course/create', options)
-    return result.status === 200
-}
 
 export default function NewCourse(props) {
     const [error, setError] = useState(null)
     const [name, setName] = useState(null)
-    const [staff, setStaff] = useState(null)
     const [description, setDescription] = useState(null)
     const refresh = useRefresh()
+    const { currentUser } = useAuth()
+    const teacher = `${currentUser.firstName} ${currentUser.lastName}`
     const [loading, createCourse] = useLoading(async () => {
         setError(null)
-        const res = await requests.post('/course/create', { name, staff, description })
+        const res = await requests.post('/course/create', { name, teacher, description })
         if (res.status !== 200)
             return setError(ERRORS.GENERAL_ERROR)
         refresh()
@@ -43,12 +34,6 @@ export default function NewCourse(props) {
                         <Form.Control
                             onChange={(e) => setName(e.target.value)}
                             placeholder={'Course Name'}/>
-                    </Form.Group>
-                    <Form.Group className={'mb-3'}>
-                        <Form.Label>Course Instructor:</Form.Label>
-                        <Form.Control
-                            onChange={(e) => setStaff(e.target.value)}
-                            placeholder={'Dr. John Doe'}/>
                     </Form.Group>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>Description:</Form.Label>

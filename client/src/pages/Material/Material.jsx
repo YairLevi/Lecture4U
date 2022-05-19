@@ -6,20 +6,21 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import requests from "../../helpers/requests";
 import AddUnit from "./modals/AddUnit";
 import { useParams } from "react-router";
+import ConfirmationModal from "../../modals/ConfirmationModal";
+import { ERRORS } from "../../helpers/errors";
+import { useNav } from "../../contexts/NavContext";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
-
-// function getCourseID(location) {
-//     const params = requests.parseParams(location)
-//     return params.courseId
-// }
 
 export default function Material(props) {
     const [showAddUnit, setShowAddUnit] = useState(false)
     const [data, setData] = useState(null)
-    const location = useLocation()
+    const [open, setOpen] = useState(false)
     const { id } = useParams()
+    const { fullNav } = useNav()
     const [searchParams] = useSearchParams()
-    const isTeacher = searchParams.get('state') === 'teacher'
+    const [state,] = useLocalStorage('state')
+    const isTeacher = state === 'teacher'
 
 
     useEffect(async () => {
@@ -33,17 +34,38 @@ export default function Material(props) {
         }
     }, [])
 
+    function openConfirm() {
+        setOpen(true)
+    }
+
+    const settings = {
+        action: isTeacher ? 'delete' : 'leave',
+        buttonAction: isTeacher ? 'Delete' : 'Leave',
+    }
+
+    async function performAction() {
+        const res = await requests.delete(`/course/${settings.action}`, { courseId: id })
+        if (res.status !== 200) return false
+        else fullNav('/main/courses')
+    }
+
     return !data ? (
         <Container className={'d-flex justify-content-center align-items-center'}>
             <Spinner className={'m-3'} animation="border"/>
         </Container>
     ) : (
         <>
-            <Container className={'p-3'}>
+            <Container className={'p-3 pb-5'}>
                 <h1 style={{ fontSize: '2rem' }}>{data.name}</h1>
                 <h5 style={{ color: "gray" }}>By {data.teacher}</h5>
                 <br/>
                 <h6>{data.description}</h6>
+                {
+                    isTeacher && <Button className={'mt-3 mb-3'} onClick={() => setShowAddUnit(true)}>
+                        <Icon iconClass={'bi-plus-circle'}/>
+                        Add Unit
+                    </Button>
+                }
                 {data.units.map((value, index) => {
                     return <Unit key={index}
                                  courseId={data._id}
@@ -54,15 +76,15 @@ export default function Material(props) {
                                  isTeacher={isTeacher}
                     />
                 })}
-                {
-                    isTeacher && <Button className={'mt-3 mb-3'} onClick={() => setShowAddUnit(true)}>
-                        <Icon iconClass={'bi-plus-circle'}/>
-                        Add Unit
-                    </Button>
-                }
+                <Button variant={'outline-danger'} onClick={openConfirm}>{settings.buttonAction} Course</Button>
             </Container>
 
+
             <AddUnit show={showAddUnit} onHide={() => setShowAddUnit(false)}/>
+            <ConfirmationModal text={`${settings.action} course ${data.name}`}
+                               func={performAction}
+                               show={open}
+                               onHide={() => setOpen(false)}/>
         </>
     )
 }
