@@ -63,7 +63,7 @@ export default function Courses() {
                                 name="radio"
                                 value={radio.value}
                                 checked={value === radio.value}
-                                onChange={(e) => setValue(e.currentTarget.value)}
+                                onChange={e => setValue(e.currentTarget.value)}
                             >
                                 {radio.name}
                             </ToggleButton>

@@ -1,22 +1,24 @@
-import { Col, Container, Row } from 'react-bootstrap'
+import { Col, Container, Row, Spinner } from 'react-bootstrap'
 import Card from "./Card";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import requests from "../../helpers/requests";
 import OverviewPanel from "./OverviewPanel";
+import useLoadingEffect from "../../hooks/useLoadingEffect";
 
 
 export default function DashboardPage(props) {
     const [data, setData] = useState()
 
-    useEffect(() => {
-        (async function () {
-            const res = await requests.get('/dashboard/get-dashboard-data')
-            const json = await res.json()
-            setData(json)
-        })()
+    const loading = useLoadingEffect(async function () {
+        const res = await requests.get('/dashboard/get-dashboard-data')
+        const json = await res.json()
+        setData(json)
     }, [])
 
-    return !data ? <h1>hello</h1> : (
+    return loading ?
+        <Container className={'d-flex justify-content-center align-items-center'}>
+            <Spinner className={'m-3'} animation="border"/>
+        </Container> :
         <Container fluid className={'p-4'}>
             <Row className={'d-flex row-d'}>
                 <OverviewPanel {...data}/>
@@ -32,5 +34,4 @@ export default function DashboardPage(props) {
                 </Col>
             </Row>
         </Container>
-    )
 }

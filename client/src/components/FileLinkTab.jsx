@@ -10,13 +10,13 @@ export default function FileLinkTab({ name, link, onClick }) {
         <Container className={'d-flex justify-content-between p-0'}
                    onMouseEnter={() => setHover(true)}
                    onMouseLeave={() => setHover(false)}
-                   style={{ cursor: 'pointer' }}
-                   onClick={onClick}
+                   // style={{ cursor: 'pointer' }}
         >
-            <a style={{width: '90%'}} href={link}>{name}</a>
+            <a style={{width: 'fit-content'}} href={link}>{name}</a>
             <div style={{
+                cursor: 'pointer',
                 visibility: hover ? 'visible' : 'hidden',
-            }}>
+            }} onClick={onClick}>
                 <Icon iconClass={'bi-trash'}/>
             </div>
         </Container>
