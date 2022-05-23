@@ -94,6 +94,15 @@ export default function SpeechToText() {
     const [transcribe_score, setTranscribe_score] = React.useState(0);
 
     React.useEffect(() => {
+        (async function () {
+            const res = await axios.get('http://localhost:8000/speech/get', { withCredentials: true })
+            console.log(res)
+            setTimeLineData(res.data)
+        })()
+
+    }, []);
+
+    React.useEffect(() => {
         if (!isTranscribe) { return }
 
         const timer = setInterval(() => {
@@ -261,6 +270,11 @@ export default function SpeechToText() {
                 setTranscribe_score(res.headers['transcribe-score'])
                 setTranscribe(false)
                 setProgress(0);
+
+                // send TimeLineData to server:
+                axios.post("http://localhost:8000/speech/save",{
+                    data: TimeLineData
+                }, { withCredentials: true })
 
                 let file_name = res.headers['transcribe-file-name'].split(".")[0] + ".docx"
                 const url = window.URL.createObjectURL(new Blob([res.data]));
