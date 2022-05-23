@@ -3,7 +3,7 @@ import './Card.scss'
 
 export default function Card(props) {
     return (
-        <div className="card p-3 mb-2">
+        <div className="card p-3 mb-2 h-100">
             <div className={'d-flex justify-content-between ps-3 pe-3 pt-3'}>
                 <div>
                     <h1>{props.value}</h1>

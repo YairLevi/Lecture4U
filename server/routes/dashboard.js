@@ -43,6 +43,7 @@ router.get('/get-dashboard-data', async (req, res) => {
     await user.save()
     const dashboard = await Dashboard.findById(user.dashboard)
     const data = await dashboard.getDashboardData()
+    data.events = await dashboard.getEvents()
     res.status(200).json(data)
 })
 

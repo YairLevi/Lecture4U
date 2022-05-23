@@ -8,7 +8,7 @@ const File = require('../models/File')
 const Comment = require('../models/forum/Comment')
 const Course = require('../models/Course')
 const Document = require('../models/Document')
-const { getUserID } = require("../httpUtil");
+const { getUserID, addDashboardEvent } = require("../httpUtil");
 const { getFileData } = require("../cloud/files");
 
 const storage = require('../cloud/storage')
@@ -65,12 +65,14 @@ router.get('/group-data', async (req, res) => {
 
 router.post('/create-group', async (req, res) => {
     try {
-        const user = await User.findById(getUserID(req))
+        const userId = getUserID(req)
+        const user = await User.findById(userId)
         const group = await Group.create({ name: req.body.name })
         group.userIds.push(user._id)
         user.groups.push(group._id)
         await user.save()
         await group.save()
+        await addDashboardEvent(userId, 'group-created', req.body.name)
         res.sendStatus(200)
 
     } catch (e) {
