@@ -7,13 +7,14 @@ const Timestamp = require('../models/Timestamp')
 const { getUserID } = require("../httpUtil");
 
 router.post('/save', async (req, res) => {
-    const data = req.body.data
+    const data = {0 : req.body.data}
+    console.log(data)
     const userId = getUserID(req)
     const doesExist = await Timestamp.exists({ userId })
     if (doesExist) {
-        await Timestamp.findOneAndUpdate( { userId }, { data })
+        await Timestamp.findOneAndUpdate({ userId },{ data })
     } else {
-        await Timestamp.create({ data, userId})
+        await Timestamp.create({ data, userId })
     }
     res.sendStatus(200)
 })
@@ -22,7 +23,8 @@ router.get('/get', async (req, res) => {
     const userId = getUserID(req)
     let data = []
     const timestamp = await Timestamp.findOne({ userId })
-    if (timestamp) data = timestamp.data
+    if (timestamp) data = timestamp.data[0]
+    console.log(timestamp)
     res.status(200).json(data)
 })
 
