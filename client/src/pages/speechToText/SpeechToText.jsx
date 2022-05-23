@@ -97,7 +97,7 @@ export default function SpeechToText() {
         (async function () {
             const res = await axios.get('http://localhost:8000/speech/get', { withCredentials: true })
             console.log(res)
-            setTimeLineData(res.data)
+            setTimeLineData(res.data[0])
         })()
 
     }, []);
