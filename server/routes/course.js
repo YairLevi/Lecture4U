@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const { Storage } = require('@google-cloud/storage')
 const path = require("path");
-const { getQueryParams, getUserID, getImageURL } = require('../httpUtil')
+const { getQueryParams, getUserID, getImageURL, removeFromDashboard } = require('../httpUtil')
 
 const createRouter = require('./course.create')
 const updateRouter = require('./course.update')
@@ -21,9 +21,9 @@ const Course = require('../models/Course')
 const Unit = require('../models/Unit')
 const Subject = require('../models/Subject')
 const User = require('../models/User')
-const constants = require("constants");
 const Assignment = require('../models/assignments/Assignment')
 const Submission = require('../models/assignments/Submission')
+const Dashboard = require('../models/Dashboard')
 
 const { getFileData, deleteCourseFolder } = require("../cloud/files");
 
@@ -79,13 +79,16 @@ router.get('/student', async (req, res) => {
 
 router.post('/enroll', async (req, res) => {
     const courseId = req.body.courseId
+    const userId = getUserID(req)
     try {
         const course = await Course.findById(courseId)
-        const user = await User.findById(getUserID(req))
+        const user = await User.findById(userId)
         if (user.myCourses.includes(courseId))
             return res.sendStatus(403)
         user.courses.push(course._id)
+        course.students.push(userId)
         await user.save()
+        await course.save()
         res.sendStatus(200)
     } catch (e) {
         console.log(e.message)
@@ -95,9 +98,18 @@ router.post('/enroll', async (req, res) => {
 
 router.get('/data', async (req, res) => {
     try {
+        const userId = getUserID(req)
+        const user = await User.findById(userId)
+        const dashboard = await Dashboard.findById(user.dashboard)
+
+        for (const subjectId of dashboard.subjects) {
+            await removeFromDashboard(userId, 'subjects', subjectId)
+        }
+
         const code = getQueryParams(req).code
         const course = await Course.findById(code)
         const material = await course.getCourseData()
+
         res.status(200).json(material)
     } catch (e) {
         console.log(e.message)

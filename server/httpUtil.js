@@ -57,5 +57,12 @@ module.exports = {
             dashboard[list].push(objectId)
             await dashboard.save()
         }
+    },
+    removeFromDashboard: async function (userId, list, objectId) {
+        const user = await User.findById(userId)
+        const dashboard = await Dashboard.findById(user.dashboard)
+        const index = dashboard[list].indexOf(objectId)
+        if (index > -1) dashboard[list].splice(dashboard[list].indexOf(objectId), 1)
+        await dashboard.save()
     }
 }

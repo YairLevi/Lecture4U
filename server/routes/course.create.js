@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const path = require("path");
 const fs = require('fs')
-const { getQueryParams, getRandomImage, getUserID, updateAllStudentDashboards } = require('../httpUtil')
+const { getQueryParams, getRandomImage, getUserID, updateAllStudentDashboards, removeFromDashboard } = require('../httpUtil')
 const storage = require('../cloud/storage')
 
 const router = express.Router()
@@ -114,7 +114,6 @@ router.post('/assignment', upload.array('files'), async (req, res) => {
 
 router.post('/submit', upload.array('files'), async (req, res) => {
     try {
-        const Bucket = storage.bucket(bucket)
         const userId = getUserID(req)
         const courseId = req.body.courseId
         const assignment = await Assignment.findById(req.body.assignmentId)
@@ -125,10 +124,9 @@ router.post('/submit', upload.array('files'), async (req, res) => {
             return await uploadFile(file, filePath)
         })
         await submission.save()
-
         assignment.submissions.push(submission._id)
         await assignment.save()
-
+        await removeFromDashboard(userId, 'assignments', req.body.assignmentId)
         res.sendStatus(200)
 
     } catch (e) {

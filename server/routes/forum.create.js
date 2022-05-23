@@ -8,7 +8,7 @@ const Comment = require('../models/forum/Comment')
 const Course = require('../models/Course')
 const User = require('../models/User')
 
-const { getUserID } = require('../httpUtil')
+const { getUserID, updateAllStudentDashboards } = require('../httpUtil')
 
 
 
@@ -16,16 +16,17 @@ router.post('/discussion', async (req, res) => {
     try {
         const courseId = req.body.courseId
         const course = await Course.findById(courseId)
-        const discussionIDs = course.discussions
 
         const author = getUserID(req)
         const title = req.body.title
         const question = req.body.question
-        const newDiscussion = await Discussion.create({ title, question, author })
+        const discussion = await Discussion.create({ courseId, title, question, author })
 
-        discussionIDs.push(newDiscussion)
+        course.discussions.push(discussion._id)
         await course.save()
-        res.status(200).json(newDiscussion)
+        await updateAllStudentDashboards(courseId, 'discussions', discussion._id)
+
+        res.status(200).json(discussion)
 
     } catch (e) {
         console.log(`at creating new discussion:\n${e.message}`)

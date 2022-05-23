@@ -7,6 +7,7 @@ const Course = require('../models/Course')
 const User = require('../models/User')
 
 const createForumRouter = require('./forum.create')
+const { removeFromDashboard, getUserID } = require("../httpUtil");
 router.use('/create', createForumRouter)
 
 
@@ -33,11 +34,12 @@ router.get('/data', async (req, res) => {
 
 router.get('/comments', async (req, res) => {
     try {
+        const userId = getUserID(req)
         const discussionId = req.query.discussionId
         const discussion = await Discussion.findById(discussionId)
 
         const comments = await Promise.all(discussion.comments.map(async commentId => {
-            const comment = await Comment.findById(commentId);
+            const comment = await Comment.findById(commentId)
             const user = await User.findById(comment.author)
             return {
                 author: user,
@@ -45,7 +47,7 @@ router.get('/comments', async (req, res) => {
                 createdAt: comment.createdAt
             }
         }))
-
+        await removeFromDashboard(userId, 'discussions', discussionId)
         res.status(200).json(comments)
 
     } catch (e) {
