@@ -8,7 +8,7 @@ const File = require('../models/File')
 const Comment = require('../models/forum/Comment')
 const Course = require('../models/Course')
 const Document = require('../models/Document')
-const { getUserID, addDashboardEvent } = require("../httpUtil");
+const { getUserID } = require("../httpUtil");
 const { getFileData } = require("../cloud/files");
 
 const storage = require('../cloud/storage')
@@ -17,6 +17,7 @@ const multer = require('multer')
 const fs = require("fs");
 const upload = multer({ dest: 'temp/' })
 const { mapAsync, clone } = require('../mongooseUtil')
+const { events, addDashboardEvent } = require("../eventUtil");
 
 function createFilePath(groupId, fileName) {
     return `groupId-${groupId}/${fileName}`
@@ -72,7 +73,7 @@ router.post('/create-group', async (req, res) => {
         user.groups.push(group._id)
         await user.save()
         await group.save()
-        await addDashboardEvent(userId, 'group-created', req.body.name)
+        await addDashboardEvent(userId, events.group_created, req.body.name)
         res.sendStatus(200)
 
     } catch (e) {
@@ -83,8 +84,8 @@ router.post('/create-group', async (req, res) => {
 
 router.post('/upload', upload.array('files'), async (req, res) => {
     try {
+        const userId = getUserID(req)
         const group = await Group.findById(req.body.groupId)
-
         const Bucket = storage.bucket(bucketName)
         const files = []
         for (const file of req.files) {
@@ -96,6 +97,11 @@ router.post('/upload', upload.array('files'), async (req, res) => {
         }
 
         group.files = [...group.files, ...files]
+
+        for (const id of group.userIds) {
+            await addDashboardEvent(id, events.new_files, await User.getNameById(userId), group.name)
+        }
+
         await group.save()
         res.sendStatus(200)
     } catch (e) {
@@ -132,6 +138,7 @@ router.post('/message', async (req, res) => {
 
 router.post('/add-members', async (req, res) => {
     try {
+        const userId = getUserID(req)
         for (const email of req.body.emails) {
             const group = await Group.findById(req.body.groupId)
             const user = await User.findOne({ email: email })
@@ -140,6 +147,7 @@ router.post('/add-members', async (req, res) => {
 
             await user.save()
             await group.save()
+            await addDashboardEvent(user._id, events.added_to_group, await User.getNameById(userId), group.name)
         }
         res.sendStatus(200)
 
@@ -168,6 +176,8 @@ router.delete('/leave-group', async (req, res) => {
 
     await user.save()
     await group.save()
+
+    await addDashboardEvent(userId, events.left_group, group.name)
 
     res.sendStatus(200)
 })

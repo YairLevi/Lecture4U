@@ -6,7 +6,10 @@ const multer = require("multer")
 const File = require('../models/File')
 const Unit = require('../models/Unit')
 const Subject = require('../models/Subject')
+const Course = require('../models/Course')
+
 const { deleteFile, uploadFile } = require("../cloud/files");
+const { addDashboardEvent, events } = require("../eventUtil");
 
 const upload = multer({ dest: 'temp/' })
 
@@ -18,9 +21,14 @@ function generateStoragePath(courseId, unitId, subjectId, fileName) {
 
 
 router.post('/unit', async (req, res) => {
-    const { unitId, name, text } = {...req.body}
+    const { courseId, unitId, name, text } = {...req.body}
     const unit = await Unit.findByIdAndUpdate(unitId, { name, text })
     await unit.save()
+
+    const course = await Course.findById(courseId)
+    for (const studentId of course.students) {
+        await addDashboardEvent(studentId, events.updated_material, course.name)
+    }
     res.sendStatus(200)
 })
 
@@ -48,6 +56,11 @@ router.post('/subject', upload.array("files"), async (req, res) => {
     subject.text = text
 
     await subject.save()
+
+    const course = await Course.findById(courseId)
+    for (const studentId of course.students) {
+        await addDashboardEvent(studentId, events.updated_material, course.name)
+    }
 
     res.sendStatus(200)
 })

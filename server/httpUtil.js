@@ -67,12 +67,4 @@ module.exports = {
         if (index > -1) dashboard[list].splice(dashboard[list].indexOf(objectId), 1)
         await dashboard.save()
     },
-    addDashboardEvent: async function (userId, title, ...args) {
-        const user = await User.findById(userId)
-        const dashboard = await Dashboard.findById(user.dashboard)
-
-        const event = await Event.create({ title, args })
-        dashboard.events.push(event._id)
-        await dashboard.save()
-    }
 }

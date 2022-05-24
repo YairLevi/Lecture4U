@@ -8,6 +8,7 @@ const User = require('../models/User')
 const File = require('../models/File')
 
 const multer = require('multer')
+const { addDashboardEvent, events } = require("../eventUtil");
 const upload = multer({ dest: 'temp/' })
 
 function makeImageUrl(userId, extension) {
@@ -22,6 +23,7 @@ router.post('/image', upload.array('files'), async (req, res) => {
     const path = makeImageUrl(userId, extension)
     const imageId = await uploadFile(file, path)
     await User.findByIdAndUpdate(userId, { profileImage: imageId })
+    await addDashboardEvent(userId, events.profile_update)
     res.sendStatus(200)
 })
 
@@ -29,6 +31,7 @@ router.post('/edit', async (req, res) => {
     const userId = getUserID(req)
     const user = await User.findById(userId)
     await user.editProfile(req.body)
+    await addDashboardEvent(userId, events.profile_update)
     res.sendStatus(200)
 })
 

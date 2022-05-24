@@ -47,6 +47,11 @@ userSchema.statics.login = async function (email, password) {
     }
 }
 
+userSchema.statics.getNameById = async function (id) {
+    const user = await this.findById(id)
+    return `${user.firstName} ${user.lastName}`
+}
+
 // INSTANCE METHODS
 
 userSchema.methods.getCourses = async function () {

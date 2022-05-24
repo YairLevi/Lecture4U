@@ -26,6 +26,7 @@ const Submission = require('../models/assignments/Submission')
 const Dashboard = require('../models/Dashboard')
 
 const { getFileData, deleteCourseFolder } = require("../cloud/files");
+const { addDashboardEvent, events } = require("../eventUtil");
 
 
 
@@ -89,6 +90,7 @@ router.post('/enroll', async (req, res) => {
         course.students.push(userId)
         await user.save()
         await course.save()
+        await addDashboardEvent(userId, events.course_added, course.name)
         res.sendStatus(200)
     } catch (e) {
         console.log(e.message)
@@ -190,6 +192,8 @@ router.delete('/delete', async (req, res) => {
 
     await Course.findOneAndDelete({ _id: courseId })
     await deleteCourseFolder(courseId)
+
+    await addDashboardEvent(getUserID(req), events.deleted_course, course.name)
     res.sendStatus(200)
 })
 
@@ -204,6 +208,7 @@ router.delete('/leave', async (req, res) => {
 
     await course.save()
     await user.save()
+    await addDashboardEvent(userId, events.left_course, course.name)
 
     res.sendStatus(200)
 })

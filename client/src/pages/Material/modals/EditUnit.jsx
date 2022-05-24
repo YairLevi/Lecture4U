@@ -17,7 +17,7 @@ export default function EditUnit(props) {
     const refresh = useRefresh()
     const [loading, handleClick] = useLoading(async () => {
         setError(null)
-        const res = await requests.post('/course/update/unit', { unitId, name, text })
+        const res = await requests.post('/course/update/unit', { courseId, unitId, name, text })
         if (res.status !== 200) return setError(ERRORS.GENERAL_ERROR)
         refresh()
     })

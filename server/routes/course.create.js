@@ -20,6 +20,8 @@ const Submission = require('../models/assignments/Submission')
 const multer = require('multer')
 const { uploadFile } = require("../cloud/files");
 const { mapAsync } = require("../mongooseUtil");
+const { addDashboardEvent, events } = require("../eventUtil");
+const { use } = require("express/lib/router");
 const upload = multer({ dest: 'temp/' })
 
 function generateStoragePath(courseId, unitId, subjectId, fileName) {
@@ -45,6 +47,7 @@ router.post('/', async (req, res) => {
         const user = await User.findById(getUserID(req))
         user.myCourses.push(course._id)
         await user.save()
+        await addDashboardEvent(getUserID(req), events.new_course, name)
         res.sendStatus(200)
     } catch (err) {
         console.log(err.message)
@@ -59,6 +62,9 @@ router.post('/unit', async (req, res) => {
         const unit = await Unit.create({ name, text })
         course.units.push(unit._id)
         await course.save()
+        for (const studentId of course.students) {
+            await addDashboardEvent(studentId, events.new_material, course.name)
+        }
         res.sendStatus(200)
     } catch (e) {
         console.log(e.message)
@@ -81,6 +87,11 @@ router.post('/subject', upload.array("files"), async (req, res) => {
 
         unit.subjects.push(subject._id)
         await unit.save()
+
+        const course = await Course.findById(courseId)
+        for (const studentId of course.students) {
+            await addDashboardEvent(studentId, events.new_material, course.name)
+        }
 
         res.sendStatus(200)
     } catch (e) {
@@ -105,6 +116,11 @@ router.post('/assignment', upload.array('files'), async (req, res) => {
         if (!course.assignments) course.assignments = []
         course.assignments.push(assignment._id)
         await course.save()
+
+        for (const studentId of course.students) {
+            await addDashboardEvent(studentId, events.new_assignment, course.name)
+        }
+
         res.sendStatus(200)
     } catch (e) {
         console.log(e.message)
@@ -116,6 +132,7 @@ router.post('/submit', upload.array('files'), async (req, res) => {
     try {
         const userId = getUserID(req)
         const courseId = req.body.courseId
+        const course = await Course.findById(courseId)
         const assignment = await Assignment.findById(req.body.assignmentId)
         const submission = await Submission.create({ userIds: [userId] })
         submission.text = req.body.text
@@ -127,6 +144,7 @@ router.post('/submit', upload.array('files'), async (req, res) => {
         assignment.submissions.push(submission._id)
         await assignment.save()
         await removeFromDashboard(userId, 'assignments', req.body.assignmentId)
+        await addDashboardEvent(userId, events.submitted_assignment, assignment.name, course.name)
         res.sendStatus(200)
 
     } catch (e) {
