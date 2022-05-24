@@ -24,6 +24,8 @@ function App() {
     const hiddenFileInputTranscript = React.useRef(null);
     let [lstbx_value, setValue] = React.useState("default");
 
+    const [myFiles, setMyFiles] = useState([]);
+
     const InitTranscriptChange = () => {
         document.getElementById('accuracy').textContent = "Loading...";
         document.getElementById('content').textContent = "";
@@ -66,12 +68,20 @@ function App() {
         axios
             .get(url,{responseType: 'arraybuffer', headers: {'Content-Type': 'application/json'}})
             .then(res => {
-                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const retFile = new Blob([res.data])
+                const url = window.URL.createObjectURL(retFile);
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', 'text.docx'); //or any other extension
                 document.body.appendChild(link);
                 link.click();
+                const newDate = new Date();
+                const datetime = String(newDate.getDate() + "-" + (newDate.getMonth()+1) + "-" + newDate.getFullYear() + "-" + newDate.getHours() + "-" + newDate.getMinutes() + "-" + newDate.getSeconds());//newDate.toLocaleString);
+                retFile.lastModifiedDate = newDate;
+                retFile.name = datetime;
+
+                myFiles.push({datetime, retFile});
+                // console.log(myFiles.push({datetime, retFile}));
             }).catch(err => console.warn(err));
     };
 
@@ -125,6 +135,7 @@ function App() {
                 }
             }).catch(err => console.warn(err));
         event.target.value = null;
+
     };
 
     const GetColImage = () => {
@@ -134,6 +145,12 @@ function App() {
                 const img = document.getElementById('col_img');
                 img.src = window.URL.createObjectURL(new Blob([res.data]));
             }).catch(err => console.warn(err));
+    };
+
+    const RouteToFiles = () => {
+        console.log('get my files')
+        console.log(myFiles);
+        console.log("size = " + myFiles.length)
     };
 
   return (
@@ -155,6 +172,7 @@ function App() {
                         <input type="file" ref={hiddenFileInputUpload} multiple={false}
                                accept={".png"} onChange={UploadHandleChange} style={{display:'none'}}/>
                         <Button variant="outline-light" onClick={TranscriptHandleChange}>Transcript & Download</Button>
+                        <Button variant="outline-light" onClick={RouteToFiles}>View my Files</Button>
                     </ButtonGroup>
                 </Nav>
             </Container>
