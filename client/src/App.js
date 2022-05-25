@@ -15,6 +15,7 @@ import { Spinner, Container } from "react-bootstrap";
 import SecurityCode from "./pages/Authentication/SecurityCode";
 import EnterMail from "./pages/Authentication/EnterMail";
 import ResetPassword from "./pages/Authentication/ResetPassword";
+import './helpers/prototypeFunctions'
 
 function App() {
     const { loading } = useAuth()

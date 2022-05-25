@@ -102,10 +102,10 @@ router.post('/subject', upload.array("files"), async (req, res) => {
 
 router.post('/assignment', upload.array('files'), async (req, res) => {
     try {
-        const { courseId, name, text, dueDate } = { ...req.body }
+        const { courseId, name, text, dueDate, number } = { ...req.body }
         const course = await Course.findById(courseId)
 
-        const assignment = await Assignment.create({ name, text, courseId, dueDate })
+        const assignment = await Assignment.create({ name, text, courseId, dueDate, number })
         assignment.files = await mapAsync(req.files, async file => {
             const filePath = assignmentPath(courseId, assignment._id, file.originalname)
             return await uploadFile(file, filePath)

@@ -7,12 +7,20 @@ const { getFileData } = require("../../cloud/files");
 const assignmentSchema = new mongoose.Schema({
     name: String,
     text: String,
+    createdAt: {
+        type: Date,
+        immutable: true,
+        default: () => Date.now()
+    },
     courseId: mongoose.SchemaTypes.ObjectId,
     dueDate: {
         type: Date,
         required: true
     },
-    number: Number,
+    number: {
+        type: Number,
+        default: null,
+    },
     files: [mongoose.SchemaTypes.ObjectId],
     submissions: [mongoose.SchemaTypes.ObjectId]
 })

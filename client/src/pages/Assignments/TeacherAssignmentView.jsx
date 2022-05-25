@@ -1,14 +1,16 @@
 import { Container, Button, Spinner } from 'react-bootstrap'
-import AssignmentTab from "./AssignmentTab";
 import AddAssignment from "./modals/AddAssignment";
 import React, { useEffect, useState } from "react";
 import requests from "../../helpers/requests";
 import { useParams } from "react-router";
-import TeacherAssignmentTab from "./TeacherAssignmentTab";
+import AssignmentTab from "./AssignmentTab";
+import AssignmentContent from "./AssignmentContent";
+import { useNav } from "../../contexts/NavContext";
 
 
 export default function TeacherAssignmentView() {
     const { id } = useParams()
+    const { relativeNav } = useNav()
     const [openModal, setOpenModal] = useState(false)
     const [assignments, setAssignments] = useState([])
     const [loading, setLoading] = useState(false)
@@ -30,15 +32,21 @@ export default function TeacherAssignmentView() {
         </Container>
         :
         <Container className={'p-0'}>
-            <h3>Assignments:</h3>
+            <h3>Assignments</h3>
             {
                 assignments.length === 0 ?
                     <p>No Assignments.</p> :
                     assignments.map((value, index) => {
-                    return <TeacherAssignmentTab key={index} id={value._id} {...value}/>
-                })
+                        return (
+                            <AssignmentTab key={index} id={value._id} {...value}>
+                                <AssignmentContent text={value.text} files={value.files}/>
+                                <Button className={'mt-3'} onClick={() => relativeNav(`/${value._id}`)}>View All
+                                    Submissions</Button>
+                            </AssignmentTab>
+                        )
+                    })
             }
-            <Button onClick={() => setOpenModal(true)}>Add Assignment</Button>
+            <Button className={'mt-3'} onClick={() => setOpenModal(true)}>Add Assignment</Button>
             <AddAssignment show={openModal} onHide={() => setOpenModal(false)}/>
         </Container>
 }

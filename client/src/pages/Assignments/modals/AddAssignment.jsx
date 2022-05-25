@@ -14,6 +14,7 @@ export default function AddAssignment(props) {
     const [name, setName] = useState('')
     const [text, setText] = useState('')
     const [date, setDate] = useState(null)
+    const [number, setNumber] = useState(1)
     const { id: courseId } = useParams()
     const [error, setError] = useState('')
     const refresh = useRefresh()
@@ -23,6 +24,7 @@ export default function AddAssignment(props) {
         formData.append('courseId', courseId)
         formData.append('dueDate', date)
         formData.append('name', name)
+        formData.append('number', number)
         formData.append('text', text)
         for (const file of files) {
             formData.append('files', file)
@@ -60,25 +62,31 @@ export default function AddAssignment(props) {
                 <Form>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Enter Assignment Title:
+                            Enter Assignment Title
                         </Form.Label>
                         <Form.Control onChange={e => setName(e.target.value)}/>
                     </Form.Group>
                     <Form.Group className={'mb-3'}>
-                        <Form.Label className={'me-3'}>
-                            Choose Due Date:
+                        <Form.Label>
+                            Assignment Number
                         </Form.Label>
-                        <input type={"date"} onChange={e => setDate(e.target.value)}/>
+                        <Form.Control type={'number'} onChange={e => setNumber(e.target.value)}/>
+                    </Form.Group>
+                    <Form.Group className={'mb-3'}>
+                        <Form.Label className={'me-3'}>
+                            Choose Due Date
+                        </Form.Label>
+                        <Form.Control type={"date"} onChange={e => setDate(e.target.value)}/>
                     </Form.Group>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Enter Some Free Text:
+                            Enter Some Free Text
                         </Form.Label>
                         <Form.Control as={'textarea'} rows={4} onChange={e => setText(e.target.value)}/>
                     </Form.Group>
                     <Form.Group className={'mb-3'}>
                         <Form.Label>
-                            Files / Attachments:
+                            Files / Attachments
                         </Form.Label>
                         <Form.Control type={'file'} multiple onChange={e => addFiles(e)}/>
                     </Form.Group>

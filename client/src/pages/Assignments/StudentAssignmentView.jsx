@@ -1,8 +1,11 @@
-import { Container, Button, Spinner } from 'react-bootstrap'
+import { Container, Button, Spinner, Card } from 'react-bootstrap'
 import AssignmentTab from "./AssignmentTab";
 import React, { useEffect, useState } from "react";
 import requests from "../../helpers/requests";
 import { useParams } from "react-router";
+import SubmitAssignment from "./modals/SubmitAssignment";
+import AssignmentContent from "./AssignmentContent";
+import SubmissionContent from "./SubmissionContent";
 
 
 export default function Assignments() {
@@ -10,6 +13,8 @@ export default function Assignments() {
     const [loading, setLoading] = useState(false)
     const [active, setActive] = useState([])
     const [submitted, setSubmitted] = useState([])
+    const [openSubmit, setOpenSubmit] = useState(false)
+    const [assignmentId, setAssignmentId] = useState(null)
 
     useEffect(() => {
         (async function () {
@@ -33,27 +38,57 @@ export default function Assignments() {
             <Spinner className={'m-3'} animation="border"/>
         </Container>
         :
-        <Container className={'p-0'}>
+        <Container className={'p-2 pb-5'}>
             <Container>
-                <h3>Active</h3>
+                <h3 style={{ fontWeight: 'normal' }}>Active</h3>
                 {
                     active.length === 0 ?
                         <p>No Active Assignments</p> :
                         active.map((value, index) => {
-                            return <AssignmentTab key={index} id={value._id} {...value}/>
+                            return (
+                                <AssignmentTab key={index} id={value._id} {...value}>
+                                    <AssignmentContent text={value.text} files={value.files}/>
+                                    <Button className={'mt-3'} onClick={() => {
+                                        setOpenSubmit(true)
+                                        setAssignmentId(value._id)
+                                    }}>
+                                        Submit
+                                    </Button>
+                                </AssignmentTab>
+                            )
                         })
                 }
             </Container>
             <Container className={'mt-5'}>
-                <h3>Submitted</h3>
+                <h3 style={{ fontWeight: 'normal' }}>Submitted</h3>
                 {
                     submitted.length === 0 ?
                         <p>No Submitted Assignments</p> :
                         submitted.map((value, index) => {
-                            return <AssignmentTab key={index} id={value._id} {...value}/>
+                            return (
+                                <AssignmentTab key={index} id={value._id} {...value}>
+                                    <SubmissionContent submissions={value.submissions}/>
+                                    <div className={'mt-5'}>
+                                        <Button>Edit</Button>
+                                        <Button variant={'outline-danger'} className={'ms-2'}>Delete</Button>
+                                        <div className={'mt-2 w-100 border-1 border-top'}>
+                                            <Card.Text className={'mt-3'}>
+                                                Assignment Preview
+                                            </Card.Text>
+                                        </div>
+                                    </div>
+                                    <Card className={'mt-3'}>
+                                        <Card.Body>
+                                            <AssignmentContent text={value.text} files={value.files}/>
+                                        </Card.Body>
+                                    </Card>
+                                </AssignmentTab>
+                            )
                         })
                 }
             </Container>
+
+            <SubmitAssignment show={openSubmit} onHide={() => setOpenSubmit(false)} assignmentId={assignmentId}/>
         </Container>
 
 }

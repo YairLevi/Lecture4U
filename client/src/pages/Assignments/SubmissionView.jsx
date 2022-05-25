@@ -1,32 +1,20 @@
-import { Container, Button, Spinner } from 'react-bootstrap'
-import AssignmentTab from "./AssignmentTab";
-import AddAssignment from "./modals/AddAssignment";
+import { Container, Button, Spinner, Card } from 'react-bootstrap'
 import React, { useEffect, useState } from "react";
 import requests from "../../helpers/requests";
 import { useParams } from "react-router";
-import { useSearchParams } from "react-router-dom";
-import TeacherAssignmentTab from "./TeacherAssignmentTab";
-import SubmissionTab from "./SubmissionTab";
-import useLocalStorage from "../../hooks/useLocalStorage";
+import SubmissionContent from "./SubmissionContent";
+import useLoadingEffect from "../../hooks/useLoadingEffect";
 
 
 export default function SubmissionView() {
     const { assignmentId } = useParams()
-    const [loading, setLoading] = useState(false)
-    const [searchParams] = useSearchParams()
     const [submissions, setSubmissions] = useState([])
-    const [state, ] = useLocalStorage('state')
-    const isTeacher = state === 'teacher'
 
-    useEffect(() => {
-        (async function () {
-            setLoading(true)
-            const res = await requests.get('/course/teacher/submissions', { assignmentId })
-            if (res.status !== 200) return
-            const json = await res.json()
-            setSubmissions(json)
-            setLoading(false)
-        })()
+    const loading = useLoadingEffect(async () => {
+        const res = await requests.get('/course/teacher/submissions', { assignmentId })
+        if (res.status !== 200) return
+        const json = await res.json()
+        setSubmissions(json)
     }, [])
 
     return loading ?
@@ -39,9 +27,11 @@ export default function SubmissionView() {
             {
                 submissions.length === 0 ?
                     <p>No Submissions yet</p> :
-                    submissions.map((value, index) => {
-                        return <SubmissionTab key={index} id={value._id} value={value}/>
-                    })
+                    <Card>
+                        <Card.Body>
+                            <SubmissionContent submissions={submissions} />
+                        </Card.Body>
+                    </Card>
             }
         </Container>
 }
