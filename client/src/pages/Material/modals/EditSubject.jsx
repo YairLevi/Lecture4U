@@ -52,7 +52,7 @@ export default function EditSubject(props) {
         return files.map((value, index) => {
             return <FileTab key={index}
                             name={value.name}
-                            onClick={() => isNew ? removeNewFile(name) : removeCurrentFile(value.name)}
+                            onClick={() => isNew ? removeNewFile(value.name) : removeCurrentFile(value.name)}
             />
         })
     }

@@ -10,7 +10,6 @@ const submissionSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: () => Date.now(),
-        immutable: true
     },
     text: String,
 })

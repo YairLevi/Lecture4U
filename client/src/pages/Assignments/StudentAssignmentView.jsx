@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import SubmitAssignment from "./modals/SubmitAssignment";
 import AssignmentContent from "./AssignmentContent";
 import SubmissionContent from "./SubmissionContent";
+import EditSubmission from "./modals/EditSubmission";
 
 
 export default function Assignments() {
@@ -15,6 +16,7 @@ export default function Assignments() {
     const [submitted, setSubmitted] = useState([])
     const [openSubmit, setOpenSubmit] = useState(false)
     const [assignmentId, setAssignmentId] = useState(null)
+    const [openEdit, setOpenEdit] = useState(false)
 
     useEffect(() => {
         (async function () {
@@ -67,15 +69,11 @@ export default function Assignments() {
                         submitted.map((value, index) => {
                             return (
                                 <AssignmentTab key={index} id={value._id} {...value}>
-                                    <SubmissionContent submissions={value.submissions}/>
-                                    <div className={'mt-5'}>
-                                        <Button>Edit</Button>
-                                        <Button variant={'outline-danger'} className={'ms-2'}>Delete</Button>
-                                        <div className={'mt-2 w-100 border-1 border-top'}>
-                                            <Card.Text className={'mt-3'}>
-                                                Assignment Preview
-                                            </Card.Text>
-                                        </div>
+                                    <SubmissionContent submissions={value.submissions} assignmentId={value._id}/>
+                                    <div className={'mt-2 w-100 border-1 border-top'}>
+                                        <Card.Text className={'mt-3'}>
+                                            Assignment Preview
+                                        </Card.Text>
                                     </div>
                                     <Card className={'mt-3'}>
                                         <Card.Body>
