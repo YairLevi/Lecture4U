@@ -25,6 +25,10 @@ function App() {
     let [lstbx_value, setValue] = React.useState("default");
 
     const [myFiles, setMyFiles] = useState([]);
+    const [DownloadModal, setDownloadModal] = useState(false);
+    const ModalDownloadShow = () => setDownloadModal(true);
+    const ModalDownloadClose = () => setDownloadModal(false);
+    const [ModalDLMessage, SetModalDLMessage] = useState("");
 
     const InitTranscriptChange = () => {
         document.getElementById('accuracy').textContent = "Loading...";
@@ -72,16 +76,12 @@ function App() {
                 const url = window.URL.createObjectURL(retFile);
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'text.docx'); //or any other extension
+                link.setAttribute('download', 'text.docx');
                 document.body.appendChild(link);
                 link.click();
                 const newDate = new Date();
-                const datetime = String(newDate.getDate() + "-" + (newDate.getMonth()+1) + "-" + newDate.getFullYear() + "-" + newDate.getHours() + "-" + newDate.getMinutes() + "-" + newDate.getSeconds());//newDate.toLocaleString);
-                retFile.lastModifiedDate = newDate;
-                retFile.name = datetime;
-
+                const datetime = String(newDate.getDate() + "-" + (newDate.getMonth()+1) + "-" + newDate.getFullYear() + "-" + newDate.getHours() + "-" + newDate.getMinutes() + "-" + newDate.getSeconds());
                 myFiles.push({datetime, retFile});
-                // console.log(myFiles.push({datetime, retFile}));
             }).catch(err => console.warn(err));
     };
 
@@ -148,9 +148,25 @@ function App() {
     };
 
     const RouteToFiles = () => {
-        console.log('get my files')
-        console.log(myFiles);
-        console.log("size = " + myFiles.length)
+        let files_list = "";
+        for (let f in myFiles) {files_list = files_list + myFiles[f]['datetime'] + "\n";}
+        let newText = files_list.split('\n').map(i => {if (i != "") return <p><Button onClick={downloadFromHistory}>{i}</Button></p>});
+        ModalDownloadShow();
+        SetModalDLMessage(newText);
+    };
+
+    const downloadFromHistory = (event) => {
+        let req_file = event.target.innerText;
+        for (let f in myFiles) {
+            if (myFiles[f]['datetime'] == req_file) {
+                const url = window.URL.createObjectURL(myFiles[f]['retFile']);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', req_file + '.docx');
+                document.body.appendChild(link);
+                link.click();
+            }
+        }
     };
 
   return (
@@ -163,6 +179,15 @@ function App() {
             <Modal.Body><strong>{ModalAlertMessage}</strong></Modal.Body>
             <Modal.Footer><Button variant="secondary" onClick={ModalHandleClose}>Close</Button></Modal.Footer>
         </Modal>
+
+
+        <Modal show={DownloadModal} onHide={ModalDownloadClose} backdrop="static" keyboard={false}>
+            <Modal.Header closeButton/>
+            <Modal.Body><strong>{ModalDLMessage}</strong></Modal.Body>
+            <Modal.Footer><Button variant="secondary" onClick={ModalDownloadClose}>Close</Button></Modal.Footer>
+        </Modal>
+
+
         <Navbar bg="dark" variant="dark">
             <Container>
                 <Navbar.Brand href="#home">Handwriting to Text</Navbar.Brand>
