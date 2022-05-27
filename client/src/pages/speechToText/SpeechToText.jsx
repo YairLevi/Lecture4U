@@ -408,7 +408,7 @@ export default function SpeechToText() {
                                     color: "#23A5EB"
                                 }
                             }}>
-                                <RadioGroup row onClick={set_speech_to_text_language} value={speech_language}>
+                                <RadioGroup row onChange={set_speech_to_text_language} value={speech_language}>
                                     <FormControlLabel value="Hebrew" control={<Radio/>} label="Hebrew"/>
                                     <FormControlLabel value="English" control={<Radio />} label="English"/>
                                 </RadioGroup>
