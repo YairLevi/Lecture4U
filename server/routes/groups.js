@@ -29,11 +29,19 @@ router.get('/get-groups', async (req, res) => {
         const user = await User.findById(userId)
         const groups = await mapAsync(user.groups, async groupId => {
             const group = await clone(Group, groupId)
-            if (group.course !== 'no-course')
-                group.course = await Course.findById(group.course)
-            else
-                group.course = { name: 'No Course' }
-            group.userIds = await mapAsync(group.userIds, userId => User.findById(userId))
+            if (group.owner) {
+                group.owner = await clone(User, group.owner)
+            }
+            if (group.owner && group.owner.profileImage) {
+                group.owner.profileImage = await getFileData(group.owner.profileImage)
+            }
+            group.userIds = await mapAsync(group.userIds, async userId => {
+                const _user = await clone(User, userId)
+                if (_user.profileImage) {
+                    _user.profileImage = await getFileData(_user.profileImage)
+                }
+                return _user
+            })
             return group
         })
 
@@ -68,7 +76,7 @@ router.post('/create-group', async (req, res) => {
     try {
         const userId = getUserID(req)
         const user = await User.findById(userId)
-        const group = await Group.create({ name: req.body.name })
+        const group = await Group.create({ name: req.body.name, owner: userId })
         group.userIds.push(user._id)
         user.groups.push(group._id)
         await user.save()
@@ -163,9 +171,11 @@ router.delete('/leave-group', async (req, res) => {
 
     const user = await User.findById(userId)
     const group = await Group.findById(groupId)
+    const groupName = group.name
 
     const indexOfUser = group.userIds.indexOf(user._id)
     group.userIds.splice(indexOfUser, 1)
+    await group.save()
     if (group.userIds.length === 0) {
         await Group.findByIdAndDelete(group._id)
     }
@@ -175,9 +185,8 @@ router.delete('/leave-group', async (req, res) => {
     user.groups.splice(indexOfGroup, 1)
 
     await user.save()
-    await group.save()
 
-    await addDashboardEvent(userId, events.left_group, group.name)
+    await addDashboardEvent(userId, events.left_group, groupName)
 
     res.sendStatus(200)
 })

@@ -33,8 +33,8 @@ export default function AssignmentTab({ id, name, text, files, number, dueDate, 
                     cursor: 'pointer',
                 }}>
                     <div>
-                        <h6 className={'m-0 mb-0 ms-2'}>Exercise {number ? number : 0}</h6>
-                        <h5 className={'m-1 ms-2'} style={{ color: "gray", width: '20ch' }}>{name}</h5>
+                        <h6 className={'m-0 mb-0 ms-2'} style={{ color: 'gray' }}>Exercise {number ? number : 0}</h6>
+                        <h5 className={'m-1 ms-2'} style={{ width: '20ch' }}>{name}</h5>
                     </div>
                     <i style={{ fontSize: '2rem' }} className={`bx bx-chevron-${show ? 'down' : 'right'}`} />
                 </Container>

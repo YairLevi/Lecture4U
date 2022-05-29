@@ -12,7 +12,7 @@ export default function CourseCard(props) {
     }
 
     return (
-        <Container className={'d-flex justify-content-center mb-4 p-0'} onClick={handleClick}>
+        <Container className={'d-flex justify-content-center mb-4 p-0 h-100'} onClick={handleClick}>
             <Card className={'card-pop'} style={{
                 width: props.width ? props.width : '22rem',
                 borderRadius: '2rem',

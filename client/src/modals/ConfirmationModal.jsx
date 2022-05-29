@@ -10,7 +10,8 @@ export default function ConfirmationModal({ show, onHide, func, text}) {
     const refresh = useRefresh()
     const [loading, action] = useLoading(async () => func())
 
-    async function handleClick() {
+    async function handleClick(e) {
+        e.stopPropagation()
         setError(null)
         const result = await action()
         if (!result) return setError(ERRORS.GENERAL_ERROR)

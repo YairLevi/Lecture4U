@@ -19,7 +19,7 @@ export default function ProfilePage() {
                 <h3 style={{fontWeight: "normal"}}>Profile</h3>
                 <Container className={'col-md-6 col-sm-12'}>
                     <Container className={'d-flex flex-column justify-content-center align-items-center p-3'}>
-                        <Avatar className={'mb-3'} src={currentUser.profileImage.url[0]} sx={{ width: 100, height: 100 }}/>
+                        <Avatar className={'mb-3'} src={currentUser.profileImage?.url[0]} sx={{ width: 100, height: 100 }}/>
                         <Button onClick={() => setOpenImage(true)}>Add Photo</Button>
                     </Container>
                     <Form>

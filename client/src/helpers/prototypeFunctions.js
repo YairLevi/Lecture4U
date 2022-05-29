@@ -9,6 +9,7 @@ Date.prototype.parseEventDate = function () {
     const month = this.toLocaleString('default', { month: 'short' })
     const hour = this.getHours()
     const dayTime = hour > 11 ? 'PM' : 'AM'
-    const minute = this.getMinutes()
+    let minute = this.getMinutes()
+    if (minute < 10) { minute = `0${minute}`}
     return `${month} ${day}\n${hour}:${minute} ${dayTime}`
 }

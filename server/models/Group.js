@@ -15,6 +15,7 @@ const groupSchema = new mongoose.Schema({
         type: String,
         default: 'This is the group description.'
     },
+    owner: mongoose.SchemaTypes.ObjectId,
     userIds: [mongoose.SchemaTypes.ObjectId],
     files: [mongoose.SchemaTypes.ObjectId],
     comments: [mongoose.SchemaTypes.ObjectId],
