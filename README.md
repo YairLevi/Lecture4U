@@ -1,9 +1,16 @@
+  <div align="center">
+    <!-- PROJECT LOGO -->
+    <img src="https://github.com/YairLevi/Lecture4U/blob/main/client/src/assets/header.svg"/>
+    <h1 align="center">Anyone Can Share Knowledge, Anywhere, Anytime.</h1>
+    <img src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white"/>
+    <img src="https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white"/>
+    <img src="https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white"/>
+    <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white"/>
+    <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB"/>
+    <img src="https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white"/>
+    <img src="https://img.shields.io/badge/bootstrap-%23563D7C.svg?style=for-the-badge&logo=bootstrap&logoColor=white"/>
+  </div>
 
-<!-- PROJECT LOGO -->
-<p align="center">
-  <img src="https://github.com/YairLevi/Lecture4U/blob/main/client/src/assets/header.svg"/>
-  <h1 align="center">Anyone Can Share Knowledge, Anywhere, Anytime.</h1>
-</p>
 </br>
 
 <details>
