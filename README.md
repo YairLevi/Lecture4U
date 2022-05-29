@@ -1,4 +1,10 @@
-# Lecture4U
+
+<!-- PROJECT LOGO -->
+<p align="center">
+  <img src="https://github.com/YairLevi/Lecture4U/blob/main/client/src/assets/header.svg"/>
+  <h1 align="center">Anyone Can Share Knowledge, Anywhere, Anytime.</h1>
+</p>
+</br>
 
 <details>
   <summary>Table of Contents</summary>
@@ -18,9 +24,9 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#folder-structure">Folder Structure</a></li>
-        <li><a href="#run-demo">Run Demo</a></li>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation-and-running">Installation & Running</a></li>
+        <li><a href="#run-demo">Run Demo</a></li>
       </ul>
     </li>
     <li>
