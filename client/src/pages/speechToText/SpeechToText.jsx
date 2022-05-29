@@ -26,6 +26,9 @@ import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognitio
 import MicIcon from '@mui/icons-material/Mic';
 import axios from "axios";
 import {Alert, AlertTitle} from '@mui/material';
+import useLocalStorage from "../../hooks/useLocalStorage";
+import moment from "moment";
+
 // https://blog.logrocket.com/using-the-react-speech-recognition-hook-for-voice-assistance/
 // https://github.com/JamesBrill/react-speech-recognition#readme
 // https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
@@ -34,9 +37,6 @@ import {Alert, AlertTitle} from '@mui/material';
 
 // for Course recommendation system:
 // https://mui.com/components/bottom-navigation/
-
-let speech_language = "";
-let file_duration = 0
 
 function LinearProgressWithLabel(props) {
     return (
@@ -60,9 +60,6 @@ LinearProgressWithLabel.propTypes = {
      */
     value: PropTypes.number.isRequired,
 };
-
-
-
 
 export default function SpeechToText() {
 
@@ -89,12 +86,66 @@ export default function SpeechToText() {
     const hiddenFileInput = React.useRef(null);
 
     // progress bar:
-    const [progress, setProgress] = React.useState(0);
-    const [isTranscribe, setTranscribe] = React.useState(false);
-    const [transcribe_score, setTranscribe_score] = React.useState(0);
+    const [progress, setProgress] = useLocalStorage('progress',0)
+    const [isTranscribe, setTranscribe] = useLocalStorage('isTranscribe',false)
+    const [transcribe_score, setTranscribe_score] = useLocalStorage('transcribe_score',0)
+    const [fileTime, setFileTime] = useLocalStorage('fileTime',0)
 
+    // radio buttons (speech to text language)
+    const [speech_language, setSpeechLanguage] = useLocalStorage('speech_language',"")
+
+    // Reload the page:
+    // window.onbeforeunload = function() {
+    //     console.log("You Reload The Page!")
+    //     localStorage.setItem('time', JSON.stringify(moment(new Date(),"YYYY-MM-DDTHH:mm:ss")))
+    //     return true;
+    // };
+
+    // add event listener to local storage:
+    useEffect(() => {
+        function listenForStorage() {
+            console.log("inside listenForStorage()")
+            const progress = localStorage.getItem('progress')
+            const isTranscribe = localStorage.getItem('isTranscribe')
+            const transcribe_score = localStorage.getItem('transcribe_score')
+            const flag = isTranscribe === "true"
+
+            if (progress && isTranscribe && transcribe_score) {
+                setProgress(parseInt(progress))
+                setTranscribe(flag)
+                setTranscribe_score(parseFloat(transcribe_score))
+            }
+        }
+        window.addEventListener('storage', listenForStorage)
+        return () => {
+            window.removeEventListener('storage', listenForStorage)
+        }
+    }, [])
+
+    // Save the time when the user Left the page:
+    useEffect(() => {
+        return () => {
+            console.log("You Left The Page!")
+            localStorage.setItem('time', JSON.stringify(moment(new Date(),"YYYY-MM-DDTHH:mm:ss")))
+        }
+    }, [])
+
+    // Save the time when the user return to the page, and also get TimeLine data from DB.
     React.useEffect(() => {
         (async function () {
+            // calculate the current progress bar
+            if (isTranscribe) {
+                let last_time = JSON.parse(localStorage.getItem('time'))
+                let current_time = moment(new Date(),"YYYY-MM-DDTHH:mm:ss")
+                let seconds = Math.round(moment.duration(current_time.diff(last_time)).asSeconds())
+                let milliseconds = seconds * 1000
+                let newProgress = progress + (10 * Math.round((milliseconds / fileTime)))
+                setProgress(newProgress)
+                console.log("new progress bar:")
+                console.log(newProgress)
+            }
+
+            // get TimeLine Data from DB.
             const res = await axios.get('http://localhost:8000/speech/get', { withCredentials: true })
             console.log(res)
             setTimeLineData(res.data[0])
@@ -102,6 +153,7 @@ export default function SpeechToText() {
 
     }, []);
 
+    // Progress bar calculations:
     React.useEffect(() => {
         if (!isTranscribe) { return }
 
@@ -113,7 +165,7 @@ export default function SpeechToText() {
                     return prevProgress + 10
                 }
             });
-        }, file_duration);
+        }, fileTime);
 
         return () => {
             clearInterval(timer);
@@ -171,8 +223,8 @@ export default function SpeechToText() {
 
     // Choose language - Radio buttons
     const set_speech_to_text_language = (event) => {
-        speech_language = event.target.value
-        console.log(speech_language)
+        setSpeechLanguage(event.target.value)
+        console.log(event.target.value)
     };
 
 
@@ -195,8 +247,9 @@ export default function SpeechToText() {
             .post('http://localhost:5001/upload', form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
-                    file_duration = (res.data['duration'] * 100) / 2
-                    console.log(file_duration)
+                    let time = (res.data['duration'] * 100) / 2
+                    setFileTime(time)
+                    console.log(fileTime)
                     alert_message = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
                     SetModalAlertMessage(alert_message)
                     ModalHandleShow()
@@ -267,11 +320,12 @@ export default function SpeechToText() {
                 }
 
                 setTimeLineData(temp_list)
-                setTranscribe_score(res.headers['transcribe-score'])
-                setTranscribe(false)
-                setProgress(0);
+                localStorage.setItem('isTranscribe', JSON.stringify(false))
+                localStorage.setItem('transcribe_score', JSON.stringify(parseFloat(res.headers['transcribe-score'])))
+                localStorage.setItem('progress', JSON.stringify(0))
+                window.dispatchEvent(new Event('storage'))
 
-                // send TimeLineData to server:
+                //send TimeLineData to server:
                 axios.post("http://localhost:8000/speech/save",{
                     data: TimeLineData
                 }, { withCredentials: true })
@@ -292,7 +346,6 @@ export default function SpeechToText() {
         TimeLineModalHandleShow()
         console.log(TimeLineData[i])
     }
-
 
     return (
         <div className="App">
@@ -355,7 +408,7 @@ export default function SpeechToText() {
                                     color: "#23A5EB"
                                 }
                             }}>
-                                <RadioGroup row onClick={set_speech_to_text_language}>
+                                <RadioGroup row onChange={set_speech_to_text_language} value={speech_language}>
                                     <FormControlLabel value="Hebrew" control={<Radio/>} label="Hebrew"/>
                                     <FormControlLabel value="English" control={<Radio />} label="English"/>
                                 </RadioGroup>

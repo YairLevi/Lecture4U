@@ -54,7 +54,6 @@ def transcript():
     return send_file(return_data,
                      mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                      as_attachment=True, attachment_filename=file_path)
-    # return send_file('text.docx', as_attachment=True)
 
 
 @app.route("/change_focus", methods=["POST"])
@@ -101,35 +100,6 @@ def init_transcript():
     transcript_confidence, content = 0, ""
     transcript_confidence, content = transcription_model.transcript(True, words_split_const, False)
     return {'transcript_score': transcript_confidence, 'content': content}
-
-
-# @app.route("/update_repository", methods=["POST"])
-# @cross_origin()
-# def update_repository():
-#     global course_name, group_name, message_for_course, message_for_group
-#     print(request.data)
-#     course_name = request.json["course_name"]["value"]
-#     group_name = request.json["group_name"]["value"]
-#     message_for_course = request.json["description"]
-#     message_for_group = request.json["message"]
-#     print("message_for_course = {}\nmessage_for_group = {}\ncourse_name = {}\ngroup_name = {}\n"
-#           .format(message_for_course, message_for_group, course_name, group_name))
-#     return "****** update_repository Successfully ******"
-#
-#
-# @app.route("/download", methods=["GET"])
-# @cross_origin()
-# def download():
-#     print("Get request in order to download the file")
-#     return "****** Send Transcription Successfully ******"
-#
-#
-# @app.after_request
-# def after_request(response):
-#     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-#     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-#     response.headers.add('Access-Control-Allow-Credentials', 'true')
-#     return response
 
 
 if __name__ == "__main__":

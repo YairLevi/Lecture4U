@@ -25,6 +25,12 @@ function App() {
     let [lstbx_value, setValue] = React.useState("default");
 
     const [myFiles, setMyFiles] = useState([]);
+    const [DownloadModal, setDownloadModal] = useState(false);
+    const ModalDownloadShow = () => setDownloadModal(true);
+    const ModalDownloadClose = () => setDownloadModal(false);
+    const [ModalDLMessage, SetModalDLMessage] = useState("");
+
+    const [currentFile, SetCurrentFile] = useState("");
 
     const InitTranscriptChange = () => {
         document.getElementById('accuracy').textContent = "Loading...";
@@ -72,16 +78,12 @@ function App() {
                 const url = window.URL.createObjectURL(retFile);
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'text.docx'); //or any other extension
+                link.setAttribute('download', currentFile);
                 document.body.appendChild(link);
                 link.click();
                 const newDate = new Date();
-                const datetime = String(newDate.getDate() + "-" + (newDate.getMonth()+1) + "-" + newDate.getFullYear() + "-" + newDate.getHours() + "-" + newDate.getMinutes() + "-" + newDate.getSeconds());//newDate.toLocaleString);
-                retFile.lastModifiedDate = newDate;
-                retFile.name = datetime;
-
-                myFiles.push({datetime, retFile});
-                // console.log(myFiles.push({datetime, retFile}));
+                const datetime = String(newDate.getDate() + "/" + (newDate.getMonth()+1) + "/" + newDate.getFullYear() + "  " + newDate.getHours() + ":" + newDate.getMinutes());
+                myFiles.push({datetime, currentFile, retFile});
             }).catch(err => console.warn(err));
     };
 
@@ -93,6 +95,7 @@ function App() {
             .post('http://localhost:5000/upload', form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
+                    SetCurrentFile(res.data['FileName'].replace(/\.[^/.]+$/, "") + ".docx");
                     alert_message = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
                     SetModalAlertMessage(alert_message)
                     ModalHandleShow()
@@ -148,9 +151,33 @@ function App() {
     };
 
     const RouteToFiles = () => {
-        console.log('get my files')
-        console.log(myFiles);
-        console.log("size = " + myFiles.length)
+        let files_list = "";
+        for (let f in myFiles) {files_list = files_list + myFiles[f]['currentFile'] + "," + myFiles[f]['datetime'] + "\n";}
+        let newText = files_list.split('\n').map(i => {
+            if (i != "") {
+                let details = i.split(',')
+                let dt = details[1];
+                let cf = details[0];
+                return <p>{dt}&emsp;&emsp;&emsp;<Button className="button" onClick={downloadFromHistory}><b>Download {cf}</b></Button></p>
+            }
+        });
+        ModalDownloadShow();
+        SetModalDLMessage(newText);
+    };
+
+    const downloadFromHistory = (event) => {
+        let req_file = event.target.innerText;
+        req_file = req_file.substr(req_file.indexOf(" ") + 1);
+        for (let f in myFiles) {
+            if (myFiles[f]['currentFile'] == req_file) {
+                const url = window.URL.createObjectURL(myFiles[f]['retFile']);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', myFiles[f]['currentFile']);
+                document.body.appendChild(link);
+                link.click();
+            }
+        }
     };
 
   return (
@@ -162,6 +189,10 @@ function App() {
             </Modal.Header>
             <Modal.Body><strong>{ModalAlertMessage}</strong></Modal.Body>
             <Modal.Footer><Button variant="secondary" onClick={ModalHandleClose}>Close</Button></Modal.Footer>
+        </Modal>
+        <Modal show={DownloadModal} onHide={ModalDownloadClose} backdrop="static" keyboard={false}>
+            <Modal.Header className="modal-header" closeButton><b>My Files</b></Modal.Header>
+            <Modal.Body><strong>{ModalDLMessage}</strong></Modal.Body>
         </Modal>
         <Navbar bg="dark" variant="dark">
             <Container>
@@ -185,8 +216,8 @@ function App() {
                 <Button className="button" onClick={handleClickT}>Choose Text File With The Content</Button>
                 <input type="file" ref={hiddenFileInputTranscript} multiple={false}
                        accept={".txt"} onChange={UploadTxtHandleChange} style={{display:'none'}}/>
-                <br/><p>&emsp;</p><Button className="button"  onClick={GetColImage}>Check Detection</Button>
-                <br/><p>&emsp;</p><Button className="button"  onClick={InitTranscriptChange}>Check Accuracy</Button>
+                <br/><p>&emsp;</p><Button className="button" onClick={GetColImage}>Check Detection</Button>
+                <br/><p>&emsp;</p><Button className="button" onClick={InitTranscriptChange}>Check Accuracy</Button>
             </ButtonGroup>
             <br/>
             <div>
