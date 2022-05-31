@@ -112,14 +112,7 @@ def handle_htr(words_split_const, t_count, ll):
         current_line = glob.glob(png_lst[r])
         threads[r] = Thread(target=thread_parse_line, args=(lines_dict, i, current_line, sem, ll, t_count))
         threads[r].start()
-        if r == 0:
-            threads[r].join()
-        elif r == 1:
-            threads[r].join()
-        elif r == 2:
-            threads[r].join()
-        else:
-            threads[r].join()
+        threads[r].join()
     remove_irrelevant_images(LINES_ROI_PNG)
     keys = list(lines_dict.keys())
     keys.sort()
