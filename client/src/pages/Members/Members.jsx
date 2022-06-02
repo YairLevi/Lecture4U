@@ -25,7 +25,7 @@ export default function Members() {
             {
                 members !== [] ?
                     members.map((value, index) => {
-                        return <UserLabel key={index} {...value} noMargin={false}/>
+                        return <UserLabel key={index} {...value} noMargin={false} size={'regular'}/>
                     })
                     :
                     <p>No members of this course</p>
