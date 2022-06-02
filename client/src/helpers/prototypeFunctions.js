@@ -20,3 +20,11 @@ Date.prototype.getTimeString = function () {
     const period = hour > 11 ? 'PM' : 'AM'
     return `${hour}:${minute} ${period}`
 }
+
+Date.prototype.todayString = function () {
+    const today = new Date()
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const day = days[today.getDay()]
+    const date = this.getMonthAndDay()
+    return `${day}, ${date}`
+}

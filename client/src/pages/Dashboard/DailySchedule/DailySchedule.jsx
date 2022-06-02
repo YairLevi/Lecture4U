@@ -10,6 +10,9 @@ export default function DailySchedule({ schedule }) {
     return (
         <Card className="main-card mb-3 overflow-auto" style={{ height: '350px' }}>
             <div className="card-body overflow-auto">
+                <p style={{ fontSize: '1em' }}>
+                    Today is <strong>{new Date().todayString()}</strong>
+                </p>
                 <div className="vertical-timeline vertical-timeline--animate vertical-timeline--one-column">
                     {
                         schedule.slice(0).map((value, index) => {
