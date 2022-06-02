@@ -7,33 +7,30 @@ import SubmitAssignment from "./modals/SubmitAssignment";
 import AssignmentContent from "./AssignmentContent";
 import SubmissionContent from "./SubmissionContent";
 import EditSubmission from "./modals/EditSubmission";
+import useLoadingEffect from "../../hooks/useLoadingEffect";
 
 
 export default function Assignments() {
     const { id } = useParams()
-    const [loading, setLoading] = useState(false)
     const [active, setActive] = useState([])
     const [submitted, setSubmitted] = useState([])
     const [openSubmit, setOpenSubmit] = useState(false)
     const [assignmentId, setAssignmentId] = useState(null)
     const [openEdit, setOpenEdit] = useState(false)
 
-    useEffect(() => {
-        (async function () {
-            setLoading(true)
-            let res = await requests.get('/course/assignments', { courseId: id })
-            if (res.status !== 200) return
-            const json = await res.json()
-            for (const assignment of json) {
-                if (assignment.submissions.length === 0) {
-                    setActive(prev => [...prev, assignment])
-                } else {
-                    setSubmitted(prev => [...prev, assignment])
-                }
+    const loading = useLoadingEffect(async function () {
+        let res = await requests.get('/course/assignments', { courseId: id })
+        if (res.status !== 200) return
+        const json = await res.json()
+        for (const assignment of json) {
+            if (assignment.submissions.length === 0) {
+                setActive(prev => [...prev, assignment])
+            } else {
+                setSubmitted(prev => [...prev, assignment])
             }
-            setLoading(false)
-        })()
+        }
     }, [])
+
 
     return loading ?
         <Container className={'d-flex justify-content-center align-items-center'}>

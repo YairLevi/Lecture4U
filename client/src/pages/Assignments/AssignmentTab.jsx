@@ -13,9 +13,11 @@ export default function AssignmentTab({ id, name, text, files, number, dueDate, 
     const [openSubmit, setOpenSubmit] = useState(false)
 
     return (
-        <div className={'mt-3 overflow-hidden border border-1'} style={{
+        <div className={'mt-4 overflow-hidden border border-1'} style={{
             borderRadius: '10px',
-            width: '70%',
+            width: '80%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
         }}>
             <div className={'d-flex'} onClick={() => setShow(prev => !prev)}>
                 <Container className={'col-3 pt-1 pb-2 ps-2 pe-2'} style={{

@@ -1,6 +1,7 @@
 import { Button, Card } from "react-bootstrap";
 import React, { useState } from "react";
 import EditSubmission from "./modals/EditSubmission";
+import UserLabel from "../../components/UserLabel";
 
 
 export default function SubmissionContent({ submissions, assignmentId }) {
@@ -13,9 +14,7 @@ export default function SubmissionContent({ submissions, assignmentId }) {
                     {
                         submissions[0].userIds.map((user, index) => {
                             return <div key={index} className={'d-flex justify-content-between'}>
-                                <h6 key={index}>
-                                    {user.firstName} {user.lastName}
-                                </h6>
+                                <UserLabel {...user} noMargin={true} size={'small'} />
                                 <p className={'mb-2 ms-2 p-0'} style={{ fontSize: '0.9rem' }}>
                                     submission date: {new Date(submissions[0].date).parseEventDate()}
                                 </p>

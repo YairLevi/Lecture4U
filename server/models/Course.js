@@ -6,6 +6,7 @@ const { getFileData } = require('../cloud/files')
 const Submission = require('./assignments/Submission')
 const User = require('./User')
 const Assignment = require('./assignments/Assignment')
+const { clone } = require("../mongooseUtil");
 
 
 const courseSchema = new mongoose.Schema({
@@ -70,7 +71,11 @@ courseSchema.methods.getAssignmentsOfUser = async function (userId) {
         assignment.submissions = await Promise.all(assignment.submissions
             .map(async submissionId => {
                 const submission = (await Submission.findById(submissionId))._doc
-                submission.userIds = await Promise.all(submission.userIds.map(user => User.findById(user)))
+                submission.userIds = await Promise.all(submission.userIds.map(async user => {
+                    const u = await clone(User, user)
+                    u.profileImage = await getFileData(u.profileImage)
+                    return u
+                }))
                 submission.files = await Promise.all(submission.files.map(fileId => getFileData(fileId)))
                 return submission
             }))

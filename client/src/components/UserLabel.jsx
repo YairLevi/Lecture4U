@@ -15,9 +15,12 @@ const dim = {
 }
 
 export default function UserLabel(props) {
+    let image = props.profileImage
+    image = image ? image.url[0] : ''
+
     return (
         <div className={`d-flex ${props.noMargin ? '' : 'mt-3'}`}>
-            <Avatar src={props.profileImage?.url[0]} style={{
+            <Avatar src={image} style={{
                 width: dim[props.size].avatarSize,
                 height: dim[props.size].avatarSize
             }}/>
