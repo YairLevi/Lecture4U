@@ -18,6 +18,11 @@ export default function ConfirmationModal({ show, onHide, func, text}) {
         refresh()
     }
 
+    function handleClose(e) {
+        e.stopPropagation()
+        onHide()
+    }
+
     return (
         <Modal show={show} onHide={onHide}>
             <Modal.Header>
@@ -29,7 +34,7 @@ export default function ConfirmationModal({ show, onHide, func, text}) {
             <Modal.Footer className={'d-flex'}>
                 {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}
                 {loading && <Spinner animation={"border"}/>}
-                <Button variant={"outline"} onClick={onHide}>Cancel</Button>
+                <Button variant={"outline"} onClick={handleClose}>Cancel</Button>
                 <Button onClick={handleClick} disabled={loading}>Continue</Button>
             </Modal.Footer>
         </Modal>

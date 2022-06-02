@@ -1,17 +1,16 @@
 import { Container } from 'react-bootstrap'
 import requests from "../../helpers/requests"
 import { useState, useEffect } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation, useParams } from 'react-router'
 
 
 export default function Members() {
     const [members, setMembers] = useState()
-    const location = useLocation()
+    const { id: courseId } = useParams()
 
     useEffect(() => {
         (async function() {
-            const params = requests.parseParams(location)
-            const res = await requests.get('/course/members', { courseId: params.courseId })
+            const res = await requests.get('/course/members', { courseId })
             const data = await res.json()
             setMembers(data)
         })()
