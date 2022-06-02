@@ -16,7 +16,7 @@ export default function OverviewPanel({ assignments, subjects, discussions, rece
                       subvalue={
                           assignments.count === 0 ?
                               'No Active Assignments' :
-                              assignments.mostUrgent.date + ' ' + assignments.mostUrgent.courseName
+                              new Date(assignments.mostUrgent.date).getMonthAndDay() + '\n' + assignments.mostUrgent.courseName
                       }
                       color={'red'}
                       icon={null}/>
@@ -28,7 +28,7 @@ export default function OverviewPanel({ assignments, subjects, discussions, rece
                       subvalue={
                           subjects.count === 0 ?
                               'No New Subjects' :
-                              subjects.mostRecent.date + ' ' + subjects.mostRecent.courseName
+                              new Date(subjects.mostRecent.date).getMonthAndDay() + ' ' + subjects.mostRecent.courseName
                       }
                       color={'red'}
                       icon={null}
@@ -41,15 +41,10 @@ export default function OverviewPanel({ assignments, subjects, discussions, rece
                       subvalue={
                           discussions.count === 0 ?
                               'No New Discussions' :
-                              discussions.mostRecent.date + ' ' + discussions.mostRecent.courseName
+                              new Date(discussions.mostRecent.date).getMonthAndDay() + ' ' + discussions.mostRecent.courseName
                       }
                       color={'red'}
                       icon={null}
-                />
-            </CardWrapper>
-            <CardWrapper>
-                <Card title={'Recent Login'}
-                      value={recentLogin ? recentLogin : 'First Login'}
                 />
             </CardWrapper>
         </>

@@ -17,7 +17,7 @@ export default function Card(props) {
                         <span className="text2 me-2" style={{ color: "gray" }}>
                             {props.subtitle}<br/>
                         </span>
-                        <span className="text1" style={{ fontSize: '1.1rem'}}>
+                        <span className="text1" style={{ fontSize: '1.1rem', whiteSpace: 'pre-wrap'}}>
                             {props.subvalue}
                         </span>
                     </div>

@@ -13,3 +13,10 @@ Date.prototype.parseEventDate = function () {
     if (minute < 10) { minute = `0${minute}`}
     return `${month} ${day}\n${hour}:${minute} ${dayTime}`
 }
+
+Date.prototype.getTimeString = function () {
+    const hour = this.getHours()
+    const minute = this.getMinutes() < 10 ? `0${this.getMinutes()}` : this.getMinutes()
+    const period = hour > 11 ? 'PM' : 'AM'
+    return `${hour}:${minute} ${period}`
+}

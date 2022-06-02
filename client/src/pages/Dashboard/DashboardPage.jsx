@@ -4,6 +4,7 @@ import requests from "../../helpers/requests";
 import OverviewPanel from "./OverviewPanel";
 import useLoadingEffect from "../../hooks/useLoadingEffect";
 import Timeline from "../../components/Timeline/Timeline";
+import DailySchedule from './DailySchedule/DailySchedule'
 
 
 export default function DashboardPage(props) {
@@ -26,13 +27,11 @@ export default function DashboardPage(props) {
             <Row>
                 <Col className={'col-lg-7'}>
                     <h2 className={'p-3'} style={{ fontWeight: "normal" }}>Events</h2>
-                    <Timeline events={data.events} />
+                    <Timeline events={data.events}/>
                 </Col>
                 <Col className={'col-lg-5'}>
                     <h2 className={'p-3'} style={{ fontWeight: "normal" }}>Schedule</h2>
-                    <Card>
-                        Hello
-                    </Card>
+                    <DailySchedule schedule={data.schedule} />
                 </Col>
             </Row>
         </Container>

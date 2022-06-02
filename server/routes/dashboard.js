@@ -8,6 +8,7 @@ const Discussion = require('../models/forum/Discussion')
 const Dashboard = require('../models/Dashboard')
 
 const { getUserID } = require("../httpUtil");
+const Schedule = require("../models/Schedule");
 
 
 router.get('/get-dashboard-data', async (req, res) => {
@@ -44,6 +45,7 @@ router.get('/get-dashboard-data', async (req, res) => {
     const dashboard = await Dashboard.findById(user.dashboard)
     const data = await dashboard.getDashboardData()
     data.events = await dashboard.getEvents()
+    data.schedule = (await Schedule.findOne({ userId })).schedule
     res.status(200).json(data)
 })
 
