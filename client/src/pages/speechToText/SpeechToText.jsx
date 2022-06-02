@@ -244,7 +244,7 @@ export default function SpeechToText() {
         form.append('file', fileUploaded)
 
         axios
-            .post('http://localhost:5001/upload', form)
+            .post('http://localhost:5000/upload', form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
                     let time = (res.data['duration'] * 100) / 2
@@ -287,7 +287,7 @@ export default function SpeechToText() {
             return
         }
 
-        let url = 'http://localhost:5001/transcribe?language=' + speech_language
+        let url = 'http://localhost:5000/transcribe?language=' + speech_language
         setTranscribe_score(0)
         setTranscribe(true)
         axios
