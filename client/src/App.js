@@ -35,7 +35,7 @@ function App() {
                 <Route path={'/reset-password/new'} element={<ResetPassword/>} />
             </Route>
             <Route element={<PrivateRoute/>}>
-                <Route path={"/main/*"} element={<Main/>}/>
+                <Route path={"/*"} element={<Main/>}/>
             </Route>
         </Routes>
     );

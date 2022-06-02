@@ -51,7 +51,7 @@ export default function Main() {
                 </MainNavbar>
                 <Container fluid className={'h-100 overflow-auto'}>
                     <Routes>
-                        <Route exact path={'/'} element={<DashboardPage/>}/>
+                        <Route path={'/dashboard'} element={<DashboardPage/>}/>
                         <Route path={'/profile'} element={<ProfilePage/>}/>
                         <Route path={'/groups'} element={<GroupsPage/>}/>
                         <Route path={'/groups/:id'} element={<Group/>}/>

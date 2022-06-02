@@ -5,8 +5,6 @@ import { eventSettings } from "../../../helpers/events";
 
 
 export default function DailySchedule({ schedule }) {
-    console.log(schedule)
-
     return (
         <Card className="main-card mb-3 overflow-auto" style={{ height: '350px' }}>
             <div className="card-body overflow-auto">

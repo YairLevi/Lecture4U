@@ -22,7 +22,7 @@ $hover-color: rgba(220, 220, 220, 0.3);
 $background-color: #ffffff;
 $sidebar-bg-color: $background-color;
 $submenu-bg-color: #ffffff;
-$sidebar-color: #333333;
+$sidebar-color: #000000;
 $highlight-color: #000000;
 
 $title-color: #808080FF;
@@ -43,8 +43,13 @@ $title-color: #808080FF;
 @keyframes swing {}
 
 .pro-inner-item:hover {
-  background-color: lightgray;
+  background-color: rgba(200, 200, 200, 0.5);
 }
+
+.pro-inner-item:focus, .pro-inner-item:active {
+  color: white !important;
+}
+
 
 .title1 {
   color: $title-color;

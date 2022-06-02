@@ -1,29 +1,29 @@
-import React, { useState } from 'react'
-import { ProSidebar, MenuItem, SubMenu, SidebarFooter, SidebarHeader, SidebarContent } from 'react-pro-sidebar';
-import { Users } from "../../icons/users";
+import React, { useEffect, useState } from 'react'
+import { ProSidebar, SidebarFooter, SidebarContent } from 'react-pro-sidebar';
 import { useAuth } from "../../contexts/AuthContext";
 import './Sidebar.scss'
 
-import { Container } from 'react-bootstrap'
+import { NavLink, Container, Tab, Tabs } from 'react-bootstrap'
 import Menu from './Menu'
-import InnerMenu from "./InnerMenu";
 import Item, { Icon } from './Item'
-import { useNavigate } from "react-router";
-import { Button, FormControl, InputGroup, Nav, Navbar as Bar } from "react-bootstrap";
-import AddCourse from "../../pages/Courses/modals/AddCourse";
-import NewCourse from "../../pages/Courses/modals/NewCourse";
-import { useSearchParams } from 'react-router-dom'
-import { useNav } from "../../contexts/NavContext";
-import { NavLink } from 'react-bootstrap'
+import { useLocation } from "react-router";
+import initSelect from '../../helpers/sidebarButtons'
 
 
 export default function Sidebar({ closeSidebar, open }) {
-    const navigate = useNavigate()
     const { logout } = useAuth()
-    const [modalShow, setModalShow] = useState(false)
-    const [addCourseShow, setAddCourseShow] = useState(false)
-    const [searchParams, setSearchParams] = useSearchParams()
-    const { nav, fullNav } = useNav()
+    const location = useLocation()
+    const [selected, setSelected] = useState()
+
+    useEffect(() => {
+        const current = location.pathname.split('/')[1]
+        setSelected(() => {
+            const newSelect = {...initSelect}
+            newSelect[current] = true
+            return newSelect
+        })
+    }, [location])
+
 
     return (
         <>
@@ -43,35 +43,16 @@ export default function Sidebar({ closeSidebar, open }) {
                     </NavLink>
                 </Container>
                 <SidebarContent>
-
                     <Menu title={"General"}>
-                        <Item icon={'bi-person'} onClick={() => fullNav('/main')}>Dashboard</Item>
-                        <Item icon={'bi-person'} onClick={() => fullNav('/main/profile')}>Profile</Item>
-                        <Item icon={'bi-people'} onClick={() => fullNav('/main/groups')}>Groups</Item>
-                        <Item icon={'bi-book'} onClick={() => fullNav('/main/courses')}>Courses</Item>
+                        <Item name={'dashboard'} selected={selected} icon={'bi-person'}>Dashboard</Item>
+                        <Item name={'profile'} selected={selected} icon={'bi-person'}>Profile</Item>
+                        <Item name={'groups'} selected={selected} icon={'bi-people'}>Groups</Item>
+                        <Item name={'courses'} selected={selected} icon={'bi-book'}>Courses</Item>
                     </Menu>
-                    {/*<Menu title={"Student View"}>*/}
-                    {/*    <InnerMenu title={"Courses"} icon={'bi-book'}>*/}
-                    {/*        <Item icon={'bi-plus-circle'} onClick={() => setAddCourseShow(true)}>Add Course</Item>*/}
-                    {/*        <Item icon={'bi-collection'}*/}
-                    {/*              onClick={() => fullNav('/main/courses', {}, false)}>*/}
-                    {/*            Show all courses*/}
-                    {/*        </Item>*/}
-                    {/*    </InnerMenu>*/}
-                    {/*</Menu>*/}
-                    {/*<Menu title={"Teacher View"}>*/}
-                    {/*    <InnerMenu title={"My Courses"}>*/}
-                    {/*        <Item icon={'bi-plus-circle'} onClick={() => setModalShow(true)}>New Course</Item>*/}
-                    {/*        <Item icon={'bi-collection'}*/}
-                    {/*              onClick={() => fullNav('/main/courses', {}, false)}>*/}
-                    {/*            Show all courses*/}
-                    {/*        </Item>*/}
-                    {/*    </InnerMenu>*/}
-                    {/*</Menu>*/}
                     <Menu title={"Tools"}>
-                        <Item icon={'bi-mic'} onClick={() => fullNav('/main/speech', {}, false)}>Speech To Text</Item>
-                        <Item icon={'bi-type'} onClick={() => fullNav('/main/ocr', {}, false)}>Image To Text</Item>
-                        <Item icon={'bi-calendar-range'} onClick={() => fullNav('/main/calendar', {}, false)}>Calender</Item>
+                        <Item name={'speech'} selected={selected} icon={'bi-mic'}>Speech To Text</Item>
+                        <Item name={'ocr'} selected={selected} icon={'bi-type'}>Image To Text</Item>
+                        <Item name={'calendar'} selected={selected} icon={'bi-calendar-range'}>Calender</Item>
                     </Menu>
                 </SidebarContent>
                 <SidebarFooter>

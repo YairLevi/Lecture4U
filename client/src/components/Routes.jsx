@@ -10,5 +10,5 @@ export function PrivateRoute() {
 
 export function PublicRoute() {
     const { currentUser } = useAuth()
-    return !currentUser ? <Outlet/> : <Navigate to={'/main'}/>
+    return !currentUser ? <Outlet/> : <Navigate to={'/dashboard'}/>
 }
