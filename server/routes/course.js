@@ -27,6 +27,7 @@ const Dashboard = require('../models/Dashboard')
 
 const { getFileData, deleteCourseFolder } = require("../cloud/files");
 const { addDashboardEvent, events } = require("../eventUtil");
+const { clone } = require("../mongooseUtil");
 
 
 
@@ -124,8 +125,9 @@ router.get('/members', async (req, res) => {
         const courseId = req.query.courseId
         const course = await Course.findById(courseId)
         const members = await Promise.all(course.students.map(async userId => {
-            const user = await User.findById(userId)
-            return user.firstName + ' ' + user.lastName
+            const user = await clone(User, userId)
+            user.profileImage = await getFileData(user.profileImage)
+            return user
         }))
         res.status(200).json(members)
     } catch (e) {

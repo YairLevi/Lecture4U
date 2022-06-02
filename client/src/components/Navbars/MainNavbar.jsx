@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Navbar as Bar, Button, Form, Nav, NavDropdown, Container, NavLink } from "react-bootstrap";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import UserAvatar from "../Avatar";
 import Avatar from "@mui/material/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
 

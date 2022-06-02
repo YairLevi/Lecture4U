@@ -43,8 +43,8 @@ export default function ForumDiscussion({ currentDiscussion }) {
                     {
                         comments &&
                         comments.map((value, index) => {
-                            const name = value.author.firstName + ' ' + value.author.lastName
-                            return <ForumComment key={index} name={name} content={value.content}/>
+                            // const name = value.author.firstName + ' ' + value.author.lastName
+                            return <ForumComment key={index} {...value}/> // name={name} content={value.content}/>
                         })
                     }
                 </>

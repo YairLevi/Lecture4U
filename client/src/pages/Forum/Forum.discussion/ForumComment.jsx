@@ -1,15 +1,14 @@
 import { Card } from 'react-bootstrap'
+import UserLabel from "../../../components/UserLabel";
 
 
-export default function ForumComment({ name, content}) {
+export default function ForumComment(props) {
     return (
         <Card className={'mb-3'}>
             <Card.Body>
-                <Card.Text style={{fontWeight: 'bold', color: 'gray'}}>
-                    {name}
-                </Card.Text>
+                <UserLabel {...props.author} noMargin={true}/>
                 <Card.Text>
-                    {content}
+                    {props.content}
                 </Card.Text>
             </Card.Body>
         </Card>

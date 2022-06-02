@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { ProSidebar, MenuItem, SubMenu, SidebarFooter, SidebarHeader, SidebarContent } from 'react-pro-sidebar';
 import { Users } from "../../icons/users";
-import UserAvatar from '../Avatar'
 import { useAuth } from "../../contexts/AuthContext";
 import './Sidebar.scss'
 

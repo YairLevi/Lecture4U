@@ -8,6 +8,8 @@ const User = require('../models/User')
 
 const createForumRouter = require('./forum.create')
 const { removeFromDashboard, getUserID } = require("../httpUtil");
+const { getFileData } = require("../cloud/files");
+const { clone } = require("../mongooseUtil");
 router.use('/create', createForumRouter)
 
 
@@ -40,7 +42,8 @@ router.get('/comments', async (req, res) => {
 
         const comments = await Promise.all(discussion.comments.map(async commentId => {
             const comment = await Comment.findById(commentId)
-            const user = await User.findById(comment.author)
+            const user = await clone(User, comment.author)
+            user.profileImage = await getFileData(user.profileImage)
             return {
                 author: user,
                 content: comment.content,
