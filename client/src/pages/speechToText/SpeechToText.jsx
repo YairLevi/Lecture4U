@@ -1,10 +1,19 @@
+// https://blog.logrocket.com/using-the-react-speech-recognition-hook-for-voice-assistance/
+// https://github.com/JamesBrill/react-speech-recognition#readme
+// https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
+// https://github.com/devias-io/material-kit-react
+
+// for Course recommendation system:
+// https://mui.com/components/bottom-navigation/
+
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button, ButtonGroup, Container, Card, Nav, Navbar, Modal} from "react-bootstrap"
 import React, {useState, useEffect} from 'react';
 import {FormControl, Radio, RadioGroup, Typography} from "@mui/material";
 import CustomizedDialogs from "./Dialog";
 import RegistrationForm from "./RegistrationForm";
-// import FixedBottomNavigation from "./Recommendations Forum"
+import { DataGrid } from '@mui/x-data-grid'; /// npm i @mui/x-data-grid
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from "@mui/material/Box";
@@ -12,7 +21,6 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import PropTypes from 'prop-types';
 import LinearProgress from '@mui/material/LinearProgress';
-
 
 import Timeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
@@ -29,14 +37,6 @@ import {Alert, AlertTitle} from '@mui/material';
 import useLocalStorage from "../../hooks/useLocalStorage";
 import moment from "moment";
 
-// https://blog.logrocket.com/using-the-react-speech-recognition-hook-for-voice-assistance/
-// https://github.com/JamesBrill/react-speech-recognition#readme
-// https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
-// https://github.com/devias-io/material-kit-react
-
-
-// for Course recommendation system:
-// https://mui.com/components/bottom-navigation/
 
 function LinearProgressWithLabel(props) {
     return (
@@ -54,12 +54,15 @@ function LinearProgressWithLabel(props) {
 }
 
 LinearProgressWithLabel.propTypes = {
-    /**
-     * The value of the progress indicator for the determinate and buffer variants.
-     * Value between 0 and 100.
-     */
     value: PropTypes.number.isRequired,
 };
+
+// the columns of the TimeLine table.
+const columns = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'file', headerName: 'File name', width: 250 },
+    { field: 'accuracy', headerName: 'Transcription Accuracy', width: 200 },
+];
 
 export default function SpeechToText() {
 
@@ -74,15 +77,14 @@ export default function SpeechToText() {
     let alert_message = ""
 
     // timeline speech to text:
-    const [TimeLineData, setTimeLineData] = useState([]);
+    const [TimeLineData, setTimeLineData] = useLocalStorage('TimeLineData',[]);
     const [displayTimeLineInfo, setDisplayTimeLineInfo] = useState(false);
     const TimeLineModalHandleClose = () => setDisplayTimeLineInfo(false);
     const TimeLineModalHandleShow = () => setDisplayTimeLineInfo(true);
     const [TimeLineIndex, setTimeLineIndex] = useState(-1);
     let TimeLineInfo = []
 
-
-    // for upload button:
+    // upload button:
     const hiddenFileInput = React.useRef(null);
 
     // progress bar:
@@ -109,11 +111,13 @@ export default function SpeechToText() {
             const isTranscribe = localStorage.getItem('isTranscribe')
             const transcribe_score = localStorage.getItem('transcribe_score')
             const flag = isTranscribe === "true"
+            const newTimeLineData = JSON.parse(localStorage.getItem('TimeLineData'))
 
-            if (progress && isTranscribe && transcribe_score) {
+            if (progress && isTranscribe && transcribe_score && newTimeLineData) {
                 setProgress(parseInt(progress))
                 setTranscribe(flag)
                 setTranscribe_score(parseFloat(transcribe_score))
+                setTimeLineData(newTimeLineData)
             }
         }
         window.addEventListener('storage', listenForStorage)
@@ -319,7 +323,7 @@ export default function SpeechToText() {
                     temp_list[index][key].push([res.headers['transcribe-file-name'],key,res.headers['transcribe-score']])
                 }
 
-                setTimeLineData(temp_list)
+                localStorage.setItem('TimeLineData', JSON.stringify(temp_list))
                 localStorage.setItem('isTranscribe', JSON.stringify(false))
                 localStorage.setItem('transcribe_score', JSON.stringify(parseFloat(res.headers['transcribe-score'])))
                 localStorage.setItem('progress', JSON.stringify(0))
@@ -327,7 +331,7 @@ export default function SpeechToText() {
 
                 //send TimeLineData to server:
                 axios.post("http://localhost:8000/speech/save",{
-                    data: TimeLineData
+                    data: temp_list
                 }, { withCredentials: true })
 
                 let file_name = res.headers['transcribe-file-name'].split(".")[0] + ".docx"
@@ -471,10 +475,9 @@ export default function SpeechToText() {
                         <br/>
                         You will be able to see what percentage is left until the end.
                         <br/>
-                        When done, the transcribed file will be saved to a system.
+                        When done, the transcribed file will be downloaded.
                         <br/>
-                        By the 'Download' button above you can download the transcribed file,
-                        and you can share it with other users by clicking the 'Send' button above.
+                        You can share it with other users by clicking the 'Send' button above.
                     </Typography>
 
                     <br/>
@@ -522,6 +525,7 @@ export default function SpeechToText() {
                 onHide={TimeLineModalHandleClose}
                 backdrop="static"
                 keyboard={false}
+                size={"lg"}
             >
                 <Modal.Header closeButton>
                     <Alert severity="info">
@@ -534,19 +538,26 @@ export default function SpeechToText() {
                         Object.entries(TimeLineData[TimeLineIndex]).map((cdiv) => (
                             cdiv[1].forEach(function (list,index) {
                                 TimeLineInfo.push(
-                                    <div key={index}>
-                                        <strong>File Name: </strong> {list[0]}
-                                        <br/>
-                                        <strong>Accuracy: </strong>{list[2]}
-                                        <br/><br/>
-                                    </div>
+                                    {
+                                        id: index,
+                                        file: list[0],
+                                        accuracy: list[2]
+                                    }
                                 )
                             })
                         ))
 
                     }
 
-                    <>{TimeLineInfo}</>
+                    <div style={{ height: 400, width: '100%' }}>
+                        <DataGrid
+                            rows={TimeLineInfo}
+                            columns={columns}
+                            pageSize={5}
+                            rowsPerPageOptions={[5]}
+                            checkboxSelection
+                        />
+                    </div>
 
                 </Modal.Body>
                 <Modal.Footer>
@@ -556,9 +567,6 @@ export default function SpeechToText() {
                 </Modal.Footer>
             </Modal>
             }
-
-            {/*<FixedBottomNavigation/>*/}
-
 
         </div>
 
