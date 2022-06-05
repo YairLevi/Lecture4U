@@ -65,13 +65,16 @@
 
 
 ## About The Project
+Final project in the Department of Computer Science, Bar Ilan University. </br>
+**Lecture4U** is a course management system, which allows users to take part in courses, or manage their courses as lecturer. </br>
+Our system provides each user machine learning tools which makes it easier for users to learn and manage their time.  
 ### Motivation
 ### Features
-- [x] **Course management tool -** _As a student_ you can view the materials that uploaded by the lecturer, rate the study units according to your knowledge, see the assignments you need to submit, and chat with course members in the forum. _As a lecturer_ you can upload study materials, add assignments, and see the average    knowledge of each study unit (according to students ratings).
+- [x] **Course management tools -** _As a student_ you can view the materials that uploaded by the lecturer, rate the study units according to your knowledge, see the assignments you need to submit, and chat with course members in the forum. _As a lecturer_ you can upload study materials, add assignments, and see the average    knowledge of each study unit (according to students ratings).
 - [x] **Learning Groups -** Users can create groups with their friends, they can chat in the group forum, share files, and work on a shared document (like Google Docs).
-- [x] **OCR -** Given an handwriting image, creates a .docx file, with the text that appears in the image.
-- [x] **Speech to text -** Given .m4a audio file, creates a transcript file (.docx), and divide the transcription to timestamps according to known keywords.
-- [x] **Scheduler -** Each user has it's own calendar, he schedule his constraints and their priorities, and the scheduler creates a schedule that satisfy his constraints.
+- [x] **OCR tool -** Given an handwriting image, creates a .docx file, with the text that appears in the image.
+- [x] **Speech to text tool -** Given .m4a audio file, creates a transcript file (.docx), and divide the transcription to timestamps according to known keywords.
+- [x] **Scheduler tool -** Each user has it's own calendar, he schedules his constraints and their priorities, and the scheduler creates a schedule that satisfy his constraints.
 ### Built With
 ## Usage
 
