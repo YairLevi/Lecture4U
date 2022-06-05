@@ -65,7 +65,7 @@
 
 
 ## About The Project
-Final project in the Department of Computer Science, Bar Ilan University. </br>
+Final project in the Computer Science Department, Bar Ilan University. </br>
 **Lecture4U** is a course management system, which allows users to take part in courses, or manage their courses as lecturer. </br>
 Our system provides each user machine learning tools which makes it easier for users to learn and manage their time.  
 ### Motivation
@@ -94,6 +94,21 @@ Our system provides each user machine learning tools which makes it easier for u
 ### Microservices
 #### OCR
 #### Speech to text
+Our goal is to tanscibe the desiered .m4a audio file to timestamps according to the known keywords. If you haven't already run one of our speech to text demo files, it is recommended to do so (see speech to text Run Demo section).
+
+The model supports transcription into English or Hebrew. The English keyword are: ['new', 'topic', 'end', 'topic], therefore, when the speaker wants to talk about a new topic in his lecture, he should say: "new topic", then the topic's name, and once he has finished saying the topic's name, he will say "end topic". Whatever he says from that moment, until the next time he says: "new topic" will be considered as the same part of his topic. 
+
+Symmetrically, the same thing is done with Hebrew, but with the keywords: ['נושא', 'חדש', 'סוף', 'נושא'].
+
+***For example,*** suppose we have an english recored in which we wish to speak on two topics: "Compiler", and "Interpreter", so in the recording, when we want to start talking about compilers, we say: "new topic compiler end of topic", then start talking about all the content related to compilers, after that say: "new topic interpreter end of topic", and start talking about all the content related to interpreter. 
+Finally he will get a transcript of the recording, which is divided into two topics: "Compilers", "interpreter", and the timestamps that these two subjects learned.
+
+Users upload their .m4a audio files to the speech to text microservice (a flask server), choose the language and click the transcribe button.
+The microservice uploads the files to a google cloud bucket, then uses the google cloud speech to text api to get a words list and time that each word was said.
+Then, our algorithm split the list to topics according to the keywords and calculates the timesatamps that each topic was studied , and finally write to a .docx file.
+The user get the transcript file, and get the confidence of the model in the transcript he made.
+
+
 #### Constraint Satisfaction Problems CSPs
 
 
