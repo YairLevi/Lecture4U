@@ -66,8 +66,7 @@
 
 ## About The Project
 Final project in the Computer Science Department, Bar Ilan University. </br>
-**Lecture4U** is a course management system, which allows users to take part in courses, or manage their courses as lecturer. </br>
-Our system provides each user machine learning tools which makes it easier for users to learn and manage their time.  
+**Lecture4U** is a course management system, which allows users to take part in courses, or manage their courses as lecturer. Our system provides each user machine learning tools which makes it easier for them to learn and manage their time.  
 ### Motivation
 ### Features
 - [x] **Course management tools -** _As a student_ you can view the materials that uploaded by the lecturer, rate the study units according to your knowledge, see the assignments you need to submit, and chat with course members in the forum. _As a lecturer_ you can upload study materials, add assignments, and see the average    knowledge of each study unit (according to students ratings).
@@ -94,14 +93,13 @@ Our system provides each user machine learning tools which makes it easier for u
 ### Microservices
 #### OCR
 #### Speech to text
-Our goal is to tanscibe the desiered .m4a audio file to timestamps according to the known keywords. If you haven't already run one of our speech to text demo files, it is recommended to do so (see speech to text Run Demo section).
+Our goal is to tanscibe the given .m4a audio file and write for each topic it's timestamp according to the known keywords. If you haven't already run one of our speech to text demo files, it is recommended to do so (see speech to text Run Demo section).
 
 The model supports transcription into English or Hebrew. The English keyword are: ['new', 'topic', 'end', 'topic], therefore, when the speaker wants to talk about a new topic in his lecture, he should say: "new topic", then the topic's name, and once he has finished saying the topic's name, he will say "end topic". Whatever he says from that moment, until the next time he says: "new topic" will be considered as the same part of his topic. 
 
 Symmetrically, the same thing is done with Hebrew, but with the keywords: ['נושא', 'חדש', 'סוף', 'נושא'].
 
-***For example,*** suppose we have an english recored in which we wish to speak on two topics: "Compiler", and "Interpreter", so in the recording, when we want to start talking about compilers, we say: "new topic compiler end of topic", then start talking about all the content related to compilers, after that say: "new topic interpreter end of topic", and start talking about all the content related to interpreter. 
-Finally he will get a transcript of the recording, which is divided into two topics: "Compilers", "interpreter", and the timestamps that these two subjects learned.
+***For example,*** suppose we have an english audio file in which we wish to speak on two topics: "Compiler", and "Interpreter", so in the recording, when we want to start talking about compilers, we say: "new topic compiler end topic", then start talking about all the content related to compilers, after that say: "new topic interpreter end topic", and start talking about all the content related to interpreter. Finally he will get a transcript of the recording, which is divided into two topics: "Compilers", "interpreter", and the timestamps that these two subjects learned.
 
 Users upload their .m4a audio files to the speech to text microservice (a flask server), choose the language and click the transcribe button.
 The microservice uploads the files to a google cloud bucket, then uses the google cloud speech to text api to get a words list and time that each word was said.
