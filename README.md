@@ -69,7 +69,7 @@ Final project in the Computer Science Department, Bar Ilan University. </br>
 **Lecture4U** is a course management system, which allows users to take part in courses, or manage their courses as lecturer. Our system provides each user machine learning tools which makes it easier for them to learn and manage their time.  
 ### Motivation
 ### Features
-- [x] **Course management tools -** _As a student_ you can view the materials that uploaded by the lecturer, rate the study units according to your knowledge, see the assignments you need to submit, and chat with course members in the forum. _As a lecturer_ you can upload study materials, add assignments, and see the average    knowledge of each study unit (according to students ratings).
+- [x] **Course management tools -** _As a student_ you can view the study units that uploaded by the lecturer, rate the them according to your knowledge, see the assignments you need to submit, and chat with other course members in the forum. </br> _As a lecturer_ you can upload study units, add assignments. You can also select one of the courses you teach, see the average knowledge of each study unit in this course (according to students ratings), and see how many students saw the course study units.  
 - [x] **Learning Groups -** Users can create groups with their friends, they can chat in the group forum, share files, and work on a shared document (like Google Docs).
 - [x] **OCR tool -** Given an handwriting image, creates a .docx file, with the text that appears in the image.
 - [x] **Speech to text tool -** Given .m4a audio file, creates a transcript file (.docx), and divide the transcription to timestamps according to known keywords.
@@ -93,7 +93,7 @@ Final project in the Computer Science Department, Bar Ilan University. </br>
 ### Microservices
 #### OCR
 #### Speech to text
-Our goal is to tanscibe the given .m4a audio file and write for each topic it's timestamp according to the known keywords. If you haven't already run one of our speech to text demo files, it is recommended to do so (see speech to text Run Demo section).
+Our goal is to transcibe the given .m4a audio file and write for each topic it's timestamp according to the known keywords. If you haven't already run one of our speech to text demo files, it is recommended to do so (see speech to text Run Demo section).
 
 The model supports transcription into English or Hebrew. The English keyword are: ['new', 'topic', 'end', 'topic], therefore, when the speaker wants to talk about a new topic in his lecture, he should say: "new topic", then the topic's name, and once he has finished saying the topic's name, he will say "end topic". Whatever he says from that moment, until the next time he says: "new topic" will be considered as the same part of his topic. 
 
@@ -108,6 +108,18 @@ The user get the transcript file, and get the confidence of the model in the tra
 
 
 #### Constraint Satisfaction Problems CSPs
+Constraint satisfaction problems (CSPs) are mathematical questions defined as a set of objects whose state must satisfy a number of constraints or limitations. CSPs represent the entities in a problem as a homogeneous collection of finite constraints over variables, which is solved by constraint satisfaction methods.
+
+In our project, each user has it's own calendar, and wish to schedule his tasks according to his time and priorities constrains. The user clicks the 'schedule tasks' button, that will open a form. There he will choose his tasks details, and finally clicks the approve button. Symmetrically, he can also place his tasks directly on the calendar, and then clicks the approve button in the form.
+
+Each task has a priority (rank 1-5, when 1 is the least important). The priority actually means that, if one task is more important than another task, then in each scheduling ,the more important task must appear first on the calendar.
+
+Our scheduler microservice gets the inforamtion, and tries to satisfy the problem. The scheduler may find some different legal solutions and return them to the user. The user has an options drop list that displays all the legal solutions (scheduling), that the scheduler find him. Then the user can choose his prefered schedule, and by clicking the 'save' button, his schedule will save to the DB, and will automatically load when he login again. 
+
+Our algorithm supports backward compatibility, that is, if the user has tasks that are already scheduled on the calendar (from previous algorithm runs), and now he wants to add new tasks, then of course the algorithm will check that there is no discrepancy with the previous tasks he has scheduled.
 
 
 ## Contact
+- Tal Sigman
+- Yair Levi
+- Noam Roth 
