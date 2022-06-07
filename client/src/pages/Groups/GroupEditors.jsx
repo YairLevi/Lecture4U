@@ -38,7 +38,10 @@ export default function GroupEditors(props) {
                     }
                     {
                         props.documents.map((value, index) => {
-                            return <EditorTab key={value._id} name={value.name} docId={value._id}/>
+                            return <EditorTab key={value._id} name={value.name} docId={value._id} onClick={() => {
+                                setFileToDelete(value)
+                                setOpenConfirm(true)
+                            }}/>
                         })
                     }
                 </Card.Body>

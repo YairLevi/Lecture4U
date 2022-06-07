@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useNav } from "../../contexts/NavContext";
 import ConfirmationModal from "../../modals/ConfirmationModal";
 import requests from "../../helpers/requests";
+import DeleteButton from "../../components/DeleteButton";
 
 const AVATAR_SIZE = 30
 
@@ -22,14 +23,11 @@ export default function GroupCard(props) {
         <Card style={{
             maxWidth: '22rem',
             cursor: 'pointer',
-        }} className={'m-3'} onClick={() => relativeNav(`/${props._id}`)}>
+        }} className={'mt-4 mb-4'} onClick={() => relativeNav(`/${props._id}`)}>
             <Card.Body>
                 <div className={'d-flex justify-content-between mb-3'}>
                     <Avatar src={props.owner?.profileImage?.url[0]}/>
-                    <i style={{ fontSize: '1.5rem' }} onClick={e => {
-                        e.stopPropagation()
-                        setOpenConfirm(true)
-                    }} className={'d-flex align-items-center bx bx-trash'}/>
+                    <DeleteButton onClick={() => {setOpenConfirm(true)}}/>
                 </div>
                 <Card.Title>
                     {props.name}

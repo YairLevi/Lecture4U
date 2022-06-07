@@ -1,6 +1,7 @@
 import { Container, Button } from 'react-bootstrap'
 import { Icon } from "./Sidebar/Item";
 import { useState } from "react";
+import DeleteButton from "./DeleteButton";
 
 
 export default function FileLinkTab({ name, link, onClick }) {
@@ -13,12 +14,7 @@ export default function FileLinkTab({ name, link, onClick }) {
                    // style={{ cursor: 'pointer' }}
         >
             <a style={{width: 'fit-content'}} href={link}>{name}</a>
-            <div style={{
-                cursor: 'pointer',
-                visibility: hover ? 'visible' : 'hidden',
-            }} onClick={onClick}>
-                <Icon iconClass={'bi-trash'}/>
-            </div>
+            <DeleteButton onClick={onClick} fontSize={'1.2rem'}/>
         </Container>
     )
 }

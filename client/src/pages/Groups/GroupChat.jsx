@@ -28,8 +28,7 @@ export default function GroupChat(props) {
                 {
                     props.comments &&
                     props.comments.map((value, index) => {
-                        const name = value.author.firstName + ' ' + value.author.lastName
-                        return <ForumComment key={index} name={name} content={value.content}/>
+                        return <ForumComment key={index} author={value.author} content={value.content}/>
                     })
                 }
             </Container>

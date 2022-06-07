@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Container } from "react-bootstrap";
 import { Icon } from "../../components/Sidebar/Item";
 import { useNav } from "../../contexts/NavContext";
+import DeleteButton from "../../components/DeleteButton";
 
-export default function EditorTab({ name, docId }) {
+export default function EditorTab({ name, docId, onClick }) {
     const [hover, setHover] = useState(false)
     const { relativeNav } = useNav()
 
@@ -19,11 +20,7 @@ export default function EditorTab({ name, docId }) {
                    onClick={handleClick}
         >
             <p style={{textOverflow: 'ellipsis', width: '90%'}}>{name}</p>
-            <div style={{
-                visibility: hover ? 'visible' : 'hidden',
-            }}>
-                <Icon iconClass={'bi-trash'}/>
-            </div>
+            <DeleteButton onClick={onClick} fontSize={'1.2rem'} />
         </Container>
     )
 }

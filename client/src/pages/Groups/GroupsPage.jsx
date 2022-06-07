@@ -41,8 +41,8 @@ export default function GroupsPage(props) {
 
     return (
         <>
-            <Container fluid className={'p-3 h-100'}>
-                <h3 style={{ fontWeight: 'normal' }} className={'m-3'}>Groups</h3>
+            <Container className={'p-3 h-100'}>
+                <h3 style={{ fontWeight: 'normal' }}>Groups</h3>
                 {
                     loading ?
                         <Container className={'d-flex justify-content-center align-items-center'}>
@@ -52,16 +52,11 @@ export default function GroupsPage(props) {
                             {
                                 groups && groups.map((value, index) => {
                                     return <Col key={index} className={'col-12 col-md-6 col-lg-4 col-xl-3'}>
-                                            <GroupCard {...value} />
-                                        </Col>
+                                        <GroupCard {...value} />
+                                    </Col>
                                 })
                             }
                         </Row>
-                    // loading ?
-                    //     <Container className={'d-flex justify-content-center align-items-center'}>
-                    //         <Spinner className={'m-3'} animation="border"/>
-                    //     </Container> :
-                    //     groups && groups.map((value, index) => <GroupTab key={index} value={value}/>)
                 }
                 <Button onClick={openModal}>Add Group</Button>
             </Container>
