@@ -5,7 +5,7 @@ import './Logo.scss'
 
 export default function Navbar(props) {
     return (
-        <Bar className={"p-3 border-bottom shadow-sm"} bg={"white"} expand="md" sticky={"top"}>
+        <Bar className={"p-2 border-bottom shadow-sm"} bg={"white"} expand="md" sticky={"top"}>
             <Container>
                 <Bar.Brand href="/">
                     <div className={'logo'} />

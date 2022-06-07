@@ -20,16 +20,26 @@ import Editor from "../Groups/Editor";
 import DashboardPage from "../Dashboard/DashboardPage";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
+
+const selectedStyle = {
+    color: 'white',
+    backgroundColor: '#007bff',
+}
+
 export default function Main() {
     const [open, setOpen] = useState(false)
     const { siblingNav } = useNav()
     const params = useParams()
     const [searchParams,] = useSearchParams()
     const state = useLocalStorage('state')
+    const [current, setCurrent] = useState()
     const [inCourse, setInCourse] = useState(false)
 
     useEffect(() => {
         setInCourse(params['*'].split('/')[0] === 'courses' && params['*'].split('/').length > 1)
+        const page = params['*'].split('/')[2]
+        console.log(page)
+        setCurrent(page)
     }, [params])
 
     return (
@@ -41,7 +51,12 @@ export default function Main() {
                         inCourse && courseTabs.map((value, index) => {
                             return (
                                 <Nav.Item key={index}>
-                                    <Nav.Link onClick={async () => siblingNav(`/${value.toLowerCase()}`, {}, false)}>
+                                    <Nav.Link
+                                        style={current === value.toLowerCase() ? selectedStyle : {}}
+                                        onClick={async () => {
+                                            setCurrent(value)
+                                            siblingNav(`/${value.toLowerCase()}`, {}, false)
+                                        }}>
                                         {value}
                                     </Nav.Link>
                                 </Nav.Item>
