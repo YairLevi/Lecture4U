@@ -40,14 +40,15 @@ export default function GroupsPage(props) {
     const avatarSize = 30
 
     return (
-        <>
-            <Container className={'p-3 h-100'}>
-                <h3 style={{ fontWeight: 'normal' }}>Groups</h3>
-                {
-                    loading ?
-                        <Container className={'d-flex justify-content-center align-items-center'}>
-                            <Spinner className={'m-3'} animation="border"/>
-                        </Container> :
+        loading ?
+            <Container className={'d-flex justify-content-center align-items-center'}>
+                <Spinner className={'m-3'} animation="border"/>
+            </Container> :
+            <>
+                <Container className={'p-3 h-100'}>
+                    <h3 style={{ fontWeight: 'normal' }}>Groups</h3>
+                    {
+
                         <Row>
                             {
                                 groups && groups.map((value, index) => {
@@ -57,11 +58,11 @@ export default function GroupsPage(props) {
                                 })
                             }
                         </Row>
-                }
-                <Button onClick={openModal}>Add Group</Button>
-            </Container>
+                    }
+                    <Button onClick={openModal}>Add Group</Button>
+                </Container>
 
-            <AddGroup show={open} onHide={closeModal}/>
-        </>
+                <AddGroup show={open} onHide={closeModal}/>
+            </>
     )
 }

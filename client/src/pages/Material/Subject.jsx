@@ -22,7 +22,6 @@ export default function Subject({ unitId, subjectId, name, text, files }) {
     const isTeacher = state === 'teacher'
     const { id: courseId } = useParams()
 
-    console.log(files)
 
     function openModal(e) {
         e.stopPropagation()

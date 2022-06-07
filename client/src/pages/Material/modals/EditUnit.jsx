@@ -23,7 +23,7 @@ export default function EditUnit(props) {
     })
 
     return (
-        <>
+        <Modal>
             <Modal.Header closeButton>
                 <Modal.Title>
                     Edit Unit
@@ -46,6 +46,6 @@ export default function EditUnit(props) {
                 {loading && <Spinner animation={"border"}/>}
                 <Button onClick={handleClick} disabled={loading}>Apply Changes</Button>
             </Modal.Footer>
-        </>
+        </Modal>
     )
 }

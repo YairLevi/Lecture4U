@@ -32,7 +32,7 @@ export default function TeacherAssignmentView() {
         </Container>
         :
         <Container className={'p-0'}>
-            <h3>Assignments</h3>
+            <h3 style={{fontWeight: 'normal'}}>Assignments</h3>
             {
                 assignments.length === 0 ?
                     <p>No Assignments.</p> :

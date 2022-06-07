@@ -4,11 +4,18 @@ import { useState } from "react";
 import AddSubject from "./modals/AddSubject";
 import requests from "../../helpers/requests";
 import EditUnit from "./modals/EditUnit";
+import ConfirmationModal from "../../modals/ConfirmationModal";
 
 
 export default function Unit({ unitId, courseId, name, text, subjects, isTeacher }) {
     const [showAddSubject, setShowAddSubject] = useState(false)
     const [openEdit, setOpenEdit] = useState(false)
+    const [openConfirm, setOpenConfirm] = useState(false)
+
+    async function deleteUnit() {
+        const res = await requests.delete('/course/unit', { unitId })
+        return res.status === 200
+    }
 
     return (
         <>
@@ -18,7 +25,7 @@ export default function Unit({ unitId, courseId, name, text, subjects, isTeacher
                     {
                         isTeacher &&
                         <div>
-                            <Button variant={'outline-danger'} className={'me-2'}>Delete</Button>
+                            <Button variant={'outline-danger'} className={'me-2'} onClick={() => setOpenConfirm(true)}>Delete</Button>
                             <Button variant={"outline-dark"} className={'me-2'} onClick={() => setOpenEdit(true)}>Edit</Button>
                             <Button variant={'primary'} onClick={() => setShowAddSubject(true)}>Add Subject</Button>
                         </div>
@@ -41,9 +48,8 @@ export default function Unit({ unitId, courseId, name, text, subjects, isTeacher
                 </Card.Body>
             </Card>
 
-            <Modal show={openEdit} onHide={() => setOpenEdit(false)}>
-                <EditUnit name={name} text={text} id={unitId}/>
-            </Modal>
+            <ConfirmationModal show={openConfirm} onHide={() => setOpenConfirm(false)} text={`delete unit ${name}`} func={deleteUnit}/>
+            <EditUnit name={name} text={text} id={unitId} show={openEdit} onHide={() => setOpenEdit(false)}/>
             <AddSubject show={showAddSubject} onHide={() => setShowAddSubject(false)} unitId={unitId}/>
         </>
     )

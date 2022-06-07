@@ -38,7 +38,6 @@ export default function Main() {
     useEffect(() => {
         setInCourse(params['*'].split('/')[0] === 'courses' && params['*'].split('/').length > 1)
         const page = params['*'].split('/')[2]
-        console.log(page)
         setCurrent(page)
     }, [params])
 
