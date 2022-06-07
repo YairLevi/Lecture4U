@@ -45,7 +45,9 @@ router.get('/get-dashboard-data', async (req, res) => {
     const dashboard = await Dashboard.findById(user.dashboard)
     const data = await dashboard.getDashboardData()
     data.events = await dashboard.getEvents()
-    data.schedule = (await Schedule.findOne({ userId })).schedule
+    const sched = await Schedule.findOne({ userId })
+    if (sched)
+        data.schedule = sched.schedule
     res.status(200).json(data)
 })
 

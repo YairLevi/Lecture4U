@@ -11,17 +11,23 @@ export default function DailySchedule({ schedule }) {
                 <p style={{ fontSize: '1em' }}>
                     Today is <strong>{new Date().todayString()}</strong>
                 </p>
-                <div className="vertical-timeline vertical-timeline--animate vertical-timeline--one-column">
-                    {
-                        schedule.slice(0).map((value, index) => {
-                            const start = new Date(value.start).getTimeString()
-                            const end = new Date(value.end).getTimeString()
-                            const text = value.text
-                            const priority = value.priority
-                            return <DailyScheduleItem key={index} {...{ start, end, text, priority }} />
-                        })
-                    }
-                </div>
+                {
+
+                    !schedule ?
+                        <p>Your schedule seems to be free today.</p> :
+                        <div className="vertical-timeline vertical-timeline--animate vertical-timeline--one-column">
+                            {
+                                schedule.slice(0).map((value, index) => {
+                                    const start = new Date(value.start).getTimeString()
+                                    const end = new Date(value.end).getTimeString()
+                                    const text = value.text
+                                    const priority = value.priority
+                                    return <DailyScheduleItem key={index} {...{ start, end, text, priority }} />
+                                })
+
+                            }
+                        </div>
+                }
             </div>
         </Card>
     )
