@@ -9,7 +9,6 @@ const fs = require('fs')
 const path = require("path");
 const mongoose = require("mongoose");
 mongoose.connect(process.env.URL)
-// require('./routes/collab')
 
 const authRouter = require('./routes/auth')
 const courseRouter = require('./routes/course')
@@ -19,6 +18,7 @@ const scheduleRouter = require('./routes/calendar')
 const groupsRouter = require('./routes/groups')
 const profileRouter = require('./routes/profile')
 const dashboardRouter = require('./routes/dashboard')
+const ocrRouter = require('./routes/ocr')
 
 const PORT = 8000
 const HOST = 'localhost'
@@ -38,15 +38,10 @@ app.use('/forum', forumRouter)
 app.use('/schedule', scheduleRouter)
 app.use('/groups', groupsRouter)
 app.use('/profile', profileRouter)
+app.use('/ocr', ocrRouter)
 
 
 app.use(express.static(__dirname + '/static'));
-
-// const { Storage } = require('@google-cloud/storage');
-//
-// const storage = new Storage({
-//     keyFilename: path.join(__dirname, 'avid-battery-339118-75042e644d3f.json')
-// });
 
 const bucketName = 'lecture4u-1';
 

@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     profileImage: mongoose.SchemaTypes.ObjectId,
     groups: [mongoose.SchemaTypes.ObjectId],
     dashboard: mongoose.SchemaTypes.ObjectId,
+    ocrTimestampHistory: mongoose.SchemaTypes.ObjectId,
 })
 
 userSchema.pre('save', async function (next) {
