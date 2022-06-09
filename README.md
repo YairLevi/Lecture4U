@@ -72,7 +72,7 @@ Final project in the Computer Science Department, Bar Ilan University. </br>
 - [x] **Course management tools -** _As a student_ you can view the study units that uploaded by the lecturer, rate the them according to your knowledge, see the assignments you need to submit, and chat with other course members in the forum. </br> _As a lecturer_ you can upload study units, add assignments. You can also select one of the courses you teach, see the average knowledge of each study unit in this course (according to students ratings), and see how many students saw the course study units.  
 - [x] **Learning Groups -** Users can create groups with their friends, they can chat in the group forum, share files, and work on a shared document (like Google Docs).
 - [x] **OCR tool -** Given an handwriting image, creates a .docx file, with the text that appears in the image.
-- [x] **Speech to text tool -** Given .m4a audio file, creates a transcript file (.docx), and divide the transcription to timestamps according to known keywords.
+- [x] **Speech to text tool -** Given .m4a audio file, creates a transcript file (.docx), and divide the transcription to topics (with the timestamps of each topic) according to known keywords. You can keep track of the transcript process according to the progress bar. Each user also has a TimeLine that show his recent actions with the speech to text module.   
 - [x] **Scheduler tool -** Each user has it's own calendar, he schedules his constraints and their priorities, and the scheduler creates a schedule that satisfy his constraints.
 ### Built With
 ## Usage
