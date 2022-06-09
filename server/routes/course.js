@@ -25,7 +25,7 @@ const Assignment = require('../models/assignments/Assignment')
 const Submission = require('../models/assignments/Submission')
 const Dashboard = require('../models/Dashboard')
 
-const { getFileData, deleteCourseFolder } = require("../cloud/files");
+const { getFileData, deleteCourseFolder, deleteFile } = require("../cloud/files");
 const { addDashboardEvent, events } = require("../eventUtil");
 const { clone } = require("../mongooseUtil");
 
@@ -221,6 +221,47 @@ router.get('/exist', async (req, res) => {
     const course = await Course.findOne({ _id: courseId })
     if (course) return res.status(200)
     else return res.status(400)
+})
+
+
+
+// maybe move deletes to other file ?
+
+router.delete('/unit', async (req, res) => {
+    const courseId = req.body.unitId
+    const unitId = req.body.unitId
+    const unit = await Unit.findById(unitId)
+
+    for (const subjectId of unit.subjects) {
+        const subject = await Subject.findById(subjectId)
+        for (const fileId of subject.files) {
+            await deleteFile(fileId)
+        }
+        await Subject.findByIdAndDelete(subjectId)
+    }
+    await Unit.findByIdAndDelete(unitId)
+    const course = await Course.findById(courseId)
+    course.units.splice(course.units.indexOf(unitId), 1)
+    await course.save()
+
+    res.sendStatus(200)
+})
+
+router.delete('/subject', async (req, res) => {
+    const unitId = req.body.unitId
+    const subjectId = req.body.subjectId
+
+    const subject = await Subject.findById(subjectId)
+    for (const fileId of subject.files) {
+        await deleteFile(fileId)
+    }
+
+    await Subject.findByIdAndDelete(subjectId)
+    const unit = await Unit.findById(unitId)
+    unit.subjects.splice(unit.subjects.indexOf(subjectId), 1)
+    await unit.save()
+
+    res.sendStatus(200)
 })
 
 

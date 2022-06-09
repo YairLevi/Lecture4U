@@ -5,15 +5,17 @@ import AddSubject from "./modals/AddSubject";
 import requests from "../../helpers/requests";
 import EditUnit from "./modals/EditUnit";
 import ConfirmationModal from "../../modals/ConfirmationModal";
+import { useParams } from "react-router";
 
 
 export default function Unit({ unitId, courseId, name, text, subjects, isTeacher }) {
     const [showAddSubject, setShowAddSubject] = useState(false)
     const [openEdit, setOpenEdit] = useState(false)
     const [openConfirm, setOpenConfirm] = useState(false)
+    const { id } = useParams()
 
     async function deleteUnit() {
-        const res = await requests.delete('/course/unit', { unitId })
+        const res = await requests.delete('/course/unit', { unitId, courseId: id })
         return res.status === 200
     }
 

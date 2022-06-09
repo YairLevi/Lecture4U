@@ -46,5 +46,6 @@ module.exports = {
         const file = await File.findById(fileId)
         const bucket = storage.bucket(file.bucket)
         await bucket.file(file.file).delete()
+        await File.findByIdAndDelete(fileId)
     },
 }

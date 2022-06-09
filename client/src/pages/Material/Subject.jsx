@@ -4,6 +4,8 @@ import { Icon } from "../../components/Sidebar/Item";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import EditSubject from "./modals/EditSubject";
 import { useParams } from "react-router";
+import ConfirmationModal from "../../modals/ConfirmationModal";
+import requests from "../../helpers/requests";
 
 const toggleStyle = {
     cursor: 'pointer',
@@ -20,8 +22,13 @@ export default function Subject({ unitId, subjectId, name, text, files }) {
     const [openEdit, setOpenEdit] = useState(false)
     const [state,] = useLocalStorage('state')
     const isTeacher = state === 'teacher'
+    const [openConfirm, setOpenConfirm] = useState()
     const { id: courseId } = useParams()
 
+    async function deleteSubject() {
+        const res = await requests.delete('/course/subject', { unitId, subjectId })
+        return res.status === 200
+    }
 
     function openModal(e) {
         e.stopPropagation()
@@ -40,7 +47,10 @@ export default function Subject({ unitId, subjectId, name, text, files }) {
                     {
                         isTeacher &&
                         <div>
-                            <Button className={'me-2'} variant={'outline-danger'}>Delete</Button>
+                            <Button className={'me-2'} variant={'outline-danger'} onClick={e => {
+                                e.stopPropagation()
+                                setOpenConfirm(true)
+                            }}>Delete</Button>
                             <Button variant={"outline-dark"} onClick={openModal}>Edit</Button>
                         </div>
                     }
@@ -64,6 +74,10 @@ export default function Subject({ unitId, subjectId, name, text, files }) {
             <Modal show={openEdit} onHide={() => setOpenEdit(false)}>
                 <EditSubject id={subjectId} {...{ name, text, files, unitId }}/>
             </Modal>
+            <ConfirmationModal show={openConfirm}
+                               onHide={() => setOpenConfirm(false)}
+                               text={`delete subject ${name}`}
+                               func={deleteSubject} />
         </>
     )
 }

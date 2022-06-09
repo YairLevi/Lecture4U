@@ -23,7 +23,7 @@ export default function EditUnit(props) {
     })
 
     return (
-        <Modal>
+        <Modal show={props.show} onHide={props.onHide}>
             <Modal.Header closeButton>
                 <Modal.Title>
                     Edit Unit
