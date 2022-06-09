@@ -40,7 +40,7 @@ function submissionPath(courseId, assignmentId, submissionId, fileName) {
 router.post('/', async (req, res) => {
     try {
         const name = req.body.name
-        const teacher = req.body.teacher
+        const teacher = getUserID(req)
         const description = req.body.description
         const image = await Image.create({ bucket: bucket, file: getRandomImage() })
         const course = await Course.create({ name, teacher, description, image })

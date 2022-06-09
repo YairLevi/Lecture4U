@@ -22,7 +22,9 @@ router.get('/data', async (req, res) => {
 
         const resList = []
         for (const discussionId of discussionIDs) {
-            const discussion = await Discussion.findById(discussionId)
+            const discussion = await clone(Discussion, discussionId)
+            discussion.author = await clone(User, discussion.author)
+            discussion.author.profileImage = await getFileData(discussion.author.profileImage)
             resList.push(discussion)
         }
 

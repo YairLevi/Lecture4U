@@ -10,6 +10,7 @@ import ConfirmationModal from "../../modals/ConfirmationModal";
 import { ERRORS } from "../../helpers/errors";
 import { useNav } from "../../contexts/NavContext";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import UserLabel from "../../components/UserLabel";
 
 
 export default function Material(props) {
@@ -30,6 +31,7 @@ export default function Material(props) {
             // error. put some error screen here.
         } else {
             const json = await res.json()
+            console.log(json)
             setData(json)
         }
     }, [])
@@ -57,7 +59,8 @@ export default function Material(props) {
         <>
             <Container className={'p-3 pb-5'}>
                 <h1 style={{ fontSize: '2rem' }}>{data.name}</h1>
-                <h5 style={{ color: "gray" }}>By {data.teacher}</h5>
+                {/*<h5 style={{ color: "gray" }}></h5>*/}
+                <UserLabel size={'small'} {...data.teacher} />
                 <br/>
                 <h6>{data.description}</h6>
                 {

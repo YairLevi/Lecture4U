@@ -14,6 +14,7 @@ export default function ForumDiscussion({ currentDiscussion }) {
 
     async function fetchData() {
         if (!currentDiscussion) return
+        console.log(currentDiscussion)
         setComments([])
         setLoading(true)
         const res = await requests.get('/forum/comments', { discussionId: currentDiscussion._id })
@@ -30,7 +31,7 @@ export default function ForumDiscussion({ currentDiscussion }) {
                 <>
                     <ForumSubject title={currentDiscussion.title}
                                   author={currentDiscussion.author}
-                                  content={currentDiscussion.content}
+                                  content={currentDiscussion.question}
                                   createdAt={currentDiscussion.createdAt}
                     />
                     <ForumTextbox currentDiscussion={currentDiscussion} refresh={() => fetchData()}/>

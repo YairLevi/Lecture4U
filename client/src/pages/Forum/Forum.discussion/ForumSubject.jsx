@@ -1,4 +1,5 @@
 import { Card } from 'react-bootstrap'
+import UserLabel from "../../../components/UserLabel";
 
 
 export default function ForumSubject({ title, author, content, createdAt }) {
@@ -9,7 +10,8 @@ export default function ForumSubject({ title, author, content, createdAt }) {
                     {title}
                 </Card.Text>
                 <Card.Text>
-                    By {author}<br/>At {createdAt}
+                    <UserLabel size={'small'} {...author} />
+                    At <strong>{new Date(createdAt).getMonthAndDay()}</strong>
                 </Card.Text>
                 <br/>
                 <Card.Text>

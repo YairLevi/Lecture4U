@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, Container } from 'react-bootstrap'
 import './CourseCard.scss'
 import { useNav } from "../../contexts/NavContext";
+import UserLabel from "../UserLabel";
 
 
 export default function CourseCard(props) {
@@ -10,6 +11,8 @@ export default function CourseCard(props) {
     function handleClick() {
         relativeNav(`/${props.id}/material`)
     }
+
+    console.log(props)
 
     return (
         <Container className={'d-flex justify-content-center mb-4 p-0 h-100'} onClick={handleClick}>
@@ -25,7 +28,7 @@ export default function CourseCard(props) {
                         {props.name}
                     </Card.Title>
                     <Card.Subtitle className={'card-subtitle'}>
-                        {props.teacher}
+                        <UserLabel size={'very-small'} {...props.teacher}/>
                     </Card.Subtitle>
                     <br/>
                     <Card.Text className={'card-description'}>

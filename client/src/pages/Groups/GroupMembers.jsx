@@ -1,6 +1,7 @@
 import { Card, Button } from "react-bootstrap";
 import { useState } from "react";
 import AddMember from "./modals/AddMember";
+import UserLabel from "../../components/UserLabel";
 
 
 export default function GroupMembers(props) {
@@ -15,12 +16,10 @@ export default function GroupMembers(props) {
                         Members
                     </Card.Title>
                 </Card.Header>
-                <Card.Body>
+                <Card.Body className={'overflow-auto'} style={{ height: 200 }}>
                     {
                         props.users.map((value, index) => {
-                            return <Card.Text key={index}>
-                                {value.firstName} {value.lastName}
-                            </Card.Text>
+                            return <UserLabel size={'small'} noMargin={true} {...value} key={index}/>
                         })
                     }
                 </Card.Body>

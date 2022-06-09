@@ -2,6 +2,11 @@ import { Card } from "react-bootstrap";
 import Avatar from "@mui/material/Avatar";
 
 const dim = {
+    "very-small": {
+        avatarSize: '28px',
+        fontSize: '0.9rem',
+        margins: 'ms-2 mt-1'
+    },
     small: {
         avatarSize: '32px',
         fontSize: '1rem',
@@ -26,7 +31,6 @@ export default function UserLabel(props) {
             }}/>
             <p className={dim[props.size].margins} style={{
                 fontSize: dim[props.size].fontSize,
-                fontWeight: 'bold'
             }}>
                 {props.firstName} {props.lastName}
             </p>

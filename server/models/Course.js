@@ -14,7 +14,7 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    teacher: String,
+    teacher: mongoose.SchemaTypes.ObjectId,
     description: String,
     units: [mongoose.SchemaTypes.ObjectId],
     createdAt: {
@@ -55,6 +55,10 @@ courseSchema.methods.getCourseData = async function () {
 
         courseData.units.push(unitData)
     }
+
+    courseData.teacher = await clone(User, courseData.teacher)
+    courseData.teacher.profileImage = await getFileData(courseData.teacher.profileImage)
+    console.log(courseData.teacher)
 
     return courseData
 }
