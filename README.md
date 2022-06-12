@@ -92,6 +92,21 @@ Final project in the Computer Science Department, Bar Ilan University. </br>
 ### Database
 ### Microservices
 #### OCR
+
+Given an handwriting image, creates a .docx file, with the text that appears in the image. 
+
+Each image may conatin a few sentences, and in each sentence a few words.
+First, we split the given image, into several images, that contain only one word. In order to to that, we use the [Otsu threshold](https://en.wikipedia.org/wiki/Otsu%27s_method). In the simplest form, this algorithm returns a single intensity threshold that separate pixels into two classes, foreground and background. Then, choose the right kernel size for each image. 
+
+Different users have a different font size, so we can't pre-adjust the same kernel size for each user, since users with a large font size need a large kernel (to catch the whole word), while users with a small font size need a relatively small kernel. To solve this problem we create a calibration system that enables each user to upload an
+image, choose a kernel size, and see if our model was able to marked each word in a green rectangle. To achieve maximum accuracy later on, it's recommended to choose a kernel size that mark each word in a rectangle. 
+
+Now, let's talk about our neural network model. For the training, we used the [IAM Handwriting Database](https://fki.tic.heia-fr.ch/databases/iam-handwriting-database). The model implemented with TensorFlow (TF), and has several [CNN](https://en.wikipedia.org/wiki/Convolutional_neural_network) and [LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory) layers, and a [CTC Loss](https://en.wikipedia.org/wiki/Connectionist_temporal_classification).
+
+We feed the model with the previous images (that contain only one word), and for each image, the model returns a word. We keep the order in which we send the images, so we can put the text back together, in the correct order it appeared in the regular image. Finally. write the model's output to a .docx file.
+
+
+
 #### Speech to text
 Our goal is to transcibe the given .m4a audio file and write for each topic it's timestamp according to the known keywords. If you haven't already run one of our speech to text demo files, it is recommended to do so (see speech to text Run Demo section).
 
@@ -116,7 +131,7 @@ Each task has a priority (rank 1-5, when 1 is the least important). The priority
 
 Our scheduler microservice gets the inforamtion, and tries to satisfy the problem. The scheduler may find some different legal solutions and return them to the user. The user has an options drop list that displays all the legal solutions (scheduling), that the scheduler find him. Then the user can choose his prefered schedule, and by clicking the 'save' button, his schedule will save to the DB, and will automatically load when he login again. 
 
-Our algorithm supports backward compatibility, that is, if the user has tasks that are already scheduled on the calendar (from previous algorithm runs), and now he wants to add new tasks, then of course the algorithm will check that there is no discrepancy with the previous tasks he has scheduled.
+If the user has tasks that are already scheduled on the calendar (from previous algorithm runs), and now wants to add new tasks, then the scheduler creates a new problem that contains the previous tasks, as well as the new tasks and tries to solve (satisfy) the new problem - it's checks that the new tasks do not contradict the previous tasks that already schedule on the calendar.
 
 
 ## Contact
