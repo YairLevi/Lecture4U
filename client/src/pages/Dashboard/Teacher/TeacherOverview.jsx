@@ -68,7 +68,7 @@ export default function TeacherOverview({ ratings }) {
                        data={{
                            labels: ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'],
                            datasets: [{
-                               label: 'Show Graph',
+                               label: 'Hide Chart',
                                data: chartData,
                                backgroundColor: [
                                    'rgba(255, 99, 132, 1.0)',
