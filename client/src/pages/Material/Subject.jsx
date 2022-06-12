@@ -9,6 +9,7 @@ import requests from "../../helpers/requests";
 import { Rating } from '@mui/material'
 import useLoadingEffect from "../../hooks/useLoadingEffect";
 import { useLoading } from "../../hooks/useLoading";
+import { useAuth } from "../../contexts/AuthContext";
 
 
 const toggleStyle = {
@@ -26,7 +27,10 @@ export default function Subject({ unitId, subjectId, name, text, files, ratings 
     const [openEdit, setOpenEdit] = useState(false)
     const [state,] = useLocalStorage('state')
     const isTeacher = state === 'teacher'
-    const [rating, setRating] = useState()
+    const { currentUser } = useAuth()
+    const userRating = ratings.filter(item => item.user == currentUser._id)
+    userRating.push({ rating: 0 })
+    const [rating, setRating] = useState(userRating[0].rating)
     const [openConfirm, setOpenConfirm] = useState()
     const { id: courseId } = useParams()
 
@@ -59,8 +63,8 @@ export default function Subject({ unitId, subjectId, name, text, files, ratings 
                     {
                         !isTeacher &&
                         <div className={'d-flex align-items-center'}>
-                            <p className={'m-0 me-2 p-0'} style={{ color: 'gray' }}>{loading ? 'Saving...' : 'Rate the subject'}</p>
-                            <Rating onChange={e => setRating(e.target.value)} disabled={loading}/>
+                            <p className={'m-0 me-2 p-0'} style={{ color: 'gray' }}>{loading ? 'Saving...' : 'Rate Your Understanding'}</p>
+                            <Rating value={rating} onChange={e => setRating(e.target.value)} disabled={loading}/>
                         </div>
                     }
                     {
