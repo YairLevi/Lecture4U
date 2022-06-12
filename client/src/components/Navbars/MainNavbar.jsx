@@ -26,7 +26,7 @@ export default function MainNavbar({ openSidebar, isSticky, children }) {
             <SideButton breakpoint={'lg'} onClick={openSidebar}/>
             <Bar.Toggle aria-controls="main-Bar-nav"/>
             <Bar.Collapse id="main-Bar-nav">
-                <Nav variant={'pills'} className={'me-auto ms-auto'}>
+                <Nav variant={'pills'} className={'me-auto'}>
                     {children}
                 </Nav>
                 <div className={'d-flex pe-3 align-items-center'}>

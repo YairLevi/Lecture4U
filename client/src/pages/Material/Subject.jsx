@@ -6,6 +6,10 @@ import EditSubject from "./modals/EditSubject";
 import { useParams } from "react-router";
 import ConfirmationModal from "../../modals/ConfirmationModal";
 import requests from "../../helpers/requests";
+import { Rating } from '@mui/material'
+import useLoadingEffect from "../../hooks/useLoadingEffect";
+import { useLoading } from "../../hooks/useLoading";
+
 
 const toggleStyle = {
     cursor: 'pointer',
@@ -17,18 +21,26 @@ const toggleOnClick = (val, setVal) => {
     else setVal('none')
 }
 
-export default function Subject({ unitId, subjectId, name, text, files }) {
+export default function Subject({ unitId, subjectId, name, text, files, ratings }) {
     const [display, setDisplay] = useState('none')
     const [openEdit, setOpenEdit] = useState(false)
     const [state,] = useLocalStorage('state')
     const isTeacher = state === 'teacher'
+    const [rating, setRating] = useState()
     const [openConfirm, setOpenConfirm] = useState()
     const { id: courseId } = useParams()
+
 
     async function deleteSubject() {
         const res = await requests.delete('/course/subject', { unitId, subjectId })
         return res.status === 200
     }
+
+    const loading = useLoadingEffect(async () => {
+        const res = await requests.post('/course/rate', { subjectId, rating })
+        return res.status === 200
+    }, [rating], true)
+
 
     function openModal(e) {
         e.stopPropagation()
@@ -45,6 +57,13 @@ export default function Subject({ unitId, subjectId, name, text, files }) {
                         <Card.Text as={'h5'} className={'ms-3'}>{name}</Card.Text>
                     </div>
                     {
+                        !isTeacher &&
+                        <div className={'d-flex align-items-center'}>
+                            <p className={'m-0 me-2 p-0'} style={{ color: 'gray' }}>{loading ? 'Saving...' : 'Rate the subject'}</p>
+                            <Rating onChange={e => setRating(e.target.value)} disabled={loading}/>
+                        </div>
+                    }
+                    {
                         isTeacher &&
                         <div>
                             <Button className={'me-2'} variant={'outline-danger'} onClick={e => {
@@ -58,7 +77,7 @@ export default function Subject({ unitId, subjectId, name, text, files }) {
                 <Card.Body className={`d-${display}`}>
                     {
                         text !== '' &&
-                        <Card.Text className={'mb-5'} style={{whiteSpace: 'pre-wrap'}}>{text}</Card.Text>
+                        <Card.Text className={'mb-5'} style={{ whiteSpace: 'pre-wrap' }}>{text}</Card.Text>
                     }
                     {
                         files && files.map((value, index) => (
@@ -77,7 +96,7 @@ export default function Subject({ unitId, subjectId, name, text, files }) {
             <ConfirmationModal show={openConfirm}
                                onHide={() => setOpenConfirm(false)}
                                text={`delete subject ${name}`}
-                               func={deleteSubject} />
+                               func={deleteSubject}/>
         </>
     )
 }

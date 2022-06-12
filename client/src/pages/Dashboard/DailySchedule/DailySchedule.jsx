@@ -4,11 +4,15 @@ import { Card, Container } from "react-bootstrap";
 
 
 export default function DailySchedule({ schedule }) {
-    const upToDateSchedule = schedule.filter(task => {
-        const start = new Date(task.start)
-        const today = new Date()
-        return today.getMonth() === start.getMonth() && today.getDate() === start.getDate()
-    })
+    let upToDateSchedule = []
+    if (schedule) {
+        upToDateSchedule = schedule.filter(task => {
+            const start = new Date(task.start)
+            const today = new Date()
+            return today.getMonth() === start.getMonth() && today.getDate() === start.getDate()
+        })
+    }
+
 
     return (
         <Card className="main-card mb-3 overflow-auto" style={{ height: '350px' }}>

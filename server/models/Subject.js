@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-
 const subjectSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -13,7 +12,11 @@ const subjectSchema = new mongoose.Schema({
         default: () => Date.now()
     },
     text: String,
-    files: [mongoose.SchemaTypes.ObjectId]
+    files: [mongoose.SchemaTypes.ObjectId],
+    ratings: [{
+        user: mongoose.SchemaTypes.ObjectId,
+        rating: Number,
+    }],
 })
 
 

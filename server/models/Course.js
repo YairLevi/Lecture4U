@@ -28,7 +28,7 @@ const courseSchema = new mongoose.Schema({
         immutable: true
     },
     students: [mongoose.SchemaTypes.ObjectId],
-    assignments: [mongoose.SchemaTypes.ObjectId]
+    assignments: [mongoose.SchemaTypes.ObjectId],
 })
 
 courseSchema.methods.getCourseData = async function () {
@@ -56,9 +56,10 @@ courseSchema.methods.getCourseData = async function () {
         courseData.units.push(unitData)
     }
 
-    courseData.teacher = await clone(User, courseData.teacher)
-    courseData.teacher.profileImage = await getFileData(courseData.teacher.profileImage)
-    console.log(courseData.teacher)
+    if (courseData.teacher) {
+        courseData.teacher = await clone(User, courseData.teacher)
+        courseData.teacher.profileImage = await getFileData(courseData.teacher.profileImage)
+    }
 
     return courseData
 }

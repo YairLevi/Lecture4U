@@ -20,7 +20,7 @@ const dashboardSchema = new mongoose.Schema({
 })
 
 dashboardSchema.methods.getEvents = async function() {
-    return await mapAsync(this.events, async eventId => clone(Event, eventId))
+    return await mapAsync(this.events, async (eventId) => clone(Event, eventId))
 }
 
 dashboardSchema.methods.getDashboardData = async function() {

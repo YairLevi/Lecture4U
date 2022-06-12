@@ -111,8 +111,7 @@ router.get('/data', async (req, res) => {
         for (const subjectId of dashboard.subjects) {
             await removeFromDashboard(userId, 'subjects', subjectId)
         }
-
-        const code = getQueryParams(req).code
+        const code = req.query.code
         const course = await Course.findById(code)
         const material = await course.getCourseData()
 
@@ -264,6 +263,17 @@ router.delete('/subject', async (req, res) => {
     unit.subjects.splice(unit.subjects.indexOf(subjectId), 1)
     await unit.save()
 
+    res.sendStatus(200)
+})
+
+router.post('/rate', async (req, res) => {
+    let { rating, subjectId } = {...req.body}
+    const userId = getUserID(req)
+    const subject = await Subject.findById(subjectId)
+    if (!subject.ratings) subject.ratings = {}
+    subject.ratings = subject.ratings.filter(item => item.user != userId)
+    subject.ratings.push({ user: userId, rating: Number(rating)})
+    await subject.save()
     res.sendStatus(200)
 })
 

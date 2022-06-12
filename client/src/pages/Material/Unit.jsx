@@ -45,6 +45,7 @@ export default function Unit({ unitId, courseId, name, text, subjects, isTeacher
                                         name={value.name}
                                         text={value.text}
                                         files={value.files}
+                                        ratings={value.ratings}
                         />
                     })}
                 </Card.Body>
