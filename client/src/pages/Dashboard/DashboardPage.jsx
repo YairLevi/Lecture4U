@@ -46,7 +46,7 @@ export default function DashboardPage(props) {
             </ButtonGroup>
             <Container fluid className={'m-3 h-100'}>
                 <Row>
-                    { value === 'student' ? <OverviewPanel {...data}/> : <TeacherOverview ratings={data.ratings}/> }
+                    { value === 'student' ? <OverviewPanel {...data}/> : <TeacherOverview {...data}/> }
                 </Row>
                 <Row>
                     <Col className={'col-lg-7'}>

@@ -40,14 +40,17 @@ app.use('/groups', groupsRouter)
 app.use('/profile', profileRouter)
 app.use('/ocr', ocrRouter)
 
-
-app.use(express.static(__dirname + '/static'));
-
 const bucketName = 'lecture4u-1';
 
 Date.prototype.addHours = function (h) {
     this.setTime(this.getTime() + (h * 60 * 60 * 1000));
     return this;
+}
+
+Date.prototype.getMonthAndDay = function () {
+    const day = this.getDate()
+    const month = this.toLocaleString('default', { month: 'short' })
+    return `${month} ${day}`
 }
 /////////////
 

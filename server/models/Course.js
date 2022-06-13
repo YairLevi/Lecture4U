@@ -29,6 +29,7 @@ const courseSchema = new mongoose.Schema({
     },
     students: [mongoose.SchemaTypes.ObjectId],
     assignments: [mongoose.SchemaTypes.ObjectId],
+    access: Object,
 })
 
 courseSchema.methods.getCourseData = async function () {

@@ -1,9 +1,7 @@
-
-
-
 const User = require("./models/User");
 const Dashboard = require("./models/Dashboard");
 const Event = require("./models/Event");
+
 
 module.exports = {
     // To make sure there are no typos when sending an event as parameter.

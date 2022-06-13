@@ -54,9 +54,14 @@ router.get('/get-dashboard-data', async (req, res) => {
     if (sched) data.schedule = sched.schedule
     console.log('getting ratings...')
     data.ratings = {}
+    data.access = {}
     for (const courseId of user.myCourses) {
         const course = await Course.findById(courseId)
         if (!course) continue
+        data.access[course.name] = {}
+        for (const date of Object.keys(course.access ? course.access : {})) {
+            data.access[course.name][date] = Object.keys(course.access[date]).length
+        }
         console.log(course.name)
         data.ratings[course.name] = {}
         for (const unitId of course.units) {

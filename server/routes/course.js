@@ -28,6 +28,7 @@ const Dashboard = require('../models/Dashboard')
 const { getFileData, deleteCourseFolder, deleteFile } = require("../cloud/files");
 const { addDashboardEvent, events } = require("../eventUtil");
 const { clone } = require("../mongooseUtil");
+const mongoose = require("mongoose");
 
 
 
@@ -114,6 +115,13 @@ router.get('/data', async (req, res) => {
         const code = req.query.code
         const course = await Course.findById(code)
         const material = await course.getCourseData()
+        const today = new Date().getMonthAndDay()
+        let access = course.access
+        if (!access) access = {}
+        if (!access[today]) access[today] = {}
+        access[today][userId] = true
+        await Course.updateOne({ _id: course._id }, { $set : { access: access }})
+        await course.save()
 
         res.status(200).json(material)
     } catch (e) {
