@@ -6,4 +6,6 @@ export default {
     speech: false,
     courses: false,
     dashboard: false,
+    signOut: false,
+    support: false,
 }

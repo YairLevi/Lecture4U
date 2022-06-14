@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Submission = require("./Submission");
 const User = require("../User");
 const { getFileData } = require("../../cloud/files");
+const { clone } = require("../../mongooseUtil");
 
 
 const assignmentSchema = new mongoose.Schema({
@@ -30,7 +31,11 @@ assignmentSchema.methods.getSubmissions = async function () {
     return await Promise.all(submissions
         .map(async submissionId => {
             const submission = (await Submission.findById(submissionId))._doc
-            submission.userIds = await Promise.all(submission.userIds.map(userId => User.findById(userId)))
+            submission.userIds = await Promise.all(submission.userIds.map(async userId => {
+                const user = await clone(User, userId)
+                user.profileImage = await getFileData(user.profileImage)
+                return user
+            }))
             submission.files = await Promise.all(submission.files.map(fileId => getFileData(fileId)))
             return submission
         }))

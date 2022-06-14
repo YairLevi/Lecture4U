@@ -57,8 +57,8 @@ export default function Sidebar({ closeSidebar, open }) {
                 </SidebarContent>
                 <SidebarFooter>
                     <Menu>
-                        <Item icon={'bi-question-circle'}>Support</Item>
-                        <Item icon={'bi-box-arrow-in-left'} onClick={logout}>Sign Out</Item>
+                        <Item name={"support"} selected={selected} icon={'bi-question-circle'}>Support</Item>
+                        <Item name={"signOut"} selected={selected} icon={'bi-box-arrow-in-left'} onClick={logout}>Sign Out</Item>
                     </Menu>
                 </SidebarFooter>
             </ProSidebar>

@@ -74,7 +74,10 @@ router.get('/student', async (req, res) => {
         const courseObj = await Course.findById(course)
         obj.id = courseObj._id
         obj.name = courseObj.name
-        obj.teacher = courseObj.teacher
+        if (courseObj.teacher) {
+            obj.teacher = await clone(User, courseObj.teacher)
+            obj.teacher.profileImage = await getFileData(obj.teacher.profileImage)
+        }
         obj.description = courseObj.description
         obj.image = await getImageURL(courseObj.image)
         list.push(obj)

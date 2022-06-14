@@ -12,12 +12,12 @@ const style = {
     borderRadius: '1rem'
 }
 
-export default function Item({ children, icon, name, selected }) {
+export default function Item({ children, icon, name, selected, onClick }) {
     if (!icon) icon = 'bi-border'
     const { fullNav } = useNav()
 
     return (
-        <MenuItem icon={<Icon iconClass={icon}/>} onClick={() => {fullNav(`/${name}`)}} style={
+        <MenuItem icon={<Icon iconClass={icon}/>} onClick={onClick ? onClick : () => {fullNav(`/${name}`)}} style={
             !selected || !selected[name] ? {} : style
         }>
             {children}
