@@ -28,28 +28,30 @@ export default function DashboardPage(props) {
             <Spinner className={'m-3'} animation="border"/>
         </Container> :
         <>
-            <ButtonGroup style={{ height: 'fit-content' }}>
-                {radios.map((radio, idx) => (
-                    <ToggleButton
-                        key={idx}
-                        id={`radio-${idx}`}
-                        type="radio"
-                        variant='outline-primary'
-                        name="radio"
-                        value={radio.value}
-                        checked={value === radio.value}
-                        onChange={e => setValue(e.currentTarget.value)}
-                    >
-                        {radio.name}
-                    </ToggleButton>
-                ))}
-            </ButtonGroup>
             <Container fluid className={'m-3 h-100'}>
+                <div className={'mb-3 ms-5'}>
+                    <ButtonGroup style={{ height: 'fit-content' }}>
+                        {radios.map((radio, idx) => (
+                            <ToggleButton
+                                key={idx}
+                                id={`radio-${idx}`}
+                                type="radio"
+                                variant='outline-primary'
+                                name="radio"
+                                value={radio.value}
+                                checked={value === radio.value}
+                                onChange={e => setValue(e.currentTarget.value)}
+                            >
+                                {radio.name}
+                            </ToggleButton>
+                        ))}
+                    </ButtonGroup>
+                </div>
                 <Row>
-                    { value === 'student' ? <OverviewPanel {...data}/> : <TeacherOverview {...data}/> }
+                    {value === 'student' ? <OverviewPanel {...data}/> : <TeacherOverview {...data}/>}
                 </Row>
-                <Row>
-                    <Col className={'col-lg-7'}>
+                <Row className={'d-flex justify-content-evenly ps-0 pe-0'}>
+                    <Col className={'col-lg-6'}>
                         <h2 className={'p-3'} style={{ fontWeight: "normal" }}>Events</h2>
                         <Timeline events={data.events}/>
                     </Col>

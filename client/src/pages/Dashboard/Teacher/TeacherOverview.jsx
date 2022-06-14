@@ -5,7 +5,7 @@ import RatingChart from "./RatingChart";
 
 export default function TeacherOverview(props) {
     return (
-        <>
+        <div className={'d-flex justify-content-evenly'}>
             <Card className={'col-6'}>
                 <Card.Body className={'d-flex flex-column'}>
                     <RatingChart ratings={props.ratings} />
@@ -16,6 +16,6 @@ export default function TeacherOverview(props) {
                     <AccessChart access={props.access}/>
                 </Card.Body>
             </Card>
-        </>
+        </div>
     )
 }
