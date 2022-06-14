@@ -24,7 +24,7 @@ function getDates(startDate, stopDate) {
 
 const GAP = 30
 
-export default function CourseAccessChart({ access }) {
+export default function AccessChart({ access }) {
     const [course, setCourse] = useState()
 
     const [globalValues, setGlobalValues] = useState()
