@@ -2,7 +2,6 @@ import { Dropdown } from "react-bootstrap";
 import { Chart } from "react-chartjs-2";
 import { useEffect, useReducer, useState } from "react";
 import './Slider.scss'
-import Slider from "./Slider";
 
 
 const limitTextStyle = {
@@ -17,12 +16,13 @@ function getDates(startDate, stopDate) {
     var dateArray = new Array();
     var currentDate = startDate;
     while (currentDate <= stopDate) {
-        dateArray.push(new Date (currentDate));
+        dateArray.push(new Date(currentDate));
         currentDate = currentDate.addDays(1);
     }
     return dateArray;
 }
 
+const GAP = 30
 
 export default function CourseAccessChart({ access }) {
     const [course, setCourse] = useState()
@@ -33,14 +33,7 @@ export default function CourseAccessChart({ access }) {
     const [globalLabels, setGlobalLabels] = useState()
     const [labels, setLabels] = useState()
 
-    const [globalMin, setGlobalMin] = useState(0)
-    const [min, setMin] = useState(globalMin)
-
-    const [globalMax, setGlobalMax] = useState(0)
-    const [max, setMax] = useState(globalMax)
-
-    const [minLabel, setMinLabel] = useState()
-    const [maxLabel, setMaxLabel] = useState()
+    const [sliderPos, setSliderPos] = useState(0)
 
     useEffect(() => {
         if (!course) return
@@ -48,19 +41,15 @@ export default function CourseAccessChart({ access }) {
         const newGlobalValues = Object.values(access[course])
         setGlobalLabels(newGlobalLabels)
         setGlobalValues(newGlobalValues)
-        setGlobalMin(0)
-        setMin(0)
-        setGlobalMax(newGlobalValues.length - 1)
-        setMax(newGlobalValues.length - 1)
+        setSliderPos(0)
     }, [course])
 
     useEffect(() => {
         if (!course) return
-        setValues(globalValues.slice(min, max+1))
-        setLabels(globalLabels.slice(min, max+1))
-        setMinLabel(globalLabels[min])
-        setMaxLabel(globalLabels[max])
-    }, [min, max, globalValues])
+        const num = parseInt(sliderPos) + GAP
+        setValues(globalValues.slice(sliderPos, num))
+        setLabels(globalLabels.slice(sliderPos, num))
+    }, [sliderPos, globalValues])
 
 
     return <>
@@ -121,13 +110,12 @@ export default function CourseAccessChart({ access }) {
                 }}
             />
         </div>
-        <div className={'w-100 p-3'}>
-            <Slider min={globalMin}
-                    max={globalMax}
-                    onChange={({ min, max }) => {setMin(min); setMax(max)}}
-                    minLabel={minLabel}
-                    maxLabel={maxLabel}
-            />
-        </div>
+        {
+            globalValues &&
+            globalValues.length > GAP &&
+            <div className={'w-100 p-3'}>
+                <input min={0} max={globalValues.length - GAP} value={sliderPos} onChange={e => setSliderPos(e.target.value)} type={"range"}/>
+            </div>
+        }
     </>
 }
