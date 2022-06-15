@@ -9,7 +9,7 @@ const Comment = require('../models/forum/Comment')
 const Course = require('../models/Course')
 const Document = require('../models/Document')
 const { getUserID } = require("../httpUtil");
-const { getFileData, uploadFile, deleteFile } = require("../cloud/files");
+const { getFileData, uploadFile, deleteFile, deleteListOfFilesById } = require("../cloud/files");
 
 const storage = require('../cloud/storage')
 const bucketName = 'lecture4u-3'
@@ -181,6 +181,21 @@ router.delete('/leave-group', async (req, res) => {
     group.userIds.splice(indexOfUser, 1)
     await group.save()
     if (group.userIds.length === 0) {
+        for (const fileId of group.files) {
+            await deleteFile(fileId)
+        }
+
+        async function deleteComments(commentIds) {
+            for (const commentId of commentIds) {
+                await Comment.findByIdAndDelete(commentId)
+            }
+        }
+
+        await deleteComments(group.comments)
+        for (const docId of group.documents) {
+            await Document.findByIdAndDelete(docId)
+        }
+
         await Group.findByIdAndDelete(group._id)
     }
 
@@ -211,11 +226,26 @@ router.delete('/delete-file', async (req, res) => {
 })
 
 router.post('/create-document', async (req, res) => {
-    const { groupId, name } = {...req.body}
+    const { groupId, name } = { ...req.body }
     const group = await Group.findById(groupId)
-    const document = await Document.create({ name: name, data: {} })
+    const document = await Document.create({ name: name, data: "" })
     group.documents.push(document._id)
     await group.save()
+    res.sendStatus(200)
+})
+
+router.delete('/delete-document', async (req, res) => {
+    const { groupId, docId } = { ...req.body }
+    const group = await Group.findById(groupId)
+
+    const documents = group.documents
+    documents.splice(documents.indexOf(docId), 1)
+    group.documents = documents
+
+    await group.save()
+    console.log(docId)
+    await Document.findByIdAndDelete(docId)
+
     res.sendStatus(200)
 })
 

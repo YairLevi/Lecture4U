@@ -12,7 +12,7 @@ const TOOLBAR = [
 const SAVE_INTERVAL = 2000
 
 export default function Editor() {
-    const { id: docID } = useParams()
+    const { docId: docID } = useParams()
     const [sock, setSock] = useState()
     const [quill, setQuill] = useState()
 

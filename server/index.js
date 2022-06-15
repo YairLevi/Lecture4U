@@ -52,42 +52,7 @@ Date.prototype.getMonthAndDay = function () {
     const month = this.toLocaleString('default', { month: 'short' })
     return `${month} ${day}`
 }
-/////////////
 
-var nodemailer = require('nodemailer');
-const emailValidator = require('deep-email-validator')
-
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'lecture4u.contact@gmail.com',
-        pass: 'fzyszriionujquyz'
-    }
-});
-
-
-app.get('/video', async (req, res) => {
-    const reqVideo = 'VID_20190724_211512.mp4'
-    const bucket = storage.bucket(bucketName);
-    const videoFile = bucket.file(reqVideo)
-    const metadata = await videoFile.getSignedUrl({
-        action: "read",
-        expires: new Date().addHours(1)
-    })
-    console.log(metadata)
-    res.json({ url: metadata })
-})
-
-app.get('/test', async (req, res) => {
-    const reqVideo = 'default-course-img-1.png'
-    const bucket = storage.bucket(bucketName);
-    const videoFile = bucket.file(reqVideo)
-    const metadata = await videoFile.getSignedUrl({
-        action: "read",
-        expires: new Date().addHours(1)
-    })
-    res.json({ url: metadata })
-})
 
 server.listen(PORT, HOST, callback = () => console.log(`server started on port ${PORT}`))
 
@@ -104,7 +69,7 @@ const io = require("socket.io")(server, {
 
 const defaultValue = ""
 
-let doc_dict = {}
+const doc_dict = {}
 
 io.on("connection", socket => {
     console.log('here')
@@ -112,7 +77,7 @@ io.on("connection", socket => {
 
         // needs to use DB for returning the same documentId when in same group (using groupId?)
 
-        const document = await findOrCreateDocument(documentId)
+        const document = await Document.findById(documentId)
         socket.join(documentId)
         socket.emit("load-document", document.data)
 
@@ -127,10 +92,3 @@ io.on("connection", socket => {
         })
     })
 })
-
-async function findOrCreateDocument(id) {
-    if (id == null) return
-    const document = await Document.findById(id)
-    if (document) return document
-    return await Document.create({ _id: id, data: defaultValue })
-}
