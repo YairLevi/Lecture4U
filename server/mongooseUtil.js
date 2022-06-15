@@ -5,5 +5,8 @@ module.exports = {
     },
     clone: async function (model, id) {
         return (await model.findById(id))._doc
+    },
+    deleteIdsFromModel: async function (model, arrIds) {
+        for (const id of arrIds) await model.findByIdAndDelete(id)
     }
 }

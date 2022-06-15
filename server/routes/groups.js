@@ -16,7 +16,7 @@ const bucketName = 'lecture4u-3'
 const multer = require('multer')
 const fs = require("fs");
 const upload = multer({ dest: 'temp/' })
-const { mapAsync, clone } = require('../mongooseUtil')
+const { mapAsync, clone, deleteIdsFromModel } = require('../mongooseUtil')
 const { events, addDashboardEvent } = require("../eventUtil");
 
 function createFilePath(groupId, fileName) {
@@ -184,17 +184,8 @@ router.delete('/leave-group', async (req, res) => {
         for (const fileId of group.files) {
             await deleteFile(fileId)
         }
-
-        async function deleteComments(commentIds) {
-            for (const commentId of commentIds) {
-                await Comment.findByIdAndDelete(commentId)
-            }
-        }
-
-        await deleteComments(group.comments)
-        for (const docId of group.documents) {
-            await Document.findByIdAndDelete(docId)
-        }
+        await deleteIdsFromModel(Comment, group.comments)
+        await deleteIdsFromModel(Document, group.documents)
 
         await Group.findByIdAndDelete(group._id)
     }
