@@ -9,7 +9,7 @@ const Comment = require('../models/forum/Comment')
 const Course = require('../models/Course')
 const Document = require('../models/Document')
 const { getUserID } = require("../httpUtil");
-const { getFileData } = require("../cloud/files");
+const { getFileData, uploadFile, deleteFile } = require("../cloud/files");
 
 const storage = require('../cloud/storage')
 const bucketName = 'lecture4u-3'
@@ -99,17 +99,16 @@ router.post('/upload', upload.array('files'), async (req, res) => {
     try {
         const userId = getUserID(req)
         const group = await Group.findById(req.body.groupId)
-        const Bucket = storage.bucket(bucketName)
         const files = []
         for (const file of req.files) {
             const filePath = createFilePath(group._id, file.originalname)
-            await Bucket.upload(file.path, { destination: filePath })
-            fs.unlinkSync(file.path)
-            const fileObject = await File.create({ bucket: bucketName, file: filePath })
-            files.push(fileObject._id)
+            const fileId = await uploadFile(file, filePath)
+            files.push(fileId)
         }
-
-        group.files = [...group.files, ...files]
+        const dupCheck = [...group.files, ...files].map(val => val.toString())
+        group.files = dupCheck.filter((value, index, self) => {
+            return self.indexOf(value.toString()) === index
+        })
 
         for (const id of group.userIds) {
             await addDashboardEvent(id, events.new_files, await User.getNameById(userId), group.name)
@@ -202,8 +201,12 @@ router.delete('/delete-file', async (req, res) => {
     const indexOfFile = group.files.indexOf(req.body.fileId)
     if (indexOfFile !== -1) {
         group.files.splice(indexOfFile, 1)
-        await group.save()
     }
+
+    await deleteFile(req.body.fileId)
+    await File.findById(req.body.fileId)
+
+    await group.save()
     res.sendStatus(200)
 })
 

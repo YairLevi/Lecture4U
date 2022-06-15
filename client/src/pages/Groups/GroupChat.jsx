@@ -12,7 +12,7 @@ export default function GroupChat(props) {
     const { id } = useParams()
     const refresh = useRefresh()
     const [loading, action] = useLoading(async () => {
-        const res = await requests.post('/groups/message', { content, groupId: id})
+        const res = await requests.post('/groups/message', { content, groupId: id })
         return res.status !== 200
     })
 
@@ -27,9 +27,7 @@ export default function GroupChat(props) {
             <Container className={'m-0 overflow-auto'} style={{ height: '85%' }}>
                 {
                     props.comments &&
-                    props.comments.map((value, index) => {
-                        return <ForumComment key={index} author={value.author} content={value.content}/>
-                    })
+                    props.comments.map((value, index) => <ForumComment key={index} value={value}/>)
                 }
             </Container>
             <Container className={'d-flex pt-2 pb-2'} style={{ height: '15%', borderTop: '1px solid lightgray' }}>
@@ -37,13 +35,13 @@ export default function GroupChat(props) {
                     <Form.Control as={'textarea'} style={{ resize: 'none' }} className={'h-100'}
                                   onChange={e => setContent(e.target.value)} placeholder={'Type a message...'}/>
                 </Form>
-                <Button className={'ms-2 col-2'}
+                <Button className={'ms-2 col-2 d-flex flex-column align-items-center'}
                         style={{ height: "fit-content" }}
                         onClick={sendMessage}
                         disabled={loading}
                 >
-                    {loading && <Spinner animation={"border"}/>}
                     Send
+                    {loading && <Spinner animation={"border"}/>}
                 </Button>
             </Container>
         </Container>

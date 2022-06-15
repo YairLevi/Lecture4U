@@ -21,8 +21,13 @@ module.exports = {
 
     uploadFile: async function (file, path) {
         const bucket = storage.bucket(bucketName)
+        const didExist = await bucket.file(path).exists()
         await bucket.upload(file.path, { destination: path })
         fs.unlinkSync(file.path)
+        if (didExist[0]) {
+            const file = await File.findOne({ file: path })
+            return file._id
+        }
         const fileObject = await File.create({ bucket: bucketName, file: path })
         return fileObject._id
     },

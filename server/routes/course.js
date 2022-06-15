@@ -139,7 +139,8 @@ router.get('/members', async (req, res) => {
         const course = await Course.findById(courseId)
         const members = await Promise.all(course.students.map(async userId => {
             const user = await clone(User, userId)
-            user.profileImage = await getFileData(user.profileImage)
+            if (user.profileImage)
+                user.profileImage = await getFileData(user.profileImage)
             return user
         }))
         res.status(200).json(members)

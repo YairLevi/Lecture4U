@@ -24,13 +24,15 @@ export default function DashboardPage(props) {
         setData(json)
     })
 
-    // const loading = useLoadingEffect(async function () {
-    //     const res = await requests.get('/dashboard/get-dashboard-data')
-    //     const json = await res.json()
-    //     setData(json)
-    // }, [])
+    const loadingFirst = useLoadingEffect(async function () {
+        if (data == null) {
+            const res = await requests.get('/dashboard/get-dashboard-data')
+            const json = await res.json()
+            setData(json)
+        }
+    }, [])
 
-    return loading ?
+    return loading || loadingFirst ?
         <Container className={'d-flex justify-content-center align-items-center'}>
             <Spinner className={'m-3'} animation="border"/>
         </Container> :

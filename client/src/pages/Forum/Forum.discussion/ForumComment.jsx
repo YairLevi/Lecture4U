@@ -2,13 +2,16 @@ import { Card } from 'react-bootstrap'
 import UserLabel from "../../../components/UserLabel";
 
 
-export default function ForumComment(props) {
+export default function ForumComment({ value }) {
     return (
         <Card className={'mb-3'}>
             <Card.Body>
-                <UserLabel {...props.author} noMargin={true} size={'regular'}/>
+                <div className={'d-flex justify-content-between'}>
+                    <UserLabel {...value.author} noMargin={true} size={'regular'}/>
+                    <p className={'ms-2'}>{new Date(value.createdAt).parseEventDate()}</p>
+                </div>
                 <Card.Text>
-                    {props.content}
+                    {value.content}
                 </Card.Text>
             </Card.Body>
         </Card>
