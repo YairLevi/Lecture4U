@@ -31,7 +31,6 @@ export default function Material(props) {
             // error. put some error screen here.
         } else {
             const json = await res.json()
-            console.log(json)
             setData(json)
         }
     }, [])
@@ -58,9 +57,13 @@ export default function Material(props) {
     ) : (
         <>
             <Container className={'p-3 pb-5'}>
-                <h1 style={{ fontSize: '2rem' }}>{data.name}</h1>
-                {/*<h5 style={{ color: "gray" }}></h5>*/}
-                <UserLabel size={'small'} {...data.teacher} />
+                <div className={'d-flex justify-content-between'}>
+                    <div>
+                        <h1 style={{ fontSize: '2rem' }}>{data.name}</h1>
+                        <UserLabel size={'small'} {...data.teacher} />
+                    </div>
+                    <p style={{ color: 'gray', fontSize: '0.9rem' }}>To join this course, use the code:<br/>{id}</p>
+                </div>
                 <br/>
                 <h6>{data.description}</h6>
                 {

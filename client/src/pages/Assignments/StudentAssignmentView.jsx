@@ -38,51 +38,52 @@ export default function Assignments() {
         </Container>
         :
         <Container className={'p-2 pb-5'}>
-            <Container>
-                <h3 style={{ fontWeight: 'normal' }}>Active</h3>
-                {
-                    active.length === 0 ?
-                        <p>No Active Assignments</p> :
-                        active.map((value, index) => {
-                            return (
-                                <AssignmentTab key={index} id={value._id} {...value}>
-                                    <AssignmentContent text={value.text} files={value.files}/>
-                                    <Button className={'mt-3'} onClick={() => {
-                                        setOpenSubmit(true)
-                                        setAssignmentId(value._id)
-                                    }}>
-                                        Submit
-                                    </Button>
-                                </AssignmentTab>
-                            )
-                        })
-                }
-            </Container>
-            <Container className={'mt-5'}>
-                <h3 style={{ fontWeight: 'normal' }}>Submitted</h3>
-                {
-                    submitted.length === 0 ?
-                        <p>No Submitted Assignments</p> :
-                        submitted.map((value, index) => {
-                            return (
-                                <AssignmentTab key={index} id={value._id} {...value}>
-                                    <SubmissionContent submissions={value.submissions} assignmentId={value._id}/>
-                                    <div className={'mt-2 w-100 border-1 border-top'}>
-                                        <Card.Text className={'mt-3'}>
-                                            Assignment Preview
-                                        </Card.Text>
-                                    </div>
-                                    <Card className={'mt-3'}>
-                                        <Card.Body>
-                                            <AssignmentContent text={value.text} files={value.files}/>
-                                        </Card.Body>
-                                    </Card>
-                                </AssignmentTab>
-                            )
-                        })
-                }
-            </Container>
-
+            <div className={'ms-auto me-auto'} style={{ width: '80%' }}>
+                <Container>
+                    <h3 style={{ fontWeight: 'normal' }}>Active</h3>
+                    {
+                        active.length === 0 ?
+                            <p>No Active Assignments</p> :
+                            active.map((value, index) => {
+                                return (
+                                    <AssignmentTab key={index} id={value._id} {...value}>
+                                        <AssignmentContent text={value.text} files={value.files}/>
+                                        <Button className={'mt-3'} onClick={() => {
+                                            setOpenSubmit(true)
+                                            setAssignmentId(value._id)
+                                        }}>
+                                            Submit
+                                        </Button>
+                                    </AssignmentTab>
+                                )
+                            })
+                    }
+                </Container>
+                <Container className={'mt-5'}>
+                    <h3 style={{ fontWeight: 'normal' }}>Submitted</h3>
+                    {
+                        submitted.length === 0 ?
+                            <p>No Submitted Assignments</p> :
+                            submitted.map((value, index) => {
+                                return (
+                                    <AssignmentTab key={index} id={value._id} {...value}>
+                                        <SubmissionContent submissions={value.submissions} assignmentId={value._id} asStudent={true}/>
+                                        <div className={'mt-2 w-100 border-1 border-top'}>
+                                            <Card.Text className={'mt-3'}>
+                                                Assignment Preview
+                                            </Card.Text>
+                                        </div>
+                                        <Card className={'mt-3'}>
+                                            <Card.Body>
+                                                <AssignmentContent text={value.text} files={value.files}/>
+                                            </Card.Body>
+                                        </Card>
+                                    </AssignmentTab>
+                                )
+                            })
+                    }
+                </Container>
+            </div>
             <SubmitAssignment show={openSubmit} onHide={() => setOpenSubmit(false)} assignmentId={assignmentId}/>
         </Container>
 

@@ -29,7 +29,7 @@ export default function SubmissionView() {
                     <p>No Submissions yet</p> :
                     <Card>
                         <Card.Body>
-                            <SubmissionContent submissions={submissions} />
+                            <SubmissionContent submissions={submissions} asStudent={false}/>
                         </Card.Body>
                     </Card>
             }

@@ -32,7 +32,6 @@ export default function GroupEditors(props) {
                     }
                     {
                         props.documents.map((value, index) => {
-                            console.log(value)
                             return <EditorTab key={value._id} name={value.name} docId={value._id} onClick={() => {
                                 setDocToDelete(value)
                                 setOpenConfirm(true)

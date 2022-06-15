@@ -32,21 +32,23 @@ export default function TeacherAssignmentView() {
         </Container>
         :
         <Container className={'p-0'}>
-            <h3 style={{fontWeight: 'normal'}}>Assignments</h3>
-            {
-                assignments.length === 0 ?
-                    <p>No Assignments.</p> :
-                    assignments.map((value, index) => {
-                        return (
-                            <AssignmentTab key={index} id={value._id} {...value}>
-                                <AssignmentContent text={value.text} files={value.files}/>
-                                <Button className={'mt-3'} onClick={() => relativeNav(`/${value._id}`)}>View All
-                                    Submissions</Button>
-                            </AssignmentTab>
-                        )
-                    })
-            }
-            <Button className={'mt-3'} onClick={() => setOpenModal(true)}>Add Assignment</Button>
+            <div className={'ms-auto me-auto'} style={{ width: '75%' }}>
+                <h3 style={{ fontWeight: 'normal' }}>Assignments</h3>
+                {
+                    assignments.length === 0 ?
+                        <p>No Assignments.</p> :
+                        assignments.map((value, index) => {
+                            return (
+                                <AssignmentTab key={index} id={value._id} {...value}>
+                                    <AssignmentContent text={value.text} files={value.files}/>
+                                    <Button className={'mt-3'} onClick={() => relativeNav(`/${value._id}`)}>View All
+                                        Submissions</Button>
+                                </AssignmentTab>
+                            )
+                        })
+                }
+                <Button className={'mt-3'} onClick={() => setOpenModal(true)}>Add Assignment</Button>
+            </div>
             <AddAssignment show={openModal} onHide={() => setOpenModal(false)}/>
         </Container>
 }

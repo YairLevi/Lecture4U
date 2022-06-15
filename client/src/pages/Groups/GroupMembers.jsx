@@ -6,7 +6,6 @@ import UserLabel from "../../components/UserLabel";
 
 export default function GroupMembers(props) {
     const [open, setOpen] = useState(false)
-    console.log(props.users)
 
     return (
         <>

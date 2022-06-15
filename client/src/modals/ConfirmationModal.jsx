@@ -29,7 +29,7 @@ export default function ConfirmationModal({ show, onHide, func, text}) {
                 <Modal.Title>Are You Sure?</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p>You are about to {text}.<br/>Are you sure?</p>
+                <p>You are about to <strong>{text}</strong>.<br/>Are you sure?</p>
             </Modal.Body>
             <Modal.Footer className={'d-flex'}>
                 {error && <p className={'alert-danger p-2 w-100 rounded-2'}>{error}</p>}

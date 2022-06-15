@@ -15,7 +15,6 @@ export default function AssignmentTab({ id, name, text, files, number, dueDate, 
     return (
         <div className={'mt-4 overflow-hidden border border-1'} style={{
             borderRadius: '10px',
-            width: '80%',
             marginLeft: 'auto',
             marginRight: 'auto',
         }}>

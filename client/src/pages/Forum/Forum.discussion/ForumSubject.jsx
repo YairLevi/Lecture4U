@@ -9,9 +9,9 @@ export default function ForumSubject({ title, author, content, createdAt }) {
                 <Card.Text as={'h1'}>
                     {title}
                 </Card.Text>
-                <Card.Text>
-                    <UserLabel size={'small'} {...author} />
-                    At <strong>{new Date(createdAt).getMonthAndDay()}</strong>
+                <UserLabel size={'very-small'} {...author} />
+                <Card.Text style={{ fontSize: '0.9rem'}}>
+                    {new Date(createdAt).getMonthAndDay()}
                 </Card.Text>
                 <br/>
                 <Card.Text>

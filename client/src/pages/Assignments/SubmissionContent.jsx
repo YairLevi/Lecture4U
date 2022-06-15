@@ -1,11 +1,18 @@
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, FormControl, Spinner } from "react-bootstrap";
 import React, { useState } from "react";
 import EditSubmission from "./modals/EditSubmission";
 import UserLabel from "../../components/UserLabel";
+import { useLoading } from "../../hooks/useLoading";
+import requests from "../../helpers/requests";
 
 
-export default function SubmissionContent({ submissions, assignmentId }) {
+export default function SubmissionContent({ submissions, assignmentId, asStudent }) {
     const [openEdit, setOpenEdit] = useState(false)
+    const [grade, setGrade] = useState(submissions[0].grade === -1 ? '' : submissions[0].grade)
+    const [loading, action] = useLoading(async () => {
+        const res = await requests.post('/course/grade', { submissionId: submissions[0]._id, grade: parseInt(grade) })
+        return res.status === 200
+    })
 
     return (
         <>
@@ -14,7 +21,7 @@ export default function SubmissionContent({ submissions, assignmentId }) {
                     {
                         submissions[0].userIds.map((user, index) => {
                             return <div key={index} className={'d-flex justify-content-between'}>
-                                <UserLabel {...user} noMargin={true} size={'small'} />
+                                <UserLabel {...user} noMargin={true} size={'small'}/>
                                 <p className={'mb-2 ms-2 p-0'} style={{ fontSize: '0.9rem' }}>
                                     submission date: {new Date(submissions[0].date).parseEventDate()}
                                 </p>
@@ -33,8 +40,34 @@ export default function SubmissionContent({ submissions, assignmentId }) {
                     }
                 </div>
             }
-            <Button className={'mt-5'} onClick={() => setOpenEdit(true)}>Edit</Button>
-            <Button className={'mt-5 ms-2'} variant={'outline-danger'}>Delete</Button>
+            <div className={'d-flex justify-content-between'}>
+                <div>
+                    {
+                        asStudent &&
+                        <Button className={'mt-5'} onClick={() => setOpenEdit(true)}>Edit</Button>
+                    }
+                </div>
+                <div className={'mt-auto d-flex justify-content-end align-items-center'}>
+                    {
+                        !asStudent ?
+                            <>
+                                Give Grade:<FormControl value={grade} className={'w-25 ms-2'}
+                                                        onChange={e => setGrade(e.target.value)}/>
+                                <Button className={'ms-2'} onClick={action}>
+                                    {loading && <Spinner animation={'border'}/>}
+                                    Post
+                                </Button>
+                            </> :
+                            <>
+                                Grade: {
+                                submissions[0].grade === -1 ?
+                                    <>Not Given Yet</> :
+                                    <>{submissions[0].grade}</>
+                            }
+                            </>
+                    }
+                </div>
+            </div>
 
             <EditSubmission show={openEdit}
                             onHide={() => setOpenEdit(false)}

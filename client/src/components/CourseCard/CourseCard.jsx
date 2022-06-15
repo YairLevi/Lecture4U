@@ -12,8 +12,6 @@ export default function CourseCard(props) {
         relativeNav(`/${props.id}/material`)
     }
 
-    console.log(props)
-
     return (
         <Container className={'d-flex justify-content-center mb-4 p-0 h-100'} onClick={handleClick}>
             <Card className={'card-pop'} style={{

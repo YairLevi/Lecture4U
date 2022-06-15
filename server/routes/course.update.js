@@ -47,7 +47,6 @@ router.post('/subject', upload.array("files"), async (req, res) => {
     for (const fileId of subject.files) {
         if (!currentFilesIds.includes(fileId.toString())) {
             await deleteFile(fileId)
-            await File.findByIdAndDelete(fileId)
             subject.files.splice(subject.files.indexOf(fileId), 1)
         }
     }
@@ -61,13 +60,12 @@ router.post('/subject', upload.array("files"), async (req, res) => {
     subject.name = name
     subject.text = text
 
-    await subject.save()
-
     const course = await Course.findById(courseId)
     for (const studentId of course.students) {
         await addDashboardEvent(studentId, events.updated_material, course.name)
     }
 
+    await subject.save()
     res.sendStatus(200)
 })
 
@@ -79,7 +77,6 @@ router.post('/submission', upload.array('files'), async (req, res) => {
     for (const fileId of submission.files) {
         if (!currentFilesIds.includes(fileId.toString())) {
             await deleteFile(fileId)
-            await File.findByIdAndDelete(fileId)
             submission.files.splice(submission.files.indexOf(fileId), 1)
         }
     }
@@ -91,6 +88,7 @@ router.post('/submission', upload.array('files'), async (req, res) => {
     }
 
     submission.text = text
+    submission.date = Date.now()
     await submission.save()
 
     const userId = getUserID(req)

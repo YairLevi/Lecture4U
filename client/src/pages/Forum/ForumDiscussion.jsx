@@ -14,7 +14,6 @@ export default function ForumDiscussion({ currentDiscussion }) {
 
     async function fetchData() {
         if (!currentDiscussion) return
-        console.log(currentDiscussion)
         setComments([])
         setLoading(true)
         const res = await requests.get('/forum/comments', { discussionId: currentDiscussion._id })
@@ -45,7 +44,7 @@ export default function ForumDiscussion({ currentDiscussion }) {
                         comments &&
                         comments.map((value, index) => {
                             // const name = value.author.firstName + ' ' + value.author.lastName
-                            return <ForumComment key={index} {...value}/> // name={name} content={value.content}/>
+                            return <ForumComment key={index} value={value}/> // name={name} content={value.content}/>
                         })
                     }
                 </>

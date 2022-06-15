@@ -31,7 +31,6 @@ const { clone } = require("../mongooseUtil");
 const mongoose = require("mongoose");
 
 
-
 router.get('/teacher', async (req, res) => {
     const userId = getUserID(req)
     if (!userId) return res.sendStatus(500)
@@ -123,7 +122,7 @@ router.get('/data', async (req, res) => {
         if (!access) access = {}
         if (!access[today]) access[today] = {}
         access[today][userId] = true
-        await Course.updateOne({ _id: course._id }, { $set : { access: access }})
+        await Course.updateOne({ _id: course._id }, { $set: { access: access } })
         await course.save()
 
         res.status(200).json(material)
@@ -238,11 +237,10 @@ router.get('/exist', async (req, res) => {
 })
 
 
-
 // maybe move deletes to other file ?
 
 router.delete('/unit', async (req, res) => {
-    const courseId = req.body.unitId
+    const courseId = req.body.courseId
     const unitId = req.body.unitId
     const unit = await Unit.findById(unitId)
 
@@ -270,22 +268,30 @@ router.delete('/subject', async (req, res) => {
         await deleteFile(fileId)
     }
 
-    await Subject.findByIdAndDelete(subjectId)
     const unit = await Unit.findById(unitId)
     unit.subjects.splice(unit.subjects.indexOf(subjectId), 1)
+    await Subject.findByIdAndDelete(subjectId)
     await unit.save()
 
     res.sendStatus(200)
 })
 
 router.post('/rate', async (req, res) => {
-    let { rating, subjectId } = {...req.body}
+    let { rating, subjectId } = { ...req.body }
     const userId = getUserID(req)
     const subject = await Subject.findById(subjectId)
     if (!subject.ratings) subject.ratings = {}
     subject.ratings = subject.ratings.filter(item => item.user != userId)
-    subject.ratings.push({ user: userId, rating: Number(rating)})
+    subject.ratings.push({ user: userId, rating: Number(rating) })
     await subject.save()
+    res.sendStatus(200)
+})
+
+router.post('/grade', async (req, res) => {
+    const { grade, submissionId } = { ...req.body }
+    const submission = await Submission.findById(submissionId)
+    submission.grade = grade
+    await submission.save()
     res.sendStatus(200)
 })
 

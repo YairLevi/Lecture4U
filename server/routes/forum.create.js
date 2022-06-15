@@ -41,6 +41,7 @@ router.post('/comment', async (req, res) => {
         const discussion = await Discussion.findById(discussionId)
         const comment = await Comment.create({ content, author })
         discussion.comments.push(comment)
+        discussion.mostRecent = Date.now()
         await discussion.save()
         res.sendStatus(200)
     } catch (e) {
