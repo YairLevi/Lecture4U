@@ -68,6 +68,7 @@
 Final project in the Computer Science Department, Bar Ilan University. </br>
 **Lecture4U** is a course management system, which allows users to take part in courses, or manage their courses as lecturer. Our system provides each user machine learning tools which makes it easier for them to learn and manage their time.  
 ### Motivation
+https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-b595-a55777bc0784.mp4
 ### Features
 - [x] **Course management tools -** _As a student_ you can view the study units that uploaded by the lecturer, rate the them according to your knowledge, see the assignments you need to submit, and chat with other course members in the forum. </br> _As a lecturer_ you can upload study units, add assignments. You can also select one of the courses you teach, see the average knowledge of each study unit in this course (according to students ratings), and see how many students saw the course study units.  
 - [x] **Learning Groups -** Users can create groups with their friends, they can chat in the group forum, share files, and work on a shared document (like Google Docs).
