@@ -1,4 +1,4 @@
-import { ButtonGroup, Card, Col, Container, Row, Spinner, ToggleButton } from 'react-bootstrap'
+import { Button, ButtonGroup, Card, Col, Container, Row, Spinner, ToggleButton } from 'react-bootstrap'
 import React, { useEffect, useState } from "react";
 import requests from "../../helpers/requests";
 import OverviewPanel from "./OverviewPanel";
@@ -7,21 +7,28 @@ import Timeline from "../../components/Timeline/Timeline";
 import DailySchedule from './DailySchedule/DailySchedule'
 import useLocalStorage from "../../hooks/useLocalStorage";
 import TeacherOverview from "./Teacher/TeacherOverview";
+import { useLoading } from "../../hooks/useLoading";
 
 
 export default function DashboardPage(props) {
-    const [data, setData] = useState()
+    const [data, setData] = useLocalStorage('dashboard-data', null)
     const [value, setValue] = useLocalStorage('dashboard-state', 'student')
     const radios = [
         { name: 'As Student', value: 'student' },
         { name: 'As Teacher', value: 'teacher' },
     ]
 
-    const loading = useLoadingEffect(async function () {
+    const [loading, getDashboardData] = useLoading(async () => {
         const res = await requests.get('/dashboard/get-dashboard-data')
         const json = await res.json()
         setData(json)
-    }, [])
+    })
+
+    // const loading = useLoadingEffect(async function () {
+    //     const res = await requests.get('/dashboard/get-dashboard-data')
+    //     const json = await res.json()
+    //     setData(json)
+    // }, [])
 
     return loading ?
         <Container className={'d-flex justify-content-center align-items-center'}>
@@ -46,6 +53,7 @@ export default function DashboardPage(props) {
                             </ToggleButton>
                         ))}
                     </ButtonGroup>
+                    <Button className={'ms-2'} onClick={getDashboardData}>Refresh Dashboard</Button>
                 </div>
                 <Row>
                     {value === 'student' ? <OverviewPanel {...data}/> : <TeacherOverview {...data}/>}
