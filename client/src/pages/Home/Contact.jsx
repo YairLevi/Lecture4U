@@ -1,7 +1,8 @@
-import { Button, Container, Form, Spinner } from "react-bootstrap";
-import { useState } from "react";
+import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import React, { useState } from "react";
 import { useLoading } from "../../hooks/useLoading";
 import requests from "../../helpers/requests";
+import image from '../../assets/img_1.png'
 
 
 export default function Contact() {
@@ -18,8 +19,20 @@ export default function Contact() {
 
     return (
         <Container className={'p-4'}>
-            <h1>Contact</h1>
-            <h3>Send us a message and let us know how you feel about our platform!</h3>
+            <Row className={"justify-content-center align-items-center"}>
+                <Col className={"text-center text-md-start"}>
+                    <h1 style={{ fontWeight: 'bold' }}>
+                        Contact Us
+                    </h1>
+                    <h3>
+                        Tell us and let us know how you feel about our platform!
+                    </h3>
+                </Col>
+                <Col className={"text-center col-md-6 col-12 d-md-block"}>
+                    <img className={"img-fluid"} src={`${image}`} alt={"pic"}/>
+                </Col>
+            </Row>
+            <h2>Write a message</h2>
             <Form className={'mt-5'}>
                 <Form.Label>What is this message about?</Form.Label>
                 <Form.Control value={subject} onChange={e => setSubject(e.target.value)}/>

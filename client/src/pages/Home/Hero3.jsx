@@ -13,7 +13,7 @@ export default function Hero3(props) {
                         AI Is Our Friend
                     </h1>
                     <h5>
-                        Ease your way through courses with our Artificial Intelligence tools, like Speech-To-Text,
+                        Ease your way through courses with our Artificial Intelligence based tools, like Speech-To-Text,
                         Image-To-Text, and schedule optimization
                     </h5>
                 </Col>

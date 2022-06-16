@@ -21,9 +21,9 @@ export default function Home(props) {
                         <Hero/>
                         <Hero2/>
                         <Hero3/>
-                        <HomeBottom/>
                     </>
             }
+            <HomeBottom/>
         </div>
     )
 }
