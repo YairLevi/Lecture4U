@@ -401,10 +401,6 @@ export default function SpeechToText() {
 
                             <Button variant="outline-light" onClick={TranscribeHandleChange}>Transcribe & Download</Button>
 
-                            <CustomizedDialogs>
-                                <RegistrationForm/>
-                            </CustomizedDialogs>
-
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <FormControl sx={{
                                 color: "#d3d3d3",

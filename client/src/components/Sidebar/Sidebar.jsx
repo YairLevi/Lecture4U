@@ -44,7 +44,7 @@ export default function Sidebar({ closeSidebar, open }) {
                 </Container>
                 <SidebarContent>
                     <Menu title={"General"}>
-                        <Item name={'dashboard'} selected={selected} icon={'bi-person'}>Dashboard</Item>
+                        <Item name={'dashboard'} selected={selected} icon={'bi-bar-chart'}>Dashboard</Item>
                         <Item name={'profile'} selected={selected} icon={'bi-person'}>Profile</Item>
                         <Item name={'groups'} selected={selected} icon={'bi-people'}>Groups</Item>
                         <Item name={'courses'} selected={selected} icon={'bi-book'}>Courses</Item>
@@ -52,7 +52,7 @@ export default function Sidebar({ closeSidebar, open }) {
                     <Menu title={"Tools"}>
                         <Item name={'speech'} selected={selected} icon={'bi-mic'}>Speech To Text</Item>
                         <Item name={'ocr'} selected={selected} icon={'bi-type'}>Image To Text</Item>
-                        <Item name={'calendar'} selected={selected} icon={'bi-calendar-range'}>Calender</Item>
+                        <Item name={'calendar'} selected={selected} icon={'bi-calendar-date'}>Calender</Item>
                     </Menu>
                 </SidebarContent>
                 <SidebarFooter>
