@@ -27,7 +27,7 @@ export default function Members() {
                     members.map((value, index) => {
                         return <div className={'d-flex align-items-center'} key={index}>
                             <UserLabel key={index} {...value} noMargin={false} size={'regular'}/>
-                            <p style={{ color: 'gray' }} className={'ms-2'}>{value.email}</p>
+                            <p style={{ color: 'gray' }} className={'ms-3 mt-4'}>{value.email}</p>
                         </div>
                     })
                     :
