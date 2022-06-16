@@ -1,18 +1,27 @@
 import './Card.scss'
+import { Card as BootstrapCard, Col, Row } from 'react-bootstrap'
 
 
 export default function Card(props) {
     return (
-        <div className="card p-3 mb-2 h-100">
+        <div className="card p-3 ms-4 me-4 h-100" style={{
+            backgroundColor: props.mainColor,
+        }}>
             <div className={'d-flex justify-content-between ps-3 pe-3 pt-3'}>
                 <div>
                     <h1>{props.value}</h1>
-                    <h5 style={{ color: "gray" }}>{props.title}</h5>
+                    <h5 style={{ color: "#555555" }}>{props.title}</h5>
                 </div>
-                <i style={{ fontSize: '4rem', color: 'grey' }} className={'bx bx-edit'}/>
+                <i className={props.icon} style={{
+                    fontSize: '8rem',
+                    color: props.subColor,
+                    position: "absolute",
+                    right: 10,
+                    top: 10
+                }}/>
             </div>
             <div className={'ps-3 pe-3 pb-3'}>
-                <div className="mt-5">
+                <div className="mt-3">
                     <div className="mt-3">
                         <span className="text2 me-2" style={{ color: "gray" }}>
                             {props.subtitle}<br/>
