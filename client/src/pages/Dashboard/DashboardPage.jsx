@@ -8,9 +8,12 @@ import DailySchedule from './DailySchedule/DailySchedule'
 import useLocalStorage from "../../hooks/useLocalStorage";
 import TeacherOverview from "./Teacher/TeacherOverview";
 import { useLoading } from "../../hooks/useLoading";
+import { useAuth } from "../../contexts/AuthContext";
+
 
 
 export default function DashboardPage(props) {
+    const { currentUser} = useAuth()
     const [data, setData] = useLocalStorage('dashboard-data', null)
     const [value, setValue] = useLocalStorage('dashboard-state', 'student')
     const radios = [
@@ -37,8 +40,13 @@ export default function DashboardPage(props) {
             <Spinner className={'m-3'} animation="border"/>
         </Container> :
         <>
-            <Container fluid className={'m-3 h-100'}>
-                <div className={'mb-3 ms-5'}>
+            <Container fluid className={'m-3 h-100'} style={{ overflowX: "hidden"}}>
+                <div className={'d-flex justify-content-between ms-5 mb-3 me-5'}>
+                    <h3 style={{ color: 'gray', fontWeight: 'normal' }}>
+                        Hello {currentUser.firstName}, let's learn something new today!
+                        <i className={'bx bx-sun ms-2'} style={{ fontSize: '1.5rem' }}/>
+                    </h3>
+                    <div>
                     <ButtonGroup style={{ height: 'fit-content' }}>
                         {radios.map((radio, idx) => (
                             <ToggleButton
@@ -56,6 +64,7 @@ export default function DashboardPage(props) {
                         ))}
                     </ButtonGroup>
                     <Button className={'ms-2'} onClick={getDashboardData}>Refresh Dashboard</Button>
+                </div>
                 </div>
                 <Row>
                     {value === 'student' ? <OverviewPanel {...data}/> : <TeacherOverview {...data}/>}
