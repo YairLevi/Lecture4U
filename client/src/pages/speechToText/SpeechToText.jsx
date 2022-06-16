@@ -471,9 +471,7 @@ export default function SpeechToText() {
                         <br/>
                         You will be able to see what percentage is left until the end.
                         <br/>
-                        When done, the transcribed file will be downloaded.
-                        <br/>
-                        You can share it with other users by clicking the 'Send' button above.
+                        When done, the transcribed file will be downloaded, and you will get the accuracy.
                     </Typography>
 
                     <br/>
