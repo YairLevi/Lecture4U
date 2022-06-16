@@ -16,7 +16,7 @@ export default function Hero(props) {
                         Sign up and join a vast online learning community.
                     </h5>
                 </Col>
-                <Col className={"text-center d-none d-md-block"}>
+                <Col className={"text-center col-12 col-md-6 d-md-block"}>
                     <img className={"img-fluid"} src={`${image}`} alt={"pic"}/>
                 </Col>
             </Row>

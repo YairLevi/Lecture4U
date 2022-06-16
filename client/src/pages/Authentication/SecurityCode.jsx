@@ -9,7 +9,7 @@ import requests from "../../helpers/requests";
 export default function SecurityCode(props) {
     const [error, setError] = useState()
     const [code, setCode] = useState()
-    const { siblingNav, pathFull } = useNav()
+    const { siblingNav, fullNav } = useNav()
     const [searchParams] = useSearchParams()
     const email = searchParams.get('email')
 
@@ -23,8 +23,11 @@ export default function SecurityCode(props) {
     async function handleClick(e) {
         e.preventDefault()
         const res = await action()
-        if (res === 405) return pathFull('/sign-in')
-        siblingNav('/new', {email}, false)
+        if (res === 405) {
+            return fullNav('/sign-in')
+        } else if (res === 200) {
+            siblingNav('/new', { email }, false)
+        }
     }
 
     return (

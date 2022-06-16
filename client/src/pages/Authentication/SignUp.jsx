@@ -25,7 +25,7 @@ export default function SignIn() {
         if (isTaken) return setError(ERRORS.EMAIL_TAKEN)
         const result = await register({ firstName, lastName, email, password })
         if (!result) return setError(ERRORS.GENERAL_ERROR)
-        fullNav('/sign-in', {}, false)
+        fullNav('/', {}, false)
     })
 
     async function handleClick(e) {

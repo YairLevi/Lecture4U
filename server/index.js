@@ -19,6 +19,7 @@ const groupsRouter = require('./routes/groups')
 const profileRouter = require('./routes/profile')
 const dashboardRouter = require('./routes/dashboard')
 const ocrRouter = require('./routes/ocr')
+const mailRouter = require('./routes/mail')
 
 const PORT = 8000
 const HOST = 'localhost'
@@ -39,6 +40,7 @@ app.use('/schedule', scheduleRouter)
 app.use('/groups', groupsRouter)
 app.use('/profile', profileRouter)
 app.use('/ocr', ocrRouter)
+app.use('/mail', mailRouter)
 
 const bucketName = 'lecture4u-1';
 

@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'boxicons/css/boxicons.min.css'
 import './App.css';
 
-import Home from "./pages/home/Home";
+import Home from "./pages/Home/Home";
 import SignIn from "./pages/Authentication/SignIn";
 import SignUp from "./pages/Authentication/SignUp";
 import Main from "./pages/main/Main";
@@ -16,6 +16,7 @@ import SecurityCode from "./pages/Authentication/SecurityCode";
 import EnterMail from "./pages/Authentication/EnterMail";
 import ResetPassword from "./pages/Authentication/ResetPassword";
 import './helpers/prototypeFunctions'
+import About from "./pages/Home/About";
 
 function App() {
     const { loading } = useAuth()
@@ -26,13 +27,13 @@ function App() {
         </Container>
     ) : (
         <Routes>
-            <Route path={"/"} element={<Home/>}/>
+            <Route path={"/"} exact element={<Home/>}/>
+            <Route path={"/sign-up"} element={<SignUp/>}/>
+            <Route path={'/reset-password'} element={<EnterMail/>} />
+            <Route path={'/reset-password/code'} element={<SecurityCode/>} />
+            <Route path={'/reset-password/new'} element={<ResetPassword/>} />
             <Route element={<PublicRoute/>}>
-                <Route path={"/sign-up"} element={<SignUp/>}/>
                 <Route path={"/sign-in"} element={<SignIn/>}/>
-                <Route path={'/reset-password'} element={<EnterMail/>} />
-                <Route path={'/reset-password/code'} element={<SecurityCode/>} />
-                <Route path={'/reset-password/new'} element={<ResetPassword/>} />
             </Route>
             <Route element={<PrivateRoute/>}>
                 <Route path={"/*"} element={<Main/>}/>

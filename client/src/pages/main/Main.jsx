@@ -19,6 +19,7 @@ import SpeechToText from "../speechToText/SpeechToText";
 import Editor from "../Groups/Editor";
 import DashboardPage from "../Dashboard/DashboardPage";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import Support from "../Support/Support";
 
 
 const selectedStyle = {
@@ -75,6 +76,7 @@ export default function Main() {
                         <Route path={'/speech'} element={<SpeechToText/>}/>
                         <Route path={'/calendar'} element={<Calendar/>}/>
                         <Route path={'/ocr'} element={<Ocr/>}/>
+                        <Route path={'/support'} element={<Support/>}/>
                     </Routes>
                 </Container>
             </Container>
