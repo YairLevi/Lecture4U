@@ -52,7 +52,7 @@ export default function Courses() {
         <Container fluid className={'h-100 p-3'}>
             <Container>
                 <InputGroup className="mb-5">
-                    <FormControl placeholder="Search for a course..." onChange={e => setSearchValue(e.target.value)}/>
+                    <FormControl className={'me-3 rounded rounded-2'} placeholder="Search for a course..." onChange={e => setSearchValue(e.target.value)}/>
                     <ButtonGroup>
                         {radios.map((radio, idx) => (
                             <ToggleButton
@@ -71,14 +71,13 @@ export default function Courses() {
                     </ButtonGroup>
                     <Button className={'ms-3 rounded-3'} onClick={() => setOpenModal(true)}>Add Course</Button>
                 </InputGroup>
+                <Row>
+                    {data && data.map((value, index) => {
+                        if (value.name.includes(searchValue))
+                            return <CardSlot key={index} {...value}/>
+                    })}
+                </Row>
             </Container>
-            <Row>
-                {data && data.map((value, index) => {
-                    if (value.name.includes(searchValue))
-                        return <CardSlot key={index} {...value}/>
-                })}
-            </Row>
-
             {
                 value === 'student' ?
                     <AddCourse centered show={openModal} onHide={() => setOpenModal(false)}/> :
