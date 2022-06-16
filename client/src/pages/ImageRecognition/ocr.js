@@ -1,14 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, ButtonGroup, Container, Card, Nav, Navbar, Modal, Image, Dropdown, Spinner } from "react-bootstrap"
-// import './App.css';
 import React, { useState } from 'react';
 import { Alert, AlertTitle } from "@mui/material";
 import CardHeader from "@mui/material/CardHeader";
 import axios from "axios";
 import requests from "../../helpers/requests";
 import { useLoading } from "../../hooks/useLoading";
-// import {Listbox, ListboxOption} from "@reach/listbox";
-// import "@reach/listbox/styles.css";
 
 
 export default function Ocr() {
@@ -25,7 +22,6 @@ export default function Ocr() {
 
     const hiddenFileInputUpload = React.useRef(null);
     const hiddenFileInputTranscript = React.useRef(null);
-    let [lstbx_value, setValue] = React.useState("default");
 
     const [myFiles, setMyFiles] = useState([]);
     const [DownloadModal, setDownloadModal] = useState(false);
@@ -49,7 +45,6 @@ export default function Ocr() {
     }
 
     const ModalDownloadClose = () => setDownloadModal(false);
-    const [ModalDLMessage, SetModalDLMessage] = useState("");
 
     const [currentFile, SetCurrentFile] = useState("");
 
@@ -183,21 +178,6 @@ export default function Ocr() {
             }).catch(err => console.warn(err));
     };
 
-    const downloadFromHistory = (event) => {
-        let req_file = event.target.innerText;
-        req_file = req_file.substr(req_file.indexOf(" ") + 1);
-        for (let f in myFiles) {
-            if (myFiles[f]['currentFile'] == req_file) {
-                const url = window.URL.createObjectURL(myFiles[f]['retFile']);
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', myFiles[f]['currentFile']);
-                document.body.appendChild(link);
-                link.click();
-            }
-        }
-    };
-
     return (
         <div className="App">
             <Modal show={ModalShow} onHide={ModalHandleClose} backdrop="static" keyboard={false}>
@@ -233,8 +213,7 @@ export default function Ocr() {
                             <Button variant="outline-light" onClick={handleClick}>Upload</Button>
                             <input type="file" ref={hiddenFileInputUpload} multiple={false}
                                    accept={".png"} onChange={UploadHandleChange} style={{ display: 'none' }}/>
-                            <Button variant="outline-light" onClick={TranscriptHandleChange}>Transcript &
-                                Download</Button>
+                            <Button variant="outline-light" onClick={TranscriptHandleChange}>Transcript & Download</Button>
                             <Button variant="outline-light" onClick={ModalDownloadShow}>View my Files</Button>
                         </ButtonGroup>
                     </Nav>
@@ -250,8 +229,7 @@ export default function Ocr() {
                            accept={".txt"} onChange={UploadTxtHandleChange} style={{ display: 'none' }}/>
                     <br/><p>&emsp;</p><Button className="button" onClick={GetColImage}>Check Detection</Button>
                     <br/><p>&emsp;</p><Button className="button" onClick={InitTranscriptChange}>Check Accuracy</Button>
-                </ButtonGroup>
-                <br/>
+                </ButtonGroup><br/>
                 <Dropdown>
                     <Dropdown.Toggle>{focusLevel}%</Dropdown.Toggle>
                     <Dropdown.Menu>
@@ -260,20 +238,14 @@ export default function Ocr() {
                                 return <Dropdown.Item key={index} onClick={e => {
                                     setFocusLevel(value);
                                     handleFocus(value)
-                                }}>
-                                    {value}%
-                                </Dropdown.Item>
+                                }}>{value}%</Dropdown.Item>
                             })
                         }
                     </Dropdown.Menu>
                 </Dropdown>
             </Card>
             <Card className="image-card" sx={{ maxWidth: 345 }}><Image id="col_img"/><br/></Card>
-            <Card sx={{ maxWidth: 345 }}>
-                <div id="content"></div>
-                <br/>
-                <div id="accuracy"></div>
-            </Card>
+            <Card sx={{ maxWidth: 345 }}><div id="content"></div><br/><div id="accuracy"></div></Card>
         </div>
     );
 }
