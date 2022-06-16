@@ -10,13 +10,10 @@ CORS(app, support_credentials=True)
 file_name = ""
 language = ""
 transcribe_confidence = 0
-course_name = ''
-group_name = ''
-message_for_course = ''
-message_for_group = ''
 current_date = ''
 
 
+# Given a file, save it (locally), and measure it's time.
 @app.route("/upload", methods=["POST"])
 @cross_origin()
 def upload():
@@ -35,6 +32,7 @@ def upload():
             'FileName': file_name, 'duration': round(tag.duration)}
 
 
+# Given a transcript language, transcribe the file, and write the results to a docx file, and return it.
 @app.route("/transcribe", methods=["GET"])
 @cross_origin()
 def transcribe():
@@ -63,26 +61,9 @@ def transcribe():
     return resp
 
 
-@app.route("/update_repository", methods=["POST"])
-@cross_origin()
-def update_repository():
-    global course_name, group_name, message_for_course, message_for_group
-    print(request.data)
-    course_name = request.json["course_name"]["value"]
-    group_name = request.json["group_name"]["value"]
-    message_for_course = request.json["description"]
-    message_for_group = request.json["message"]
-
-    print("message_for_course = {}\nmessage_for_group = {}\ncourse_name = {}\ngroup_name = {}\n"
-          .format(message_for_course, message_for_group, course_name, group_name))
-    return "****** update_repository Successfully ******"
-
-
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Expose-Headers', '*,Authorization,X-custom-header')
-    # response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    # response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response
 
 

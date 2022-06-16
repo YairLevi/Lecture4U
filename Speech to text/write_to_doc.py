@@ -5,6 +5,8 @@ from time import gmtime
 from time import strftime
 
 
+# Create a docx file, that contains the content of the topics, divided according to topics name,
+# and next to each topic name, is the timestamp that this topic was studied.
 def write(document_name, university_name, course_name, language, topics_names, topics_content, topics_timestamps,
           word_list):
     is_empty = False

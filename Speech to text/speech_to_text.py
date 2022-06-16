@@ -1,34 +1,12 @@
-import sys
 import os
-import io
 from google.cloud import speech
 from google.cloud import storage
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-import googleapiclient.discovery
 from moviepy.editor import AudioFileClip
-import asyncio
-import aiohttp
-from gcloud.aio.storage import Storage
 import wave
 import write_to_doc
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '../steam-treat-347709-462a24be0c62.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'steam-treat-347709-a75748e8fbdc.json'
 name_bucket = 'lecture4u-3'
-
-
-# Write speech to document instead of txt file.
-def create_document(doc_name=None, doc_content=None):
-    credentials = service_account.Credentials.from_service_account_file(
-        filename=os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
-
-    service = googleapiclient.discovery.build('docs', 'v1', credentials=credentials)
-    title = 'My Document'
-    body = {
-        'title': title
-    }
-    doc = service.documents().create(body=body).execute()
-    print('Created document with title: {0}'.format(doc.get('title')))
 
 
 # Convert .4ma to .wav file.
@@ -45,20 +23,7 @@ def upload_file_to_bucket(bucket_name, source_file_name, destination_blob_name):
     blob.upload_from_filename(source_file_name)
 
 
-async def async_upload_to_bucket(bucket_name, destination_blob_name, file_object):
-    async with aiohttp.ClientSession() as session:
-        my_storage = Storage(session=session)
-        status = await my_storage.upload(bucket_name, destination_blob_name, file_object)
-        return status['selfLink']
-
-
-async def main(file_name):
-    with io.open(file_name, 'rb') as audio_file:
-        content = audio_file.read()
-        url = await async_upload_to_bucket(name_bucket, 'speech to text files/{}'.format(file_name), content)
-        print(url)
-
-
+# Check if the target word is in the word_variations.
 def check_for_keyword_variations(target_word, word_variations):
     for word_variation in word_variations:
         if target_word == word_variation:
@@ -66,6 +31,7 @@ def check_for_keyword_variations(target_word, word_variations):
     return False
 
 
+# remove punctuation from the given word.
 def remove_punctuation(word):
     punctuation_list = ['.', ',', ' ']
     for punctuation in punctuation_list:
@@ -187,12 +153,6 @@ def run(source_name, destination_name, my_language):
     # upload file to google cloud storage:
     path = 'speech to text files/{}'.format(transcribed_audio_file_name)
     upload_file_to_bucket(name_bucket, transcribed_audio_file_name, path)
-
-    # upload async to google cloud storage :
-    # print('Start Async Uploading.')
-    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    # asyncio.run(main(transcribed_audio_file_name))
-    # print("Finish Uploading.")
 
     # settings:
     path = 'gs://' + name_bucket + '/speech to text files/{}'.format(transcribed_audio_file_name)
