@@ -15,13 +15,16 @@ router.post('/save', upload.array('files'), async (req, res) => {
     const userId = getUserID(req)
     const user = await User.findById(userId)
     if (!user.ocrTimestampHistory) {
-        user.ocrTimestampHistory = await OcrTimestampHistory.create()
+        const newHistory = await OcrTimestampHistory.create({})
+        user.ocrTimestampHistory = newHistory._id
     }
     const history = await OcrTimestampHistory.findById(user.ocrTimestampHistory)
     const file = req.files[0]
-    const fileId = await uploadFile(file, `ocr files/userId-${userId}/${file.originalname}`)
-    const newTimestamp = await OcrTimestamp.create({ name: file.originalname, file: fileId })
+    const fileId = await uploadFile(file, `ocr-files/userId-${userId}/${req.body.fileName}`)
+    const newTimestamp = await OcrTimestamp.create({ name: req.body.fileName, file: fileId })
     history.timestampHistory.push(newTimestamp)
+
+    await user.save()
     await history.save()
     res.sendStatus(200)
 })
