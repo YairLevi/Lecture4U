@@ -151,18 +151,45 @@ function App() {
     };
 
     const RouteToFiles = () => {
-        let files_list = "";
-        for (let f in myFiles) {files_list = files_list + myFiles[f]['currentFile'] + "," + myFiles[f]['datetime'] + "\n";}
-        let newText = files_list.split('\n').map(i => {
-            if (i != "") {
-                let details = i.split(',')
-                let dt = details[1];
-                let cf = details[0];
-                return <p>{dt}&emsp;&emsp;&emsp;<Button className="button" onClick={downloadFromHistory}><b>Download {cf}</b></Button></p>
-            }
-        });
-        ModalDownloadShow();
-        SetModalDLMessage(newText);
+
+
+        axios
+            .get('http://localhost:8000/ocr/get',{responseType: 'arraybuffer', headers: {'Content-Type': 'application/json'}})
+            .then(res => {
+                let files_list = "";
+                const prev_files = res.data;
+
+                console.log(prev_files);
+                // for (let f in prev_files) {myFiles.push({f['createdAt'], f['name'], f['file'].url[0]);}
+
+                for (let f in myFiles) {files_list = files_list + myFiles[f]['currentFile'] + "," + myFiles[f]['datetime'] + "\n";}
+                let newText = files_list.split('\n').map(i => {
+                    if (i != "") {
+                        let details = i.split(',')
+                        let dt = details[1];
+                        let cf = details[0];
+                        return <p>{dt}&emsp;&emsp;&emsp;<Button className="button" onClick={downloadFromHistory}><b>Download {cf}</b></Button></p>
+                    }
+                });
+                ModalDownloadShow();
+                SetModalDLMessage(newText);
+                // for (let f in prev_files) {files_list = files_list + prev_files[f]['name'] + "," + myFiles[f]['createdAt'] + "\n";}
+
+            }).catch(err => console.warn(err));
+
+
+        // let files_list = "";
+        // for (let f in myFiles) {files_list = files_list + myFiles[f]['currentFile'] + "," + myFiles[f]['datetime'] + "\n";}
+        // let newText = files_list.split('\n').map(i => {
+        //     if (i != "") {
+        //         let details = i.split(',')
+        //         let dt = details[1];
+        //         let cf = details[0];
+        //         return <p>{dt}&emsp;&emsp;&emsp;<Button className="button" onClick={downloadFromHistory}><b>Download {cf}</b></Button></p>
+        //     }
+        // });
+        // ModalDownloadShow();
+        // SetModalDLMessage(newText);
     };
 
     const downloadFromHistory = (event) => {
