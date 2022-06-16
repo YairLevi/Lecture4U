@@ -4,14 +4,15 @@ import requests from "../../helpers/requests";
 import { useParams } from "react-router";
 import SubmissionContent from "./SubmissionContent";
 import useLoadingEffect from "../../hooks/useLoadingEffect";
+import { useSearchParams } from "react-router-dom";
 
 
 export default function SubmissionView() {
-    const { assignmentId } = useParams()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [submissions, setSubmissions] = useState([])
 
     const loading = useLoadingEffect(async () => {
-        const res = await requests.get('/course/teacher/submissions', { assignmentId })
+        const res = await requests.get('/course/teacher/submissions', { assignmentId: searchParams.get('assignmentId') })
         if (res.status !== 200) return
         const json = await res.json()
         setSubmissions(json)
