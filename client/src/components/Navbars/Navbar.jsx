@@ -11,7 +11,7 @@ export default function Navbar(props) {
         <Bar className={"p-2 border-bottom shadow-sm"} bg={"white"} expand="md" sticky={"top"}>
             <Container>
                 <Bar.Brand href="/">
-                    <div className={'logo'} />
+                    <div className={'logo-lobby'} />
                 </Bar.Brand>
                 <Bar.Toggle aria-controls="basic-Bar-nav" />
                 <Bar.Collapse id="basic-Bar-nav">
