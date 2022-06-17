@@ -366,7 +366,7 @@ class Calendar extends Component {
         const { ...config } = this.state;
         return (
             <>
-                <Navbar bg="dark" variant="dark">
+                <Navbar className="color-nav" variant="dark">
                     <Container>
                         <Navbar.Brand href="#home">Calendar Schedule</Navbar.Brand>
                         <Nav className="me-auto">
