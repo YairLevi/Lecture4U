@@ -6,9 +6,9 @@
 // for Course recommendation system:
 // https://mui.com/components/bottom-navigation/
 
-
+import SpeechToTextContainer from './SpeechToTextContainer'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Button, ButtonGroup, Container, Card, Nav, Navbar, Modal} from "react-bootstrap"
+import { Button, ButtonGroup, Container, Card, Nav, Navbar, Modal, Form } from "react-bootstrap"
 import React, {useState, useEffect} from 'react';
 import {FormControl, Radio, RadioGroup, Typography} from "@mui/material";
 import CustomizedDialogs from "./Dialog";
@@ -352,7 +352,7 @@ export default function SpeechToText() {
     }
 
     return (
-        <div className="App">
+        <Container className={'pb-5'}>
 
             {/* alert modal */}
             <Modal
@@ -383,44 +383,35 @@ export default function SpeechToText() {
                 </Modal.Footer>
             </Modal>
 
-
-            <Navbar bg="dark" variant="dark">
-                <Container>
-                    <Navbar.Brand href="#home">Speech to Text</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <ButtonGroup aria-label="Basic example">
-
-                            <Button variant="outline-light" onClick={handleClick}>Upload</Button>
-                            <input type="file"
-                                   ref={hiddenFileInput}
-                                   multiple={false}
-                                   accept={".m4a"}
-                                   onChange={UploadHandleChange}
-                                   style={{display:'none'}}
+            <h3 style={{ fontWeight: "normal" }}>Speech To Text</h3>
+            <Container className={'d-flex mt-5'}>
+                <p className={'me-5'}>Choose a language</p>
+                <Form>
+                    {
+                        ['English', 'Hebrew'].map((value, index) => (
+                            <Form.Check
+                                onChange={() => setSpeechLanguage(value)}
+                                inline
+                                label={value}
+                                name={'language'}
+                                type={'radio'}
+                                id={`inline-radio-${index}`}
                             />
+                        ))
+                    }
+                </Form>
+            </Container>
+            <Container className={'d-flex mt-3'}>
+                <p className={'me-5'}>Upload a file</p>
+                <Form>
+                    <Form.Control type={'file'} onChange={UploadHandleChange}/>
+                </Form>
+            </Container>
+            <Container className={'mt-3'}>
+                <Button onClick={TranscribeHandleChange}>Transcribe And Download</Button>
+            </Container>
 
-                            <Button variant="outline-light" onClick={TranscribeHandleChange}>Transcribe & Download</Button>
-
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <FormControl sx={{
-                                color: "#d3d3d3",
-                                "&.Mui-focused": {
-                                    color: "#23A5EB"
-                                }
-                            }}>
-                                <RadioGroup row onChange={set_speech_to_text_language} value={speech_language}>
-                                    <FormControlLabel value="Hebrew" control={<Radio/>} label="Hebrew"/>
-                                    <FormControlLabel value="English" control={<Radio />} label="English"/>
-                                </RadioGroup>
-                            </FormControl>
-
-                        </ButtonGroup>
-                    </Nav>
-                </Container>
-            </Navbar>
-
-
-            <Card sx={{ maxWidth: 345 }}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4'}>
                 <CardHeader title="Run Demo" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
@@ -431,10 +422,10 @@ export default function SpeechToText() {
                     </Typography>
                 </CardContent>
 
-                <div className="microphone-wrapper">
+                <div className="microphone-wrapper d-flex justify-content-center">
                     <div className="microphone-container">
                         <div
-                            className="microphone-icon-container"
+                            className="microphone-icon-container d-flex justify-content-center"
                             ref={microphoneRef}
                             onClick={handleListing}
                         >
@@ -463,7 +454,7 @@ export default function SpeechToText() {
             </Card>
 
 
-            <Card sx={{ maxWidth: 345 }}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4'}>
                 <CardHeader title="Live Transcribe & Notification" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
@@ -488,16 +479,18 @@ export default function SpeechToText() {
                 </CardContent>
             </Card>
 
-            <Card sx={{ maxWidth: 345 }}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4'}>
                 <CardHeader title="Speech to text Timeline" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
                         Your recent actions with Speech to text module.
                     </Typography>
 
-                    <Timeline position="alternate">
+                    <Timeline position="alternate" className={'overflow-auto'} style={{ height: 300}}>
                         {
-                            Object.entries(TimeLineData).map((cdiv,i) => (
+                            TimeLineData.length === 0 ?
+                                <p className={'align-self-center'} style={{ color: "gray"}}>You have not used this tool yet.</p> :
+                                Object.entries(TimeLineData).map((cdiv,i) => (
                                 <TimelineItem className="expense-block" key={cdiv} id="expense-block-`${i}`" data-block={i}>
                                     <TimelineSeparator>
                                         <TimelineDot />
@@ -562,7 +555,7 @@ export default function SpeechToText() {
             </Modal>
             }
 
-        </div>
+        </Container>
 
     );
 }
