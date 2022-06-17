@@ -411,7 +411,8 @@ export default function SpeechToText() {
                 <Button onClick={TranscribeHandleChange}>Transcribe And Download</Button>
             </Container>
 
-            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4'}>
+
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Run Demo" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
@@ -422,10 +423,10 @@ export default function SpeechToText() {
                     </Typography>
                 </CardContent>
 
-                <div className="microphone-wrapper d-flex justify-content-center">
+                <div className="microphone-wrapper">
                     <div className="microphone-container">
                         <div
-                            className="microphone-icon-container d-flex justify-content-center"
+                            className="microphone-icon-container"
                             ref={microphoneRef}
                             onClick={handleListing}
                         >
@@ -454,7 +455,7 @@ export default function SpeechToText() {
             </Card>
 
 
-            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4'}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Live Transcribe & Notification" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
@@ -479,7 +480,7 @@ export default function SpeechToText() {
                 </CardContent>
             </Card>
 
-            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4'}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Speech to text Timeline" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
