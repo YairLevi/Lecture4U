@@ -6,13 +6,10 @@
 // for Course recommendation system:
 // https://mui.com/components/bottom-navigation/
 
-
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Button, ButtonGroup, Container, Card, Nav, Navbar, Modal} from "react-bootstrap"
+import { Button, ButtonGroup, Container, Card, Nav, Navbar, Modal } from "react-bootstrap"
 import React, {useState, useEffect} from 'react';
 import {FormControl, Radio, RadioGroup, Typography} from "@mui/material";
-import CustomizedDialogs from "./Dialog";
-import RegistrationForm from "./RegistrationForm";
 import { DataGrid } from '@mui/x-data-grid'; /// npm i @mui/x-data-grid
 
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -36,7 +33,6 @@ import axios from "axios";
 import {Alert, AlertTitle} from '@mui/material';
 import useLocalStorage from "../../hooks/useLocalStorage";
 import moment from "moment";
-
 
 function LinearProgressWithLabel(props) {
     return (
@@ -352,7 +348,7 @@ export default function SpeechToText() {
     }
 
     return (
-        <div className="App">
+        <Container className={'pb-5'}>
 
             {/* alert modal */}
             <Modal
@@ -383,8 +379,7 @@ export default function SpeechToText() {
                 </Modal.Footer>
             </Modal>
 
-
-            <Navbar bg="dark" variant="dark">
+            <Navbar className="color-nav" variant="dark">
                 <Container>
                     <Navbar.Brand href="#home">Speech to Text</Navbar.Brand>
                     <Nav className="me-auto">
@@ -409,8 +404,8 @@ export default function SpeechToText() {
                                 }
                             }}>
                                 <RadioGroup row onChange={set_speech_to_text_language} value={speech_language}>
-                                    <FormControlLabel value="Hebrew" control={<Radio/>} label="Hebrew"/>
-                                    <FormControlLabel value="English" control={<Radio />} label="English"/>
+                                    <FormControlLabel value="Hebrew" control={<Radio color={"default"}/>} label="Hebrew"/>
+                                    <FormControlLabel value="English" control={<Radio color={"default"}/>} label="English"/>
                                 </RadioGroup>
                             </FormControl>
 
@@ -420,7 +415,7 @@ export default function SpeechToText() {
             </Navbar>
 
 
-            <Card sx={{ maxWidth: 345 }}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Run Demo" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
@@ -463,7 +458,7 @@ export default function SpeechToText() {
             </Card>
 
 
-            <Card sx={{ maxWidth: 345 }}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Live Transcribe & Notification" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
@@ -471,9 +466,7 @@ export default function SpeechToText() {
                         <br/>
                         You will be able to see what percentage is left until the end.
                         <br/>
-                        When done, the transcribed file will be downloaded.
-                        <br/>
-                        You can share it with other users by clicking the 'Send' button above.
+                        When done, the transcribed file will be downloaded, and you will get the accuracy.
                     </Typography>
 
                     <br/>
@@ -490,16 +483,18 @@ export default function SpeechToText() {
                 </CardContent>
             </Card>
 
-            <Card sx={{ maxWidth: 345 }}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Speech to text Timeline" />
                 <CardContent>
                     <Typography variant="body1" color="text.secondary">
                         Your recent actions with Speech to text module.
                     </Typography>
 
-                    <Timeline position="alternate">
+                    <Timeline position="alternate" className={'overflow-auto'} style={{ height: 300}}>
                         {
-                            Object.entries(TimeLineData).map((cdiv,i) => (
+                            TimeLineData.length === 0 ?
+                                <p className={'align-self-center'} style={{ color: "gray"}}>You have not used this tool yet.</p> :
+                                Object.entries(TimeLineData).map((cdiv,i) => (
                                 <TimelineItem className="expense-block" key={cdiv} id="expense-block-`${i}`" data-block={i}>
                                     <TimelineSeparator>
                                         <TimelineDot />
@@ -564,7 +559,7 @@ export default function SpeechToText() {
             </Modal>
             }
 
-        </div>
+        </Container>
 
     );
 }

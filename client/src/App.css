@@ -45,3 +45,7 @@
     box-shadow: 0 0 10px #e0e0e0;
     border: none;
 }
+
+.color-nav {
+    background-color: rgb(8, 100, 252);
+}
