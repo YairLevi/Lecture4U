@@ -19,19 +19,24 @@ $breakpoint-xl: 1200px !default;
 
 $sidebar-width: 270px;
 $hover-color: rgba(220, 220, 220, 0.3);
-$background-color: #ffffff;
+$background-color: #0864fc;
 $sidebar-bg-color: $background-color;
 $submenu-bg-color: #ffffff;
-$sidebar-color: #000000;
+$sidebar-color: #ffffff;
 $highlight-color: #000000;
 
-$title-color: #808080FF;
+$title-color: #53a7fc;
+
+.pro-sidebar {
+  border: none !important;
+}
 
 .pro-inner-item {
   border-radius: 1rem;
-  padding-top: 1px !important;
-  padding-bottom: 1px !important;
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
   padding-left: 0.8rem !important;
+  margin-top: 5px !important;
 }
 
 .pro-inner-list-item {
@@ -50,6 +55,10 @@ $title-color: #808080FF;
   color: white !important;
 }
 
+.pro-sidebar-footer {
+  border: none !important;
+}
+
 
 .title1 {
   color: $title-color;
@@ -58,7 +67,7 @@ $title-color: #808080FF;
 }
 
 .logo {
-  background-image: url("../../assets/header.svg");
+  background-image: url("../../assets/headerMain.svg");
   background-repeat: no-repeat;
   width: 200px;
   height: 50px;

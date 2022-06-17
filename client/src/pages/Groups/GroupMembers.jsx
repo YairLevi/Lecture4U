@@ -10,7 +10,11 @@ export default function GroupMembers(props) {
     return (
         <>
             <Card className={'mb-3'}>
-                <Card.Header>
+                <Card.Header className={'bg-light'} style={{
+                    color: "#003aa9",
+                    borderTopLeftRadius: 10,
+                    borderTopRightRadius: 10
+                }}>
                     <Card.Title>
                         Members
                     </Card.Title>
@@ -22,7 +26,11 @@ export default function GroupMembers(props) {
                         })
                     }
                 </Card.Body>
-                <Card.Footer>
+                <Card.Footer style={{
+                    backgroundColor: 'white',
+                    borderBottomLeftRadius: 10,
+                    borderBottomRightRadius: 10
+                }}>
                     <Button onClick={() => setOpen(true)}>
                         Add Member
                     </Button>

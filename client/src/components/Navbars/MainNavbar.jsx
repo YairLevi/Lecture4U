@@ -22,7 +22,7 @@ export default function MainNavbar({ openSidebar, isSticky, children }) {
     const { currentUser } = useAuth()
 
     return (
-        <Bar className={"p-3"} bg={"white"} expand="xl" sticky={isSticky}>
+        <Bar className={"p-3"} expand="xl" sticky={isSticky} style={{ backgroundColor: '#fbfbfb'}}>
             <SideButton breakpoint={'lg'} onClick={openSidebar}/>
             <Bar.Toggle aria-controls="main-Bar-nav"/>
             <Bar.Collapse id="main-Bar-nav">

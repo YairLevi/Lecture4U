@@ -21,7 +21,11 @@ export default function GroupEditors(props) {
     return (
         <>
             <Card className={'mb-3'}>
-                <Card.Header>
+                <Card.Header className={'bg-light'} style={{
+                    color: "#003aa9",
+                    borderTopLeftRadius: 10,
+                    borderTopRightRadius: 10
+                }}>
                     <Card.Title>
                         Shared Editors
                     </Card.Title>
@@ -39,7 +43,11 @@ export default function GroupEditors(props) {
                         })
                     }
                 </Card.Body>
-                <Card.Footer>
+                <Card.Footer style={{
+                    backgroundColor: 'white',
+                    borderBottomLeftRadius: 10,
+                    borderBottomRightRadius: 10
+                }}>
                     <Button onClick={() => setOpen(true)}>
                         Add Document
                     </Button>

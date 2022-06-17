@@ -69,7 +69,7 @@ export default function RatingChart({ ratings }) {
                    data={{
                        labels: ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'],
                        datasets: [{
-                           label: 'Hide Chart',
+                           label: 'Rating',
                            data: chartData,
                            backgroundColor: [
                                'rgba(255, 99, 132, 1.0)',

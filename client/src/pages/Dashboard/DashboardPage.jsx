@@ -40,8 +40,8 @@ export default function DashboardPage(props) {
             <Spinner className={'m-3'} animation="border"/>
         </Container> :
         <>
-            <Container fluid className={'m-3 h-100'} style={{ overflowX: "hidden"}}>
-                <div className={'d-flex justify-content-between ms-5 mb-3 me-5'}>
+            <Container fluid className={'h-100'} style={{ overflowX: "hidden"}}>
+                <div className={'d-flex justify-content-between ms-5 mb-3 me-5 mt-2'}>
                     <h3 style={{ color: 'gray', fontWeight: 'normal' }}>
                         Hello {currentUser.firstName}, let's learn something new today!
                         <i className={'bx bx-sun ms-2'} style={{ fontSize: '1.5rem' }}/>

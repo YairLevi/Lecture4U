@@ -21,31 +21,30 @@ export default function Unit({ unitId, courseId, name, text, subjects, isTeacher
 
     return (
         <>
-            <Card className={'mt-5 mb-5'}>
-                <Card.Header className={'d-flex justify-content-between'}>
-                    <Card.Title className={'p-1'}>{name}</Card.Title>
-                    {
-                        isTeacher &&
-                        <div>
-                            <Button variant={'outline-danger'} className={'me-2'} onClick={() => setOpenConfirm(true)}>Delete</Button>
-                            <Button variant={"outline-dark"} className={'me-2'} onClick={() => setOpenEdit(true)}>Edit</Button>
-                            <Button variant={'primary'} onClick={() => setShowAddSubject(true)}>Add Subject</Button>
-                        </div>
-                    }
-                </Card.Header>
+            <h3 className={'p-1 mt-5 mb-2'}>{name}</h3>
+            <Card className={'mb-5'} style={{ backgroundColor: '#fbfbfb' }}>
                 <Card.Body>
-                    {
-                        text !== '' &&
-                        <Card.Text style={{whiteSpace: 'pre-wrap'}} className={"mb-5"}>{text}</Card.Text>
-                    }
+                    <div className={'d-flex justify-content-between'}>
+                        {
+                            text !== '' &&
+                            <Card.Text style={{whiteSpace: 'pre-wrap'}} className={"mb-5 ms-2"}>{text}</Card.Text>
+                        }
+                        {
+                            isTeacher &&
+                            <div>
+                                <Button variant={'outline-danger'} className={'me-2 border-0'} onClick={() => setOpenConfirm(true)}>Delete</Button>
+                                <Button variant={"outline-dark"} className={'me-2 border-0'} onClick={() => setOpenEdit(true)}>Edit</Button>
+                                <Button variant={'primary'} onClick={() => setShowAddSubject(true)}>Add Subject</Button>
+                            </div>
+                        }
+                    </div>
+
                     {subjects && subjects.map((value, index) => {
                         return <Subject key={index}
                                         unitId={unitId}
                                         subjectId={value._id}
-                                        name={value.name}
-                                        text={value.text}
-                                        files={value.files}
-                                        ratings={value.ratings}
+                            {...value}
+
                         />
                     })}
                 </Card.Body>

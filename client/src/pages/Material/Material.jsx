@@ -59,7 +59,7 @@ export default function Material(props) {
             <Container className={'p-3 pb-5'}>
                 <div className={'d-flex justify-content-between'}>
                     <div>
-                        <h1 style={{ fontSize: '2rem' }}>{data.name}</h1>
+                        <h1 style={{ fontSize: '2.5rem' }}>{data.name}</h1>
                         <UserLabel size={'small'} {...data.teacher} />
                     </div>
                     <p style={{ color: 'gray', fontSize: '0.9rem' }}>To join this course, use the code:<br/>{id}</p>
@@ -68,7 +68,6 @@ export default function Material(props) {
                 <h6>{data.description}</h6>
                 {
                     isTeacher && <Button className={'mt-3 mb-3'} onClick={() => setShowAddUnit(true)}>
-                        <Icon iconClass={'bi-plus-circle'}/>
                         Add Unit
                     </Button>
                 }

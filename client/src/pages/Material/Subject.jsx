@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Card, Modal, NavLink } from "react-bootstrap";
+import { Button, Card, Modal, NavLink, Row } from "react-bootstrap";
 import { Icon } from "../../components/Sidebar/Item";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import EditSubject from "./modals/EditSubject";
@@ -10,6 +10,7 @@ import { Rating } from '@mui/material'
 import useLoadingEffect from "../../hooks/useLoadingEffect";
 import { useLoading } from "../../hooks/useLoading";
 import { useAuth } from "../../contexts/AuthContext";
+import FileItem from "../../components/FileItem";
 
 
 const toggleStyle = {
@@ -22,7 +23,7 @@ const toggleOnClick = (val, setVal) => {
     else setVal('none')
 }
 
-export default function Subject({ unitId, subjectId, name, text, files, ratings }) {
+export default function Subject({ unitId, subjectId, name, text, files, ratings, createdAt }) {
     const [display, setDisplay] = useState('none')
     const [openEdit, setOpenEdit] = useState(false)
     const [state,] = useLocalStorage('state')
@@ -53,43 +54,53 @@ export default function Subject({ unitId, subjectId, name, text, files, ratings 
 
     return (
         <>
-            <Card className={'mb-3 mt-3'}>
-                <Card.Header className={'d-flex justify-content-between'}
-                             onClick={() => toggleOnClick(display, setDisplay)} style={toggleStyle}>
-                    <div className={'d-flex align-items-center'}>
-                        <Icon iconClass={'bi-bookmark'}/>
-                        <Card.Text as={'h5'} className={'ms-3'}>{name}</Card.Text>
+            <Card className={'mb-3 mt-3 overflow-hidden'} style={{backgroundColor: "transparent"}}>
+                <Card.Header className={'d-flex justify-content-between border-bottom-0 pt-2 pb-2 bg-primary'}
+                             onClick={() => toggleOnClick(display, setDisplay)}
+                             style={{ ...toggleStyle, color: "white" }}>
+                    <div className={'d-flex justify-content-between w-100'}>
+                        <div className={'d-flex align-items-center'}>
+                            <Icon iconClass={'bi-bookmark'}/>
+                            <Card.Text as={'h5'} className={'ms-3'}>{name}</Card.Text>
+                        </div>
+                        <p className={'m-1'} style={{color:'white'}}>{new Date(createdAt).getMonthAndDay()}</p>
                     </div>
                     {
                         !isTeacher &&
                         <div className={'d-flex align-items-center'}>
-                            <p className={'m-0 me-2 p-0'} style={{ color: 'gray' }}>{loading ? 'Saving...' : 'Rate Your Understanding'}</p>
+                            <p className={'m-0 me-2 p-0'}
+                               style={{ color: 'gray' }}>{loading ? 'Saving...' : 'Rate Your Understanding'}</p>
                             <Rating value={rating} onChange={e => setRating(e.target.value)} disabled={loading}/>
-                        </div>
-                    }
-                    {
-                        isTeacher &&
-                        <div>
-                            <Button className={'me-2'} variant={'outline-danger'} onClick={e => {
-                                e.stopPropagation()
-                                setOpenConfirm(true)
-                            }}>Delete</Button>
-                            <Button variant={"outline-dark"} onClick={openModal}>Edit</Button>
                         </div>
                     }
                 </Card.Header>
                 <Card.Body className={`d-${display}`}>
-                    {
-                        text !== '' &&
-                        <Card.Text className={'mb-5'} style={{ whiteSpace: 'pre-wrap' }}>{text}</Card.Text>
-                    }
-                    {
-                        files && files.map((value, index) => (
-                            <div key={index}>
-                                <a href={value.url}>{value.name}</a>
+                    <div className={'d-flex justify-content-between ps-3'}>
+                        {
+                            text !== '' &&
+                            <Card.Text className={'mb-5'} style={{ whiteSpace: 'pre-wrap' }}>{text}</Card.Text>
+                        }
+                        {
+                            isTeacher &&
+                            <div>
+                                <Button className={'me-2 border-0'} variant={'outline-danger'} onClick={e => {
+                                    e.stopPropagation()
+                                    setOpenConfirm(true)
+                                }}>Delete</Button>
+                                <Button variant={"outline-dark"} className={'border-0'}
+                                        onClick={openModal}>Edit</Button>
                             </div>
-                        ))
-                    }
+                        }
+                    </div>
+                    <div className={'ps-3 pe-3'}>
+                        <Row>
+                            {
+                                files && files.map((value, index) => (
+                                    <FileItem {...value} key={index}/>
+                                ))
+                            }
+                        </Row>
+                    </div>
                 </Card.Body>
             </Card>
 

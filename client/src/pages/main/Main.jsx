@@ -45,12 +45,12 @@ export default function Main() {
     return (
         <div className={'d-flex vh-100'}>
             <Sidebar closeSidebar={() => setOpen(false)} open={open}/>
-            <Container fluid className={'d-flex fluid flex-column p-0 vh-100'}>
+            <Container fluid className={'d-flex fluid flex-column p-0 vh-100'} style={{ backgroundColor: '#fbfbfb'}}>
                 <MainNavbar openSidebar={() => setOpen(true)}>
                     {
                         inCourse && courseTabs.map((value, index) => {
                             return (
-                                <Nav.Item key={index}>
+                                <Nav.Item key={index} className={'ms-2 me-2'}>
                                     <Nav.Link
                                         style={current === value.toLowerCase() ? selectedStyle : {}}
                                         onClick={async () => {
