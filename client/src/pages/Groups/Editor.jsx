@@ -4,6 +4,10 @@ import "quill/dist/quill.snow.css"
 import './Editor.scss'
 import { io } from "socket.io-client"
 import { useParams } from "react-router-dom"
+import { Button, Container } from "react-bootstrap";
+
+import { saveAs } from 'file-saver';
+import { pdfExporter } from 'quill-to-pdf';
 
 const TOOLBAR = [
     [{ header: [1, 2, 3, 4, 5, 6, false] }], [{ font: [] }], [{ list: "ordered" }, { list: "bullet" }],
@@ -68,5 +72,14 @@ export default function Editor() {
         setQuill(quill_obj)
     }, [])
 
-    return <div className="container h-100 w-75" ref={wrap}></div>
+    async function ExportToPdf() {
+        const delta = quill.getContents(); // gets the Quill delta
+        const pdfAsBlob = await pdfExporter.generatePdf(delta); // converts to PDF
+        saveAs(pdfAsBlob, `${docID}.pdf`); // downloads from the browser
+    }
+
+    return <Container fluid className={'h-100 d-flex flex-column'}>
+        <div className="container w-75" ref={wrap} style={{ height: '95%'}}></div>
+        <Button className={'w-25 me-auto ms-auto'} onClick={ExportToPdf}>Export to PDF</Button>
+    </Container>
 }
