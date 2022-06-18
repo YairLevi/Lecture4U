@@ -179,7 +179,7 @@ export default function Ocr() {
     };
 
     return (
-        <div className="App">
+        <Container className={'pb-5 App'}>
             <Modal show={ModalShow} onHide={ModalHandleClose} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     {ModalSuccess && (<Alert severity="success"><AlertTitle>Uploaded successfully</AlertTitle></Alert>)}
@@ -205,7 +205,7 @@ export default function Ocr() {
                     }
                 </Modal.Body>
             </Modal>
-            <Navbar bg="dark" variant="dark">
+            <Navbar bg="primary" variant="dark">
                 <Container>
                     <Navbar.Brand href="#home">Handwriting to Text</Navbar.Brand>
                     <Nav className="me-auto">
@@ -219,7 +219,7 @@ export default function Ocr() {
                     </Nav>
                 </Container>
             </Navbar>
-            <Card sx={{ maxWidth: 345 }}>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4'}>
                 <CardHeader title="Run Demo"/>
                 Calibrate the system to your handwriting - upload an image through the 'Upload' button above.<br/>
                 Then, press the buttons to upload your sample txt, to check the image's identification and run it!
@@ -244,8 +244,8 @@ export default function Ocr() {
                     </Dropdown.Menu>
                 </Dropdown>
             </Card>
-            <Card className="image-card" sx={{ maxWidth: 345 }}><Image id="col_img"/><br/></Card>
-            <Card sx={{ maxWidth: 345 }}><div id="content"></div><br/><div id="accuracy"></div></Card>
-        </div>
+            <Card className="image-card p-3 mt-4" sx={{ maxWidth: 345 }}><Image id="col_img"/><br/></Card>
+            <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4'}><div id="content"></div><br/><div id="accuracy"></div></Card>
+        </Container>
     );
 }
