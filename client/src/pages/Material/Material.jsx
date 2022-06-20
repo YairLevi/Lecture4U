@@ -47,7 +47,7 @@ export default function Material(props) {
     async function performAction() {
         const res = await requests.delete(`/course/${settings.action}`, { courseId: id })
         if (res.status !== 200) return false
-        else fullNav('/main/courses')
+        else fullNav('/courses')
     }
 
     return !data ? (

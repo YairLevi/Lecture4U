@@ -20,11 +20,14 @@ const Image = require('../models/Image')
 const Course = require('../models/Course')
 const Unit = require('../models/Unit')
 const Subject = require('../models/Subject')
+const Comment = require('../models/forum/Comment')
 const User = require('../models/User')
 const Assignment = require('../models/assignments/Assignment')
 const Submission = require('../models/assignments/Submission')
 const Dashboard = require('../models/Dashboard')
 const Discussion = require('../models/forum/Discussion')
+const File = require('../models/File')
+
 
 const { getFileData, deleteCourseFolder, deleteFile, deleteByPrefix } = require("../cloud/files");
 const { addDashboardEvent, events } = require("../eventUtil");
@@ -223,7 +226,7 @@ router.delete('/delete', async (req, res) => {
             const submission = await Submission.findById(submissionId)
             await deleteIdsFromModel(File, submission.files)
         }
-        await deleteByPrefix(`courseId-${courseId}/assignmentId-${assignmentId}`)
+        await Assignment.findByIdAndDelete(assignmentId)
     }
 
     await deleteCourseFolder(courseId)

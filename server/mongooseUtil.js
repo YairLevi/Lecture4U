@@ -1,6 +1,6 @@
-const Unit = require('models/Unit')
-const Subject = require("models/Subject");
-const File = require('models/File')
+const Unit = require('./models/Unit')
+const Subject = require("./models/Subject");
+const File = require('./models/File')
 
 module.exports = {
     mapAsync: async function (list, func) {
@@ -14,7 +14,7 @@ module.exports = {
     },
     deleteUnit: async function(unitId) {
         const unit = await Unit.findById(unitId)
-        for (const subjectId of unit.subject) {
+        for (const subjectId of unit.subjects) {
             const subject = await Subject.findById(subjectId)
             for (const fileId of subject.files) {
                 await File.findByIdAndDelete(fileId)

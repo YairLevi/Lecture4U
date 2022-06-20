@@ -65,14 +65,6 @@ export default function Subject({ unitId, subjectId, name, text, files, ratings,
                         </div>
                         <p className={'m-1'} style={{color:'white'}}>{new Date(createdAt).getMonthAndDay()}</p>
                     </div>
-                    {
-                        !isTeacher &&
-                        <div className={'d-flex align-items-center'}>
-                            <p className={'m-0 me-2 p-0'}
-                               style={{ color: 'gray' }}>{loading ? 'Saving...' : 'Rate Your Understanding'}</p>
-                            <Rating value={rating} onChange={e => setRating(e.target.value)} disabled={loading}/>
-                        </div>
-                    }
                 </Card.Header>
                 <Card.Body className={`d-${display}`}>
                     <div className={'d-flex justify-content-between ps-3'}>
@@ -89,6 +81,14 @@ export default function Subject({ unitId, subjectId, name, text, files, ratings,
                                 }}>Delete</Button>
                                 <Button variant={"outline-dark"} className={'border-0'}
                                         onClick={openModal}>Edit</Button>
+                            </div>
+                        }
+                        {
+                            !isTeacher &&
+                            <div className={'d-flex align-items-center'} style={{ height: 'fit-content'}}>
+                                <p className={'m-0 me-2 p-0'}
+                                   style={{ color: 'gray' }}>{loading ? 'Saving...' : 'Rate Your Understanding'}</p>
+                                <Rating value={rating} onChange={e => setRating(e.target.value)} disabled={loading}/>
                             </div>
                         }
                     </div>
