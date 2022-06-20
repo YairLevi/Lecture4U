@@ -89,8 +89,11 @@ https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-
 ## Project Architecture
 
 ### Backend
+Our backend is an API server implemented using NodeJS and ExpressJS, with the Mongoose API to connect with the database.
 ### Frontend
+We designed our website's UI with ReactJS and other 3rd party UI libraries, including MaterialUI and Bootstrap. 
 ### Database
+We used MongoDB as our database. Non-relational databases are our-kind of databases :)
 ### Microservices
 #### OCR
 
