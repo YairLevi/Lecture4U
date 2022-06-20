@@ -9,6 +9,7 @@ const { getUserID } = require("../httpUtil");
 const multer = require('multer')
 const { uploadFile, getFileData } = require("../cloud/files");
 const { mapAsync, clone } = require("../mongooseUtil");
+const { addDashboardEvent, events } = require("../eventUtil");
 const upload = multer({ dest: 'temp/' })
 
 router.post('/save', upload.array('files'), async (req, res) => {
@@ -26,6 +27,7 @@ router.post('/save', upload.array('files'), async (req, res) => {
 
     await user.save()
     await history.save()
+    await addDashboardEvent(userId, events.image_to_text)
     res.sendStatus(200)
 })
 

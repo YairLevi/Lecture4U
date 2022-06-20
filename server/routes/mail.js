@@ -6,13 +6,13 @@ const router = express.Router()
 const mailer = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'lecture4u.contact@gmail.com',
-        pass: 'fzyszriionujquyz'
+        user: process.env.CONTACT_EMAIL,
+        pass: process.env.CONTACT_EMAIL_PASSWORD
     }
 })
 const createMailOptions = (subject, content) => {
     return {
-        to: 'lecture4u.email@gmail.com',
+        to: process.env.MAIN_EMAIL_ADDR,
         subject: subject,
         text: content
     }

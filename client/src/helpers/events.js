@@ -94,7 +94,7 @@ export const eventSettings = {
     },
     calendar_update: {
         color: colors.GREY,
-        text: 'You changed tour schedule in the calendar',
+        text: 'You changed your schedule in the calendar',
     },
 }
 

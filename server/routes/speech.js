@@ -5,6 +5,7 @@ const router = express.Router()
 
 const Timestamp = require('../models/Timestamp')
 const { getUserID } = require("../httpUtil");
+const { addDashboardEvent, events } = require("../eventUtil");
 
 router.post('/save', async (req, res) => {
     const data = {0 : req.body.data}
@@ -16,6 +17,7 @@ router.post('/save', async (req, res) => {
     } else {
         await Timestamp.create({ data, userId })
     }
+    await addDashboardEvent(userId, events.speech_to_text)
     res.sendStatus(200)
 })
 

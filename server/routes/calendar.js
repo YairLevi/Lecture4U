@@ -11,6 +11,7 @@ const Subject = require('../models/Subject')
 const User = require('../models/User')
 const Schedule = require('../models/Schedule')
 const mongoose = require("mongoose");
+const { addDashboardEvent, events } = require("../eventUtil");
 
 
 router.post('/save_task_scheduling', async (req, res) => {
@@ -23,6 +24,7 @@ router.post('/save_task_scheduling', async (req, res) => {
             schedule.schedule = req.body
             await schedule.save()
         }
+        await addDashboardEvent(userId, events.calendar_update)
         res.sendStatus(200)
     } catch (e) {
         console.error('at save_task_scheduling:\n')

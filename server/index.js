@@ -21,14 +21,12 @@ const dashboardRouter = require('./routes/dashboard')
 const ocrRouter = require('./routes/ocr')
 const mailRouter = require('./routes/mail')
 
-const PORT = 8000
-const HOST = 'localhost'
+const PORT = process.env.SERVER_PORT
+const HOST = process.env.SERVER_ADDR
 const app = express()
 const server = require('http').Server(app)
-const threeDaysInSeconds = 60 * 60 * 24 * 3
-const jwtName = 'jwt'
 
-app.use(cors({ origin: process.env.CLIENT, credentials: true, }))
+app.use(cors({ origin: `http://${process.env.CLIENT_ADDR}:${process.env.CLIENT_PORT}`, credentials: true, }))
 app.use(cookieParser())
 app.use(express.json())
 app.use('/', authRouter)
@@ -41,8 +39,6 @@ app.use('/groups', groupsRouter)
 app.use('/profile', profileRouter)
 app.use('/ocr', ocrRouter)
 app.use('/mail', mailRouter)
-
-const bucketName = 'lecture4u-1';
 
 Date.prototype.addHours = function (h) {
     this.setTime(this.getTime() + (h * 60 * 60 * 1000));
@@ -64,7 +60,7 @@ const Document = require("./models/Document")
 
 const io = require("socket.io")(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: `http://${process.env.CLIENT_ADDR}:${process.env.CLIENT_PORT}`,
         methods: ['GET', 'POST']
     }
 })

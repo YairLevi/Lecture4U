@@ -1,4 +1,4 @@
-const serverAddress = 'http://localhost:8000'
+const serverAddress = process.env.REACT_APP_SERVER_ADDRESS
 
 export default class requests {
 
