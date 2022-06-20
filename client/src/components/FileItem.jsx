@@ -1,6 +1,3 @@
-import { useState } from "react";
-
-
 const EXTENSIONS = {
     'txt': 'bxs-file-txt',
     'pdf': 'bxs-file-pdf',

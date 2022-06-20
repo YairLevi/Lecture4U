@@ -1,9 +1,10 @@
-import { Button, Card, FormControl, Spinner } from "react-bootstrap";
+import { Button, Card, FormControl, Row, Spinner } from "react-bootstrap";
 import React, { useState } from "react";
 import EditSubmission from "./modals/EditSubmission";
 import UserLabel from "../../components/UserLabel";
 import { useLoading } from "../../hooks/useLoading";
 import requests from "../../helpers/requests";
+import FileItem from "../../components/FileItem";
 
 
 export default function SubmissionContent({ submissions, assignmentId, asStudent }) {
@@ -31,13 +32,13 @@ export default function SubmissionContent({ submissions, assignmentId, asStudent
                     <Card.Text>
                         {submissions[0].text}
                     </Card.Text>
-                    {
-                        submissions[0].files.map((value, index) => (
-                            <div key={index}>
-                                <a href={value.url}>{value.name}</a>
-                            </div>
-                        ))
-                    }
+                    <Row>
+                        {
+                            submissions[0].files.map((value, index) => (
+                                <FileItem key={index} {...value} />
+                            ))
+                        }
+                    </Row>
                 </div>
             }
             <div className={'d-flex justify-content-between'}>
