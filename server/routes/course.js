@@ -24,10 +24,11 @@ const User = require('../models/User')
 const Assignment = require('../models/assignments/Assignment')
 const Submission = require('../models/assignments/Submission')
 const Dashboard = require('../models/Dashboard')
+const Discussion = require('../models/forum/Discussion')
 
-const { getFileData, deleteCourseFolder, deleteFile } = require("../cloud/files");
+const { getFileData, deleteCourseFolder, deleteFile, deleteByPrefix } = require("../cloud/files");
 const { addDashboardEvent, events } = require("../eventUtil");
-const { clone } = require("../mongooseUtil");
+const { clone, deleteIdsFromModel, deleteUnit } = require("../mongooseUtil");
 const mongoose = require("mongoose");
 
 
@@ -205,8 +206,28 @@ router.delete('/delete', async (req, res) => {
     if (index > -1) owner.myCourses.splice(index, 1)
     await owner.save()
 
-    await Course.findOneAndDelete({ _id: courseId })
+    for (const discussionId of course.discussions) {
+        const discussion = await Discussion.findById(discussionId)
+        await deleteIdsFromModel(Comment, discussion.comments)
+        await Discussion.findByIdAndDelete(discussionId)
+    }
+
+    for (const unitId of course.units) {
+        await deleteUnit(unitId)
+    }
+
+    for (const assignmentId of course.assignments) {
+        const assignment = await Assignment.findById(assignmentId)
+        await deleteIdsFromModel(File, assignment.files)
+        for (const submissionId of assignment.submissions) {
+            const submission = await Submission.findById(submissionId)
+            await deleteIdsFromModel(File, submission.files)
+        }
+        await deleteByPrefix(`courseId-${courseId}/assignmentId-${assignmentId}`)
+    }
+
     await deleteCourseFolder(courseId)
+    await Course.findOneAndDelete({ _id: courseId })
 
     await addDashboardEvent(getUserID(req), events.deleted_course, course.name)
     res.sendStatus(200)

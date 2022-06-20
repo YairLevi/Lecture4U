@@ -47,6 +47,11 @@ module.exports = {
         await bucket.deleteFiles({ prefix: path })
     },
 
+    deleteByPrefix: async function (prefix) {
+        const bucket = storage.bucket(bucketName)
+        await bucket.deleteFiles({ prefix })
+    },
+
     deleteFile: async function (fileId) {
         const file = await File.findById(fileId)
         const bucket = storage.bucket(file.bucket)
