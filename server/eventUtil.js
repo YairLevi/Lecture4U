@@ -26,6 +26,10 @@ module.exports = {
 
     addDashboardEvent: async function (userId, title, ...args) {
         const user = await User.findById(userId)
+        if (!user.dashboard) {
+            user.dashboard = (await Dashboard.create({ userId }))._id
+        }
+        await user.save()
         const dashboard = await Dashboard.findById(user.dashboard)
 
         const event = await Event.create({ title, args })

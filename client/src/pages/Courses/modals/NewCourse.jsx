@@ -38,6 +38,7 @@ export default function NewCourse(props) {
                     <Form.Group className={'mb-3'}>
                         <Form.Label>Description:</Form.Label>
                         <Form.Control
+                            as={'textarea'} rows={5}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder={'What is this course about?'}/>
                     </Form.Group>
