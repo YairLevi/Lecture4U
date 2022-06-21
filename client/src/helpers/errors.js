@@ -2,7 +2,7 @@ export const ERRORS = {
     GENERAL_ERROR: 'Something went wrong. Try again later',
     EMPTY_NAME: 'Value can\'t be empty',
     INVALID_INPUT: 'Invalid input',
-    INVALID_MAIL: 'Invalid email',
+    INVALID_MAIL: 'Could not find that email address',
     EMAIL_DONT_EXIST: 'Account not found',
     EMAIL_TAKEN: 'That email is taken. Try another',
     INCORRECT_CREDENTIALS: 'Incorrect email or password',

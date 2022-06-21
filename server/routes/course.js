@@ -128,13 +128,15 @@ router.get('/data', async (req, res) => {
         }
 
         const material = await course.getCourseData()
-        const today = new Date().getMonthAndDay()
-        let access = course.access
-        if (!access) access = {}
-        if (!access[today]) access[today] = {}
-        access[today][userId] = true
-        await Course.updateOne({ _id: course._id }, { $set: { access: access } })
-        await course.save()
+        if (userId !== course.teacher) {
+            const today = new Date().getMonthAndDay()
+            let access = course.access
+            if (!access) access = {}
+            if (!access[today]) access[today] = {}
+            access[today][userId] = true
+            await Course.updateOne({ _id: course._id }, { $set: { access: access } })
+            await course.save()
+        }
 
         res.status(200).json(material)
     } catch (e) {

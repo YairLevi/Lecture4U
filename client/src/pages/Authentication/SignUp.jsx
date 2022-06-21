@@ -20,7 +20,7 @@ export default function SignIn() {
         setError(null)
         if (firstName === '' || lastName === '' || email === '' || password === '') return setError(ERRORS.EMPTY_NAME)
         const isValidated = await requests.get('/mail-validate', { email })
-        if (!isValidated) return setError(ERRORS.INVALID_MAIL)
+        if (isValidated.status !== 200) return setError(ERRORS.INVALID_MAIL)
         const isTaken = await checkIfExists(email)
         if (isTaken) return setError(ERRORS.EMAIL_TAKEN)
         const result = await register({ firstName, lastName, email, password })
