@@ -58,7 +58,10 @@ export default function Sidebar({ closeSidebar, open }) {
                 <SidebarFooter>
                     <Menu>
                         <Item name={"support"} selected={selected} icon={'bi-question-circle'}>Support</Item>
-                        <Item name={"signOut"} selected={selected} icon={'bi-box-arrow-in-left'} onClick={logout}>Sign Out</Item>
+                        <Item name={"signOut"} selected={selected} icon={'bi-box-arrow-in-left'} onClick={() => {
+                            localStorage.clear()
+                            logout()
+                        }}>Sign Out</Item>
                     </Menu>
                 </SidebarFooter>
             </ProSidebar>
