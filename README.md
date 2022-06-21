@@ -26,7 +26,6 @@
       <ul>
         <li><a href="#motivation">Motivation</a></li>
         <li><a href="#features">Features</a></li>
-        <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
     <li>
@@ -66,24 +65,59 @@
 
 ## About The Project
 Final project in the Computer Science Department, Bar Ilan University. </br>
-**Lecture4U** is a course management system, which allows users to take part in courses, or manage their courses as lecturer. Our system provides each user machine learning tools which makes it easier for them to learn and manage their time.  
+**Lecture4U** is a courses management system, which allows users to take part in courses, learning groups with their friends, or manage their courses as lecturers. Our system provides each user machine learning tools which makes it easier for them to learn and manage their time.  
 ### Motivation
 https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-b595-a55777bc0784.mp4
 ### Features
-- [x] **Course management tools -** _As a student_ you can view the study units that uploaded by the lecturer, rate the them according to your knowledge, see the assignments you need to submit, and chat with other course members in the forum. </br> _As a lecturer_ you can upload study units, add assignments. You can also select one of the courses you teach, see the average knowledge of each study unit in this course (according to students ratings), and see how many students saw the course study units.  
+- [x] **Course management tools -** _As a student_ you can view the study units that uploaded by the lecturer, rate them according to your knowledge, see the assignments you need to submit, and chat with other course members in the forum. </br> _As a lecturer_ you can upload study units, add assignments. You can also select one of the courses you teach, see the knowledge of each study unit in this course (according to students ratings), and see how many students saw the course study units each day.  
 - [x] **Learning Groups -** Users can create groups with their friends, they can chat in the group forum, share files, and work on a shared document (like Google Docs).
 - [x] **OCR tool -** Given an handwriting image, creates a .docx file, with the text that appears in the image.
 - [x] **Speech to text tool -** Given .m4a audio file, creates a transcript file (.docx), and divide the transcription to topics (with the timestamps of each topic) according to known keywords. You can keep track of the transcript process according to the progress bar. Each user also has a TimeLine that show his recent actions with the speech to text module.   
 - [x] **Scheduler tool -** Each user has it's own calendar, he schedules his constraints and their priorities, and the scheduler creates a schedule that satisfy his constraints.
-### Built With
 ## Usage
 
 
 ## Getting Started
 ### Folder Structure
+```
+├── client
+|   ├── src
+|   |   ├── assets
+|   |   ├── components
+|   |   ├── contexts
+|   |   ├── helpers
+|   |   ├── hooks
+|   |   ├── icons
+|   |   ├── modals
+|   |   ├── pages
+├── server
+|   ├── cloud
+|   ├── env
+|   ├── models
+|   ├── routes
+├── microservices
+|   ├── OCR
+|   ├── Speech to text
+|   ├── Scheduler
+├── testing 
+└── Additional files
+```
 ### Prerequisites
 ### Installation And Running
+#### Browse to the website
+This is the quickest way to get a running instance of Lecture4U! </br> 
+Just Browse to 
+#### From Sources
+1. Install node.js
+2. Run git clone https://github.com/YairLevi/Lecture4U.git 
+3. Go into the client and server folders, and run lines 4-5:
+4. Run npm install (only has to be done before first start or when you change the source code)
+5. Run npm start
+6. Browse to http://localhost:3000
 ### Run Demo
+There are several demo files, which is highly recommended to run.
+- For speech to text tool, go into: microservices -> Speech to text -> demos.
+- For OCR tool, go into: microservices -> OCR -> image examples.
 
 
 ## Project Architecture
