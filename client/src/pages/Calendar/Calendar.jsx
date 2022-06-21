@@ -195,7 +195,7 @@ class Calendar extends Component {
         console.log(data)
 
         axios
-            .post('http://localhost:5002/calendar_task_data', data)
+            .post(`${process.env.REACT_APP_CALENDAR_OPTIMIZER_ADDRESS}/calendar_task_data`, data)
             .then(res => {
                 this.setState({
                     counter: (this.state.counter + 1)
@@ -258,7 +258,7 @@ class Calendar extends Component {
 
     saveTasks() {
         axios
-            .post('http://localhost:8000/schedule/save_task_scheduling', this.state.events,
+            .post(`${process.env.REACT_APP_SERVER_ADDRESS}/schedule/save_task_scheduling`, this.state.events,
                 {
                     withCredentials: true
                 })
@@ -280,7 +280,7 @@ class Calendar extends Component {
     getTasks() {
         this.state.loading = true
         axios
-            .get('http://localhost:8000/schedule/get_task_scheduling', {
+            .get(`${process.env.REACT_APP_SERVER_ADDRESS}/schedule/get_task_scheduling`, {
                 withCredentials: true
             })
             .then(res => {

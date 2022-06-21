@@ -30,7 +30,7 @@ export default function Ocr() {
 
     const [loading, RouteToFiles] = useLoading(async () => {
         await axios
-            .get('http://localhost:8000/ocr/get', {
+            .get(`${process.env.REACT_APP_SERVER_ADDRESS}/ocr/get`, {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true,
             })
@@ -53,7 +53,7 @@ export default function Ocr() {
         document.getElementById('accuracy').textContent = "Loading...";
         document.getElementById('content').textContent = "";
         axios
-            .get('http://localhost:5000/init_transcript')
+            .get(`${process.env.REACT_APP_IMAGE_TO_TEXT_ADDRESS}/init_transcript`)
             .then(res => {
                 document.getElementById('content').textContent = res.data['content'];
                 document.getElementById('accuracy').textContent = String((100 * parseFloat(res.data['transcript_score'])).toFixed(1)) + "%";
@@ -72,7 +72,7 @@ export default function Ocr() {
         let form = new FormData();
         form.append('value', value)
         axios
-            .post('http://localhost:5000/change_focus', form)
+            .post(`${process.env.REACT_APP_IMAGE_TO_TEXT_ADDRESS}/change_focus`, form)
             .then(res => {
                 alert_message = "Focus change by " + String(value) + "% has succeeded!"
                 SetModalAlertMessage(alert_message)
@@ -91,7 +91,7 @@ export default function Ocr() {
             SetModalError(true)
             return
         }
-        let url = 'http://localhost:5000/transcript_download'
+        let url = `${process.env.REACT_APP_IMAGE_TO_TEXT_ADDRESS}/transcript_download`
         axios
             .get(url, { responseType: 'arraybuffer', headers: { 'Content-Type': 'application/json' } })
             .then(async res => {
@@ -117,7 +117,7 @@ export default function Ocr() {
         let form = new FormData();
         form.append('file', fileUploaded)
         axios
-            .post('http://localhost:5000/upload', form)
+            .post(`${process.env.REACT_APP_IMAGE_TO_TEXT_ADDRESS}/upload`, form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
                     SetCurrentFile(res.data['FileName'].replace(/\.[^/.]+$/, "") + ".docx");
@@ -144,7 +144,7 @@ export default function Ocr() {
         let form = new FormData();
         form.append('file', fileUploaded)
         axios
-            .post('http://localhost:5000/upload_txt', form)
+            .post(`${process.env.REACT_APP_IMAGE_TO_TEXT_ADDRESS}/upload_txt`, form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
                     alert_message = "The file: " + res.data['FileName'] + " has been uploaded successfully!"
@@ -168,7 +168,7 @@ export default function Ocr() {
 
     const GetColImage = () => {
         axios
-            .get('http://localhost:5000/check_detection', {
+            .get(`${process.env.REACT_APP_IMAGE_TO_TEXT_ADDRESS}/check_detection`, {
                 responseType: 'arraybuffer',
                 headers: { 'Content-Type': 'application/json' }
             })

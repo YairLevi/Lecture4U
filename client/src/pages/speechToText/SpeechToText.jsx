@@ -146,7 +146,7 @@ export default function SpeechToText() {
             }
 
             // get TimeLine Data from DB.
-            const res = await axios.get('http://localhost:8000/speech/get', { withCredentials: true })
+            const res = await axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/speech/get`, { withCredentials: true })
             console.log(res)
             setTimeLineData(res.data[0])
         })()
@@ -244,7 +244,7 @@ export default function SpeechToText() {
         form.append('file', fileUploaded)
 
         axios
-            .post('http://localhost:5000/upload', form)
+            .post(`${process.env.REACT_APP_SPEECH_TO_TEXT_ADDRESS}/upload`, form)
             .then(res => {
                 if (res.data['isUploaded'] === true) {
                     let time = (res.data['duration'] * 100) / 2
@@ -287,7 +287,7 @@ export default function SpeechToText() {
             return
         }
 
-        let url = 'http://localhost:5000/transcribe?language=' + speech_language
+        let url = `${process.env.REACT_APP_SPEECH_TO_TEXT_ADDRESS}/transcribe?language=` + speech_language
         setTranscribe_score(0)
         setTranscribe(true)
         axios
@@ -326,7 +326,7 @@ export default function SpeechToText() {
                 window.dispatchEvent(new Event('storage'))
 
                 //send TimeLineData to server:
-                axios.post("http://localhost:8000/speech/save",{
+                axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/speech/save`,{
                     data: temp_list
                 }, { withCredentials: true })
 
