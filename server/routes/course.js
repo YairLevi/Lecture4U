@@ -114,12 +114,19 @@ router.get('/data', async (req, res) => {
         const userId = getUserID(req)
         const user = await User.findById(userId)
         const dashboard = await Dashboard.findById(user.dashboard)
-
-        for (const subjectId of dashboard.subjects) {
-            await removeFromDashboard(userId, 'subjects', subjectId)
-        }
         const code = req.query.code
         const course = await Course.findById(code)
+
+        if (!course.students.includes(userId) && course.teacher != userId) {
+            return res.sendStatus(400)
+        }
+
+        for (const subjectId of dashboard.subjects) {
+            if (course.subjects.includes(subjectId)) {
+                await removeFromDashboard(userId, 'subjects', subjectId)
+            }
+        }
+
         const material = await course.getCourseData()
         const today = new Date().getMonthAndDay()
         let access = course.access

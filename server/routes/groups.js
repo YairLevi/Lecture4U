@@ -57,6 +57,11 @@ router.get('/get-groups', async (req, res) => {
 router.get('/group-data', async (req, res) => {
     try {
         const group = await clone(Group, req.query.groupId)
+        const userId = getUserID(req)
+        if (!group.userIds.includes(userId))
+            return res.sendStatus(400)
+
+
         group.userIds = await mapAsync(group.userIds, async userId => {
             const user = await clone(User, userId)
             user.profileImage = await getFileData(user.profileImage)
