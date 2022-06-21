@@ -10,7 +10,7 @@ export default function ForumComment({ value }) {
                     <UserLabel {...value.author} noMargin={true} size={'regular'}/>
                     <p className={'ms-2'}>{new Date(value.createdAt).parseEventDate()}</p>
                 </div>
-                <Card.Text>
+                <Card.Text style={{ whiteSpace: 'pre-wrap' }}>
                     {value.content}
                 </Card.Text>
             </Card.Body>

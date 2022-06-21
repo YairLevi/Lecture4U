@@ -14,7 +14,7 @@ export default function ForumSubject({ title, author, content, createdAt }) {
                     {new Date(createdAt).getMonthAndDay()}
                 </Card.Text>
                 <br/>
-                <Card.Text>
+                <Card.Text style={{ whiteSpace: 'pre-wrap'}}>
                     {content}
                 </Card.Text>
             </Card.Body>

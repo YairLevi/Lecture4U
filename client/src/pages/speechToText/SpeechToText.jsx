@@ -148,7 +148,7 @@ export default function SpeechToText() {
             // get TimeLine Data from DB.
             const res = await axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/speech/get`, { withCredentials: true })
             console.log(res)
-            setTimeLineData(res.data[0])
+            setTimeLineData(res.data[0] ? res.data[0] : res.data)
         })()
 
     }, []);
@@ -492,7 +492,7 @@ export default function SpeechToText() {
 
                     <Timeline position="alternate" className={'overflow-auto'} style={{ height: 300}}>
                         {
-                            TimeLineData.length === 0 ?
+                            (TimeLineData && TimeLineData.length === 0) ?
                                 <p className={'align-self-center'} style={{ color: "gray"}}>You have not used this tool yet.</p> :
                                 Object.entries(TimeLineData).map((cdiv,i) => (
                                 <TimelineItem className="expense-block" key={cdiv} id="expense-block-`${i}`" data-block={i}>

@@ -29,7 +29,7 @@ export default function SubmissionContent({ submissions, assignmentId, asStudent
                             </div>
                         })
                     }
-                    <Card.Text>
+                    <Card.Text style={{ whiteSpace: 'pre-wrap' }}>
                         {submissions[0].text}
                     </Card.Text>
                     <Row>

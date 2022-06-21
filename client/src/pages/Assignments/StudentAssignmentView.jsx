@@ -22,6 +22,7 @@ export default function Assignments() {
         let res = await requests.get('/course/assignments', { courseId: id })
         if (res.status !== 200) return
         const json = await res.json()
+        console.log(json)
         for (const assignment of json) {
             if (assignment.submissions.length === 0) {
                 setActive(prev => [...prev, assignment])

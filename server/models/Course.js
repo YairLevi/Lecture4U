@@ -66,17 +66,18 @@ courseSchema.methods.getCourseData = async function () {
 }
 
 courseSchema.methods.getAssignmentsOfUser = async function (userId) {
-    const assignmentsObjects = await Promise.all(this.assignments.map(assignmentId => Assignment.findById(assignmentId)))
-    return await Promise.all(assignmentsObjects.map(async object => {
-        const assignment = object._doc
-        assignment.submissions = await Promise.all(assignment.submissions
-            .filter(async submissionId => {
-                const submission = await Submission.findById(submissionId)
-                return submission.userIds.includes(userId)
-            }))
+    const assignmentsObjects = await Promise.all(this.assignments.map(assignmentId => clone(Assignment, assignmentId)))
+    for (const assignment of assignmentsObjects) {
+        for (const submissionId of assignment.submissions) {
+            const submission = await clone(Submission, submissionId)
+            if (!submission.userIds.includes(userId))
+                assignment.submissions.splice(assignment.submissions.indexOf(submissionId))
+        }
+    }
+    return await Promise.all(assignmentsObjects.map(async assignment => {
         assignment.submissions = await Promise.all(assignment.submissions
             .map(async submissionId => {
-                const submission = (await Submission.findById(submissionId))._doc
+                const submission = await clone(Submission, submissionId)
                 submission.userIds = await Promise.all(submission.userIds.map(async user => {
                     const u = await clone(User, user)
                     u.profileImage = await getFileData(u.profileImage)
