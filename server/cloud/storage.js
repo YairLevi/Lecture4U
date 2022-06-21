@@ -3,7 +3,7 @@ const path = require("path");
 
 const bucketName = process.env.BUCKET_NAME
 const storage = new Storage({
-    keyFilename: path.join(__dirname, '../../steam-treat-347709-462a24be0c62.json')
+    keyFilename: path.join(__dirname, '../../protean-trilogy-335015-7b854e39cda4.json')
 });
 
 module.exports = storage
