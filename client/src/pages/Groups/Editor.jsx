@@ -21,7 +21,7 @@ export default function Editor() {
     const [quill, setQuill] = useState()
 
     useEffect(() => {
-        const server_socket = io("http://localhost:8000")
+        const server_socket = io(process.env.REACT_APP_SERVER_ADDRESS)
         setSock(server_socket)
         return () => {server_socket.disconnect()}
     }, [])

@@ -52,8 +52,8 @@ Date.prototype.getMonthAndDay = function () {
 }
 
 
-// server.listen(PORT, HOST, callback = () => console.log(`server started on port ${PORT}`))
-app.listen(PORT, () => console.log('test here!!!'))
+server.listen(PORT, HOST, callback = () => console.log(`server started on port ${PORT}`))
+// app.listen(PORT, HOST, () => console.log('test here!!!'))
 
 const Document = require("./models/Document")
 
@@ -70,7 +70,6 @@ const defaultValue = ""
 const doc_dict = {}
 
 io.on("connection", socket => {
-    console.log('here')
     socket.on("get-document", async documentId => {
 
         // needs to use DB for returning the same documentId when in same group (using groupId?)
@@ -80,7 +79,7 @@ io.on("connection", socket => {
         socket.emit("load-document", document.data)
 
         doc_dict[documentId] = document.data
-        console.log(doc_dict)
+        // console.log(doc_dict)
 
         socket.on("send-changes", delta => {
             socket.broadcast.to(documentId).emit("receive-changes", delta)
