@@ -52,8 +52,8 @@ Date.prototype.getMonthAndDay = function () {
 }
 
 
-server.listen(PORT, HOST, callback = () => console.log(`server started on port ${PORT}`))
-
+// server.listen(PORT, HOST, callback = () => console.log(`server started on port ${PORT}`))
+app.listen(PORT, () => console.log('test here!!!'))
 
 const Document = require("./models/Document")
 
