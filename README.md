@@ -98,7 +98,6 @@ https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-
 |   ├── OCR
 |   ├── Speech to text
 |   ├── Scheduler
-├── testing 
 └── Additional files
 ```
 ### Installation And Running
