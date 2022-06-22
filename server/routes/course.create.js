@@ -6,7 +6,7 @@ const { getQueryParams, getRandomImage, getUserID, updateAllStudentDashboards, r
 const storage = require('../cloud/storage')
 
 const router = express.Router()
-const bucket = 'lecture4u-3'
+const bucket = require('../cloud/storage').bucketName
 
 const Image = require('../models/Image')
 const Course = require('../models/Course')
