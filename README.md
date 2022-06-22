@@ -91,7 +91,6 @@ https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-
 |   |   ├── pages
 ├── server
 |   ├── cloud
-|   ├── env
 |   ├── models
 |   ├── routes
 ├── microservices
@@ -99,11 +98,13 @@ https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-
 |   ├── Speech to text
 |   ├── Scheduler
 └── Additional files
+|   ├── Architecture document
+|   ├── Jira document
 ```
 ### Installation And Running
 #### Browse to the website
 This is the quickest way to get a running instance of Lecture4U! </br> 
-Just Browse to 
+Just Browse to http://35.195.53.125:3000
 #### From Sources
 1. Run dependencies.bat (for the python dependencies).
 2. Install node.js
