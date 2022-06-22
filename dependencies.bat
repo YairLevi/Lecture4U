@@ -13,8 +13,6 @@ pip install opencv-python
 pip install lmdb
 pip install numpy
 pip install glob
-pip install Flask
-pip install Flask-Cors
 pip install tensorflow
 pip install argparse
 pip install editdistance
