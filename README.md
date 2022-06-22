@@ -35,7 +35,6 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#folder-structure">Folder Structure</a></li>
-        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation-and-running">Installation & Running</a></li>
         <li><a href="#run-demo">Run Demo</a></li>
       </ul>
@@ -102,18 +101,18 @@ https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-
 ├── testing 
 └── Additional files
 ```
-### Prerequisites
 ### Installation And Running
 #### Browse to the website
 This is the quickest way to get a running instance of Lecture4U! </br> 
 Just Browse to 
 #### From Sources
-1. Install node.js
-2. Run git clone https://github.com/YairLevi/Lecture4U.git 
-3. Go into the client and server folders, and run lines 4-5:
-4. Run npm install (only has to be done before first start or when you change the source code)
-5. Run npm start
-6. Browse to http://localhost:3000
+1. Run dependencies.bat (for the python dependencies).
+2. Install node.js
+3. Run git clone https://github.com/YairLevi/Lecture4U.git 
+4. Go into the client and server folders, and run lines 5-6:
+5. Run npm install (only has to be done before first start or when you change the source code)
+6. Run npm start
+7. Browse to http://localhost:3000
 ### Run Demo
 There are several demo files, which is highly recommended to run.
 - For speech to text tool, go into: microservices -> Speech to text -> demos.
