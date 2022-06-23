@@ -122,8 +122,11 @@ router.get('/data', async (req, res) => {
         }
 
         for (const subjectId of dashboard.subjects) {
-            if (course.subjects.includes(subjectId)) {
-                await removeFromDashboard(userId, 'subjects', subjectId)
+            for (const unitId of course.units) {
+                const unit = await Unit.findById(unitId)
+                if (unit.subjects.includes(subjectId)) {
+                    await removeFromDashboard(userId, 'subjects', subjectId)
+                }
             }
         }
 
