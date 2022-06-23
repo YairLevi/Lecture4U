@@ -74,8 +74,7 @@ https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-
 - [x] **Speech to text tool -** Given .m4a audio file, creates a transcript file (.docx), and divide the transcription to topics (with the timestamps of each topic) according to known keywords. You can keep track of the transcript process according to the progress bar. Each user also has a TimeLine that show his recent actions with the speech to text module.   
 - [x] **Scheduler tool -** Each user has it's own calendar, he schedules his constraints and their priorities, and the scheduler creates a schedule that satisfy his constraints.
 ## Usage
-
-
+[Lecture4U](https://www.youtube.com/watch?v=D2WP6g5evyw&ab_channel=YairLevi)
 ## Getting Started
 ### Folder Structure
 ```
