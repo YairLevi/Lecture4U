@@ -12,11 +12,11 @@ import time
 import shutil
 
 THREADS_COUNTER = 4
-LINES_ROI = "..\\ROIS"
-WORDS_ROI = "..\\ROI"
-LINES_ROI_PNG = LINES_ROI + "\\*.png"
-PNG_SUFFIX = "\\*.png"
-INPUT_IMAGE_PATH = "..\\image examples\\"
+LINES_ROI = "../ROIS"
+WORDS_ROI = "../ROI"
+LINES_ROI_PNG = LINES_ROI + "/*.png"
+PNG_SUFFIX = "/*.png"
+INPUT_IMAGE_PATH = "../image examples/"
 dir_lst = []
 png_lst = []
 
@@ -58,10 +58,10 @@ def split_image_text(image_name, target_dir, kernel_size, is_line):
         # converts the image to black and white
         r, t = cv2.threshold(cv2.cvtColor(img[y:y + h, x:x + w], b2g), 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
         if is_line:
-            cv2.imwrite(target_dir + '\\{:02d}.png'.format(idx), 255 - cv2.cvtColor(t, cv2.COLOR_BGR2RGB))
+            cv2.imwrite(target_dir + '/{:02d}.png'.format(idx), 255 - cv2.cvtColor(t, cv2.COLOR_BGR2RGB))
             idx -= 1
         else:
-            cv2.imwrite(target_dir + '\\{:04d}.png'.format(x), 255 - cv2.cvtColor(t, cv2.COLOR_BGR2RGB))
+            cv2.imwrite(target_dir + '/{:04d}.png'.format(x), 255 - cv2.cvtColor(t, cv2.COLOR_BGR2RGB))
     return cv2.cvtColor(copied, cv2.COLOR_BGR2RGB)
 
 
@@ -164,4 +164,4 @@ def transcript(to_eval, words_split, to_detect):
             doc = docx.Document()
             doc.add_paragraph(new_text)
             doc.save('text.docx')
-        return evaluate(new_text, evaluation, "..\\evaluation input\\input.txt") if to_eval else new_text
+        return evaluate(new_text, evaluation, "../evaluation input/input.txt") if to_eval else new_text

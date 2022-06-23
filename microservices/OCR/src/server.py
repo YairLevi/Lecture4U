@@ -21,9 +21,9 @@ words_split_const = CONST_SPLIT
 
 
 def save_fn(file, filename, path):
-    os.chdir("..\\" + path)
+    os.chdir("../" + path)
     file.save(filename)
-    os.chdir("..\\src")
+    os.chdir("../src")
 
 
 @app.route("/upload", methods=["POST"])
