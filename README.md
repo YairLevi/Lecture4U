@@ -171,6 +171,8 @@ Our scheduler microservice gets the inforamtion, and tries to satisfy the proble
 
 If the user has tasks that are already scheduled on the calendar (from previous algorithm runs), and now wants to add new tasks, then the scheduler creates a new problem that contains the previous tasks, as well as the new tasks and tries to solve (satisfy) the new problem - it's checks that the new tasks do not contradict the previous tasks that already schedule on the calendar.
 
+## Live Display Of The App
+https://www.youtube.com/watch?v=D2WP6g5evyw&ab_channel=YairLevi
 
 ## Contact
 - Tal Sigman
