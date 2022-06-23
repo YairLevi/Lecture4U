@@ -100,6 +100,7 @@ https://user-images.githubusercontent.com/72911486/173763873-6dc298d7-b43d-4ca8-
 └── Additional files
 |   ├── Architecture document
 |   ├── Jira document
+|   ├── group's work documentation.pdf
 ```
 ### Installation And Running
 #### Browse to the website
