@@ -25,7 +25,13 @@ export default function DailySchedule({ schedule }) {
                         <p>Your schedule seems to be free today.</p> :
                         <div className="vertical-timeline vertical-timeline--animate vertical-timeline--one-column">
                             {
-                                upToDateSchedule.slice(0).map((value, index) => {
+                                upToDateSchedule.slice(0)
+                                    .sort((a, b) => {
+                                        const aDate = new Date(a.start)
+                                        const bDate = new Date(b.start)
+                                        return aDate < bDate ? -1 : 1
+                                    })
+                                    .map((value, index) => {
                                     const start = new Date(value.start).getTimeString()
                                     const end = new Date(value.end).getTimeString()
                                     const text = value.text
