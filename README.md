@@ -123,6 +123,7 @@ There are several demo files, which is highly recommended to run.
 
 ### Backend
 Our backend is an API server implemented using NodeJS and ExpressJS, with the Mongoose API to connect with the database.
+We use GCP as the cloud platform for providing both storage and remote services.
 ### Frontend
 We designed our website's UI with ReactJS and other 3rd party UI libraries, including MaterialUI and Bootstrap. 
 ### Database
