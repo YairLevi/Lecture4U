@@ -68,7 +68,7 @@ export default function Assignments() {
                             submitted.map((value, index) => {
                                 return (
                                     <AssignmentTab key={index} id={value._id} {...value}>
-                                        <SubmissionContent submissions={value.submissions} assignmentId={value._id} asStudent={true}/>
+                                        <SubmissionContent submission={value.submissions[0]} assignmentId={value._id} asStudent={true}/>
                                         <div className={'mt-2 w-100 border-1 border-top'}>
                                             <Card.Text className={'mt-3'}>
                                                 Assignment Preview

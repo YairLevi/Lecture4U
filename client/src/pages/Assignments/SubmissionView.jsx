@@ -28,11 +28,18 @@ export default function SubmissionView() {
             {
                 submissions.length === 0 ?
                     <p>No Submissions yet</p> :
-                    <Card>
-                        <Card.Body>
-                            <SubmissionContent submissions={submissions} asStudent={false}/>
-                        </Card.Body>
-                    </Card>
+                    <>
+                        {
+                            submissions.map((value, index) => {
+                                console.log(value)
+                                return <Card key={index} className={'mt-3 mb-3'}>
+                                    <Card.Body>
+                                        <SubmissionContent submission={value} asStudent={false}/>
+                                    </Card.Body>
+                                </Card>
+                            })
+                        }
+                    </>
             }
         </Container>
 }

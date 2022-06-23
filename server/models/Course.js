@@ -68,11 +68,13 @@ courseSchema.methods.getCourseData = async function () {
 courseSchema.methods.getAssignmentsOfUser = async function (userId) {
     const assignmentsObjects = await Promise.all(this.assignments.map(assignmentId => clone(Assignment, assignmentId)))
     for (const assignment of assignmentsObjects) {
+        let sub = []
         for (const submissionId of assignment.submissions) {
             const submission = await clone(Submission, submissionId)
-            if (!submission.userIds.includes(userId))
-                assignment.submissions.splice(assignment.submissions.indexOf(submissionId))
+            if (submission.userIds.includes(userId))
+                sub.push(submissionId)
         }
+        assignment.submissions = sub
     }
     return await Promise.all(assignmentsObjects.map(async assignment => {
         assignment.submissions = await Promise.all(assignment.submissions

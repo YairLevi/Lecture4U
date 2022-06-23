@@ -7,34 +7,34 @@ import requests from "../../helpers/requests";
 import FileItem from "../../components/FileItem";
 
 
-export default function SubmissionContent({ submissions, assignmentId, asStudent }) {
+export default function SubmissionContent({ submission, assignmentId, asStudent }) {
     const [openEdit, setOpenEdit] = useState(false)
-    const [grade, setGrade] = useState(submissions[0].grade === -1 ? '' : submissions[0].grade)
+    const [grade, setGrade] = useState(submission.grade === -1 ? '' : submission.grade)
     const [loading, action] = useLoading(async () => {
-        const res = await requests.post('/course/grade', { submissionId: submissions[0]._id, grade: parseInt(grade) })
+        const res = await requests.post('/course/grade', { submissionId: submission._id, grade: parseInt(grade) })
         return res.status === 200
     })
 
     return (
         <>
             {
-                submissions.length !== 0 && <div>
+                <div>
                     {
-                        submissions[0].userIds.map((user, index) => {
+                        submission.userIds.map((user, index) => {
                             return <div key={index} className={'d-flex justify-content-between'}>
                                 <UserLabel {...user} noMargin={true} size={'small'}/>
                                 <p className={'mb-2 ms-2 p-0'} style={{ fontSize: '0.9rem' }}>
-                                    submission date: {new Date(submissions[0].date).parseEventDate()}
+                                    submission date: {new Date(submission.date).parseEventDate()}
                                 </p>
                             </div>
                         })
                     }
                     <Card.Text style={{ whiteSpace: 'pre-wrap' }}>
-                        {submissions[0].text}
+                        {submission.text}
                     </Card.Text>
                     <Row>
                         {
-                            submissions[0].files.map((value, index) => (
+                            submission.files.map((value, index) => (
                                 <FileItem key={index} {...value} />
                             ))
                         }
@@ -61,9 +61,9 @@ export default function SubmissionContent({ submissions, assignmentId, asStudent
                             </> :
                             <>
                                 Grade: {
-                                submissions[0].grade === -1 ?
+                                submission.grade === -1 ?
                                     <>Not Given Yet</> :
-                                    <>{submissions[0].grade}</>
+                                    <>{submission.grade}</>
                             }
                             </>
                     }
@@ -73,7 +73,7 @@ export default function SubmissionContent({ submissions, assignmentId, asStudent
             <EditSubmission show={openEdit}
                             onHide={() => setOpenEdit(false)}
                             assignmentId={assignmentId}
-                            {...submissions[0]}
+                            {...submission}
             />
         </>
     )
