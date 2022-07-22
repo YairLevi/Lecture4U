@@ -80,12 +80,11 @@ def search_word(key_words, my_word_list, my_timestamps, language):
                     check_for_keyword_variations(next_word, keyword_variations)) or \
                         (is_english and check_for_keyword_variations(word, keyword_variations)
                          and next_word == key_words[3]):
-
-                     # we found a new topic --> start at: start_index, end at: end_index
+                    # we found a new topic --> start at: start_index, end at: end_index
 
                     end_index = i + 1  # end of the topic.
-                    topic_indexes.append((start_index, end_index)) # get the index of the topic name.
-                    topic_name.append(my_word_list[start_index + 1: end_index - 1]) # get topic's name.
+                    topic_indexes.append((start_index, end_index))  # get the index of the topic name.
+                    topic_name.append(my_word_list[start_index + 1: end_index - 1])  # get topic's name.
                     word_index = end_index + 1
                     break
 
@@ -95,12 +94,13 @@ def search_word(key_words, my_word_list, my_timestamps, language):
 
     # get the content of each topic
     for index in range(0, len(topic_indexes) - 1):
-        first = topic_indexes[index] # some topic - "first topic"
-        second = topic_indexes[index + 1] # the next topic - "second topic"
-        topic_content.append(my_word_list[first[1] + 1: second[0] - 1]) # the content of the "first topic"
-        start_time = my_timestamps[first[1] + 1][0] # start time of the "first topic"
-        end_time = my_timestamps[second[0] - 2][1] # end time of the "first topic"
-        topic_timestamp.append((start_time.total_seconds(), end_time.total_seconds())) # timestamp of the "first topic".
+        first = topic_indexes[index]  # some topic - "first topic"
+        second = topic_indexes[index + 1]  # the next topic - "second topic"
+        topic_content.append(my_word_list[first[1] + 1: second[0] - 1])  # the content of the "first topic"
+        start_time = my_timestamps[first[1] + 1][0]  # start time of the "first topic"
+        end_time = my_timestamps[second[0] - 2][1]  # end time of the "first topic"
+        topic_timestamp.append(
+            (start_time.total_seconds(), end_time.total_seconds()))  # timestamp of the "first topic".
 
     # get the last topic content:
     if len(topic_indexes) > 0:
@@ -119,7 +119,16 @@ def transcribe_gcs_with_word_time_offsets(gcs_uri, number_of_channels, sample_ra
 
     audio = speech.RecognitionAudio(uri=gcs_uri)
 
-    # set configurations:
+    # Set speech recognition configurations:
+
+    # sample_rate_hertz: Sample rate in Hertz of the audio data sent in all RecognitionAudio messages.
+    # language_code: The language of the supplied audio.
+    # enable_word_time_offsets: If true, the top result includes a list of words and the start
+    # and end time offsets (timestamps) for those words.
+    # audio_channel_count: The number of channels in the input audio data.
+    # languageCode: The language of the supplied audio.
+    # enable_automatic_punctuation: If 'true', adds punctuation to recognition result hypotheses
+
     config = speech.RecognitionConfig(
         sample_rate_hertz=sample_rate_hertz,
         language_code=my_language_code,
@@ -142,7 +151,7 @@ def transcribe_gcs_with_word_time_offsets(gcs_uri, number_of_channels, sample_ra
         alternative = result.alternatives[0]
         print("Transcript: {}".format(alternative.transcript))
         print("Confidence: {}".format(alternative.confidence))
-        confidence += alternative.confidence # calculate the average confidence.
+        confidence += alternative.confidence  # calculate the average confidence.
         amount_of_results += 1
 
         # add each word to the word_list and save it's timestamp.
@@ -202,7 +211,12 @@ def run(source_name, destination_name, my_language):
         my_keywords = ['נושא', 'חדש', 'סוף', 'נושא']
 
     # split the text to topics according to timestamps
-    topics_names, topics_content, topics_timestamps = search_word(my_keywords, word_list, timestamps, language)
+    topics_names, topics_content, topics_timestamps = [], [], []
+    try:
+        topics_names, topics_content, topics_timestamps = search_word(my_keywords, word_list, timestamps, language)
+    except Exception as e:
+        print(e)
+
     print(topics_names)
     print(topics_content)
     print(topics_timestamps)
