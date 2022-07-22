@@ -13,10 +13,7 @@ import { Alert, AlertTitle } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-/// https://code.daypilot.org/42221/react-weekly-calendar-tutorial
-/// https://stackoverflow.com/questions/43638938/updating-an-object-with-setstate-in-react
-
-
+// Some Calendar styles
 const styles = {
     wrap: {
         display: "flex"
@@ -33,6 +30,8 @@ class Calendar extends Component {
 
     constructor(props) {
         super(props);
+
+        // Binding:
         this.ModalHandleShow = this.ModalHandleShow.bind(this);
         this.ModalHandleClose = this.ModalHandleClose.bind(this);
         this.addNewRow = this.addNewRow.bind(this);
@@ -56,6 +55,9 @@ class Calendar extends Component {
         let day = d.getDate()
         if (day < 10) day = `0${day}`
 
+        // Component state
+        // the state includes the user's tasks file information (task's names, time, date, priority etc.)
+        // and the tasks that are already scheduled from previous scheduling.
         this.state = {
             loading: false,
             startDate: `${year}-${month}-${day}`,
@@ -128,14 +130,17 @@ class Calendar extends Component {
         };
     }
 
+    // show alert message
     AlertMessageHandleShow() {
         this.setState({ AlertMessageModal: { isOpen: true } })
     }
 
+    // close alert message
     AlertMessageHandleClose() {
         this.setState({ AlertMessageModal: { isOpen: false } })
     }
 
+    // add new row to the task's file.
     addNewRow() {
         let cDivs = this.state.customDiv;
         let len = cDivs.length
@@ -150,25 +155,30 @@ class Calendar extends Component {
         this.setState({ customDiv: cDivs })
     }
 
+    // show modal
     ModalHandleShow() {
         this.setState({ ModalData: { isModalOpen: true } });
     }
 
+    // close modal
     ModalHandleClose() {
         this.setState({ ModalData: { isModalOpen: false } });
     }
 
+    // get the time
     getTime(time) {
         let hour = time.getHours()
         let minutes = (time.getMinutes()) / 60
         return parseFloat((hour + minutes)).toFixed(2)
     }
 
+    // send user's tasks to the server, and when I get them back, display them on the calendar.
     sendTaskData() {
         let data = []
         for (let i = 0; i < this.state.TasksTime.length; i++) {
             if (this.state.TaskNames.names[i] === "") {continue}
 
+            // add the new tasks (from the user's file)
             data.push({
                 start: this.getTime(this.state.TasksTime[i].start),
                 end: this.getTime(this.state.TasksTime[i].end),
@@ -178,6 +188,8 @@ class Calendar extends Component {
                 end_date: moment(this.state.TasksTime[i].end).set('second', 0).format("YYYY-MM-DDTHH:mm:ss")
             })
         }
+
+        // Add the tasks that are already schedule in the calendar
         for (let i = 0; i < this.state.events.length; i++) {
             let dict = this.state.events[i]
             data.push({
@@ -194,6 +206,7 @@ class Calendar extends Component {
         console.log("Data:")
         console.log(data)
 
+        // send a request to the server.
         axios
             .post(`${process.env.REACT_APP_CALENDAR_OPTIMIZER_ADDRESS}/calendar_task_data`, data)
             .then(res => {
@@ -206,6 +219,7 @@ class Calendar extends Component {
                 let id = 1
                 let my_counter = this.state.counter
 
+                // We received a new scheduling, and we would like to add it to the calendar.
                 Object.entries(options).forEach(function ([key, value]) {
                     let my_events = []
                     for (let i = 0; i < value.length; i++) {
@@ -256,6 +270,7 @@ class Calendar extends Component {
             .catch(err => console.warn(err));
     }
 
+    // Save the tasks to DB.
     saveTasks() {
         axios
             .post(`${process.env.REACT_APP_SERVER_ADDRESS}/schedule/save_task_scheduling`, this.state.events,
@@ -277,6 +292,7 @@ class Calendar extends Component {
             .catch(err => console.warn(err));
     }
 
+    // Get the tasks from DB.
     getTasks() {
         this.state.loading = true
         axios
@@ -292,6 +308,7 @@ class Calendar extends Component {
             .catch(err => console.warn(err));
     }
 
+    // Update the event list.
     TasksHandleChange(selectedOption) {
         console.log(`Option selected:`, selectedOption);
         let counter = selectedOption.value[0]['counter']
@@ -314,6 +331,7 @@ class Calendar extends Component {
 
     }
 
+    // reset the calendar
     resetCalendar() {
         this.setState({
             schedulingOptions: [],
@@ -322,6 +340,7 @@ class Calendar extends Component {
         });
     }
 
+    // reset the form
     resetForm() {
         this.setState({
             RatingValue: {
@@ -340,6 +359,7 @@ class Calendar extends Component {
         })
     }
 
+    // delete a given row from the user's tasks file
     deleteGivenRow(i) {
         let temp = this.state.customDiv.filter((data, idx) => idx !== i)
         for (let j = 0; j < temp.length; j++) {
@@ -361,7 +381,7 @@ class Calendar extends Component {
         this.getTasks()
     }
 
-
+    // Calendar UI
     render() {
         const { ...config } = this.state;
         return (
@@ -426,6 +446,8 @@ class Calendar extends Component {
                     <Modal.Header closeButton>
                         <strong>Schedule Your Tasks</strong>
                     </Modal.Header>
+
+                    {/* User's tasks file UI */}
                     <Modal.Body>
 
                         {
@@ -442,7 +464,7 @@ class Calendar extends Component {
                                         </IconButton>
                                         &nbsp;&nbsp;&nbsp;
 
-
+                                        {/* Task Name */}
                                         <TextField
                                             id="outlined-name"
                                             label="Task Name"
@@ -455,7 +477,7 @@ class Calendar extends Component {
                                         />
                                         &nbsp;&nbsp;&nbsp;&nbsp;
 
-
+                                        {/* Start Date & Time */}
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <DateTimePicker
                                                 minutesStep ={30}
@@ -472,6 +494,7 @@ class Calendar extends Component {
 
                                         &nbsp;&nbsp;&nbsp;&nbsp;
 
+                                        {/* End Time */}
                                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                                             <DateTimePicker
                                                 minutesStep ={30}
@@ -486,7 +509,7 @@ class Calendar extends Component {
                                                 renderInput={(params) => <TextField {...params} />}/>
                                         </LocalizationProvider>
 
-
+                                        {/* Rating button */}
                                         &nbsp;&nbsp;&nbsp;&nbsp;
                                         <Rating
                                             name="simple-controlled"
@@ -517,6 +540,7 @@ class Calendar extends Component {
                     </Modal.Footer>
                 </Modal>
 
+                {/* Calendar UI */}
                 <div style={styles.wrap}>
                     <div style={styles.left}>
                         <DayPilotNavigator

@@ -2,7 +2,7 @@ import constraint
 from constraint import Domain
 from constraint import Problem
 
-
+# Task Object - includes the name and the priority.
 class Task:
     def __init__(self, name, priority):
         self.name = name
@@ -11,7 +11,7 @@ class Task:
     def __lt__(self, other):
         return self.priority < other.priority
 
-
+# The domain of the task. Each domain include some information such as: time, date ect.
 class TimePlace:
     def __init__(self, start, end, priority, start_date, end_date):
         self.start = start
@@ -20,7 +20,7 @@ class TimePlace:
         self.start_date = start_date
         self.end_date = end_date
 
-
+# Create a constraint.
 class CreateConstraint(constraint.Constraint):
     task_at_same_time = 1
     check_priority = 2
@@ -88,7 +88,7 @@ def higher_priority_first(*arg):
 
     return True
 
-
+# Given variables, their domains, and their constraints, define a problem, and return it.
 def get_problem(scheduler_variables, scheduler_domains, scheduler_constraints):
     problem = Problem()
 
@@ -101,7 +101,7 @@ def get_problem(scheduler_variables, scheduler_domains, scheduler_constraints):
 
     return problem
 
-
+# Given a problem, returns the scheduling
 def results(problem):
     scheduler_results = {}
     for index, result in enumerate(problem.getSolutions()):
@@ -141,7 +141,7 @@ def results(problem):
 
     return scheduler_results
 
-
+# Given scheduler_data set the variables and the domains of the the problem.
 def set_variables_and_domains(scheduler_data):
     variables = []
     domains = []

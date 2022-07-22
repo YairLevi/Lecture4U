@@ -8,7 +8,7 @@ CORS(app, support_credentials=True)
 
 scheduling_tasks_data = {}
 
-
+# save task scheduling
 @app.route("/save_task_scheduling", methods=["POST"])
 @cross_origin()
 def save_task_scheduling():
@@ -17,7 +17,7 @@ def save_task_scheduling():
     print(scheduling_tasks_data)
     return "****** Send scheduling_tasks_data Successfully ******"
 
-
+# Given new tasks, creates a schedule.
 @app.route("/calendar_task_data", methods=["POST"])
 @cross_origin()
 def calendar_task_data():

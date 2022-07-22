@@ -1,11 +1,3 @@
-// https://blog.logrocket.com/using-the-react-speech-recognition-hook-for-voice-assistance/
-// https://github.com/JamesBrill/react-speech-recognition#readme
-// https://github.com/JamesBrill/react-speech-recognition/blob/master/docs/API.md#language-string
-// https://github.com/devias-io/material-kit-react
-
-// for Course recommendation system:
-// https://mui.com/components/bottom-navigation/
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, ButtonGroup, Container, Card, Nav, Navbar, Modal } from "react-bootstrap"
 import React, {useState, useEffect} from 'react';
@@ -34,6 +26,7 @@ import {Alert, AlertTitle} from '@mui/material';
 import useLocalStorage from "../../hooks/useLocalStorage";
 import moment from "moment";
 
+// Progress with label UI
 function LinearProgressWithLabel(props) {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -157,6 +150,7 @@ export default function SpeechToText() {
     React.useEffect(() => {
         if (!isTranscribe) { return }
 
+        // set timer - for progress bar
         const timer = setInterval(() => {
             setProgress((prevProgress) => {
                 if (prevProgress === 100) {
@@ -185,6 +179,8 @@ export default function SpeechToText() {
             </div>
         );
     }
+
+    // Choose language:
     const handleListing = () => {
         console.log("handleListing!")
 
@@ -209,12 +205,16 @@ export default function SpeechToText() {
             continuous: true, language: flag
         });
     };
+
+    // Stop Listening
     const stopHandle = () => {
         console.log("stopHandle!")
         setIsListening(false);
         microphoneRef.current.classList.remove("listening");
         SpeechRecognition.stopListening();
     };
+
+    // Reset
     const handleReset = () => {
         console.log("handleReset!")
         stopHandle();
@@ -236,7 +236,7 @@ export default function SpeechToText() {
     };
 
 
-    // Upload Button func:
+    // Upload Button func - Upload the given file, and finally show some alert messages to the user.
     const UploadHandleChange = (event) => {
         console.log("inside UploadHandleChange!")
         const fileUploaded = event.target.files[0];
@@ -270,8 +270,8 @@ export default function SpeechToText() {
         event.target.value = null;
     };
 
-    // Transcribe Button func
-    /// https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
+    // Transcribe Button func:
+    // Transcribe, and finally adds a new timestamps to the timeline.
     const TranscribeHandleChange = () => {
         if (speech_language === "") {
             SetModalAlertMessage("Choose a language! (Hebrew / English)")
@@ -302,7 +302,7 @@ export default function SpeechToText() {
                 let keys = []
                 let dictionary = {}
 
-                /// get list of the keys:
+                /// get list of the keys: (the keys are the dates)
                 temp_list.forEach(function (dict) {
                     Object.keys(dict).forEach(function (key) {
                         keys.push(key)
@@ -319,17 +319,19 @@ export default function SpeechToText() {
                     temp_list[index][key].push([res.headers['transcribe-file-name'],key,res.headers['transcribe-score']])
                 }
 
+                // Save some information in local storage
                 localStorage.setItem('TimeLineData', JSON.stringify(temp_list))
                 localStorage.setItem('isTranscribe', JSON.stringify(false))
                 localStorage.setItem('transcribe_score', JSON.stringify(parseFloat(res.headers['transcribe-score'])))
                 localStorage.setItem('progress', JSON.stringify(0))
                 window.dispatchEvent(new Event('storage'))
 
-                //send TimeLineData to server:
+                // send TimeLineData to server:
                 axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/speech/save`,{
                     data: temp_list
                 }, { withCredentials: true })
 
+                // Download the transcribed file
                 let file_name = res.headers['transcribe-file-name'].split(".")[0] + ".docx"
                 const url = window.URL.createObjectURL(new Blob([res.data]));
                 const link = document.createElement('a');
@@ -341,12 +343,14 @@ export default function SpeechToText() {
             .catch(err => console.warn(err));
     };
 
+    // Display timeline info
     const displayInfo = (i) => {
         setTimeLineIndex(i)
         TimeLineModalHandleShow()
         console.log(TimeLineData[i])
     }
 
+    // UI
     return (
         <Container className={'pb-5'}>
 
@@ -379,6 +383,7 @@ export default function SpeechToText() {
                 </Modal.Footer>
             </Modal>
 
+            {/* Navbar UI */}
             <Navbar className="color-nav" variant="dark">
                 <Container>
                     <Navbar.Brand href="#home">Speech to Text</Navbar.Brand>
@@ -414,7 +419,7 @@ export default function SpeechToText() {
                 </Container>
             </Navbar>
 
-
+            {/* calibration system */}
             <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Run Demo" />
                 <CardContent>
@@ -457,7 +462,7 @@ export default function SpeechToText() {
                 <br/>
             </Card>
 
-
+            {/* Live Notifications */}
             <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Live Transcribe & Notification" />
                 <CardContent>
@@ -483,6 +488,7 @@ export default function SpeechToText() {
                 </CardContent>
             </Card>
 
+            {/* Timeline UI */}
             <Card sx={{ maxWidth: 345 }} className={'p-3 mt-4 App'}>
                 <CardHeader title="Speech to text Timeline" />
                 <CardContent>
@@ -500,7 +506,8 @@ export default function SpeechToText() {
                                         <TimelineDot />
                                         <TimelineConnector />
                                     </TimelineSeparator>
-                                    <TimelineContent><Button variant="text" onClick={()=>{displayInfo(i)}}>{Object.keys(TimeLineData[i])[0]}</Button></TimelineContent>
+                                    <TimelineContent><Button variant="text"
+                                                             onClick={()=>{displayInfo(i)}}>{Object.keys(TimeLineData[i])[0]}</Button></TimelineContent>
                                 </TimelineItem>
                             ))
                         }
@@ -520,9 +527,12 @@ export default function SpeechToText() {
             >
                 <Modal.Header closeButton>
                     <Alert severity="info">
-                        <AlertTitle>Information about your actions with the speech to text module at: <strong>{Object.keys(TimeLineData[TimeLineIndex])[0]}</strong></AlertTitle>
+                        <AlertTitle>Information about your actions with the speech to text module at:
+                            <strong>{Object.keys(TimeLineData[TimeLineIndex])[0]}</strong></AlertTitle>
                     </Alert>
                 </Modal.Header>
+
+                {/* By clicking on a date, show the relevant information */}
                 <Modal.Body>
 
                     {
